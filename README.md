@@ -1,2 +1,2 @@
-# Pearl-Jam-Batch
+# Pearl Jam Batch
 Batch processing services for Peal Jam
