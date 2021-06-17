@@ -2,6 +2,10 @@ package fr.insee.pearljam.batch;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
@@ -127,7 +131,20 @@ public class PearlJamBatchApplicationTests {
 		if (!testScenarioInDir.exists()) {
 			testScenarioInDir.mkdir();
 		}
+		
+		File testScenarioProcessingDir = new File("src/test/resources/in/" + name + "/testScenarios/processing");
+		if (!testScenarioProcessingDir.exists()) {
+			testScenarioProcessingDir.mkdir();
+		}
+		
 		FileUtils.copyDirectory(initInDir, testScenarioInDir);
+		List<Path> subfolder = Files.walk(new File("src/test/resources/in/" + name + "/testScenarios").toPath(), 1)
+	            .filter(Files::isDirectory)
+	            .collect(Collectors.toList());
+		subfolder.remove(0);
+		subfolder.parallelStream().forEach(path -> 
+			new File("src/test/resources/in/" + name + "/testScenarios/" + path.getFileName().toString() + "/processing").mkdir());
+		
 		File outDir = new File("src/test/resources/out");
 		if (!outDir.exists()) {
 			outDir.mkdir();

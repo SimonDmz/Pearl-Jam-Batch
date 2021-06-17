@@ -47,7 +47,6 @@ public class TestsEndToEndCampaign {
     
 	private String keycloakTokenUrl = (String) context.getBean("keycloakAuthUrl");
 	private String contextReferentialBaseUrl = (String) context.getBean("contextReferentialBaseUrl");
-	private static final String PROCESSING = "src/test/resources/processing";
 	private static final String OUT = "src/test/resources/out/campaign/testScenarios";
 	
 	/**
@@ -74,7 +73,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario1() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario1";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -89,7 +88,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario2() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario2";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during load campaign"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -104,7 +103,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario3() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario3";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during process, error loading campaign"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -119,7 +118,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario4() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario4";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during creation of campaign"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -133,7 +132,7 @@ public class TestsEndToEndCampaign {
 	@Test
 	public void testScenario5() throws Exception {
 		
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario5", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario5", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","done.xml"));
 	}
 	
@@ -143,7 +142,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario6() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario6", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario6", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -156,7 +155,7 @@ public class TestsEndToEndCampaign {
 	@Test
 	public void testScenario7() throws Exception {
 		try {
-			assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario7", OUT, PROCESSING));
+			assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario7", OUT));
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during creation of campaign"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
@@ -170,7 +169,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario8() throws Exception {
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario8", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario8", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","done.xml"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
@@ -183,7 +182,7 @@ public class TestsEndToEndCampaign {
 	@Test
 	public void testScenario9() throws Exception {
 		try {
-			assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario9", OUT, PROCESSING));
+			assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario9", OUT));
 		} catch (ValidateException ve){
 			assertEquals(true, ve.getMessage().contains("Error during creation of campaign"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
@@ -197,7 +196,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario10() throws Exception {
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario10", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario10", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","done.xml"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
@@ -209,7 +208,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario11() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario11", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario11", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -220,7 +219,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario12() throws Exception {
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario12", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario12", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","done.xml"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
@@ -232,7 +231,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario13() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario13", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario13", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -261,7 +260,7 @@ public class TestsEndToEndCampaign {
 		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/su5678", idDto);
 
 		
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario14", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario14", OUT));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -273,7 +272,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario15() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario15", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario15", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -284,7 +283,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario16() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario16", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario16", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -295,7 +294,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario17() throws Exception {
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario17", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario17", OUT));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -307,7 +306,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario18() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario18", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario18", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -318,7 +317,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario19() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario19", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario19", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -346,7 +345,7 @@ public class TestsEndToEndCampaign {
 		expectExternalCall(keycloakTokenUrl, resp);
 		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/12", idDto);
 
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario20", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario20", OUT));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(false, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -358,7 +357,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario21() throws Exception {
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario21", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario21", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.list"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","warning.xml"));
 	}
@@ -371,7 +370,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario22() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario22";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -386,7 +385,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario23() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario23";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -401,7 +400,7 @@ public class TestsEndToEndCampaign {
 	public void testScenario24() throws Exception {
 		String in = "src/test/resources/in/campaign/testScenarios/campaignScenario24";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -421,7 +420,7 @@ public class TestsEndToEndCampaign {
 		expectExternalCall(contextReferentialBaseUrl + "/sabiane/survey-unit/su1234/interviewer", null);
 
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario14", OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario14", OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during process, error loading campaign : Could not get response from contextReferential"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","error.xml"));
@@ -434,7 +433,7 @@ public class TestsEndToEndCampaign {
 	 */
 	@Test
 	public void testScenario26() throws Exception {
-		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario26", OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario26", OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/campaign/testScenarios"), "campaign","done.xml"));
 	}
 	

@@ -23,6 +23,8 @@
 
 	<!-- Rework of data model -->
 	<include file="300_data_model_changes.xml" relativeToChangelogFile="true"/>
+	<include file="301_removing_interviewer_msg_recipent.xml" relativeToChangelogFile="true"/>
+
 
 	<include file="300_update_data.xml" relativeToChangelogFile="true"/>
 

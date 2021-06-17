@@ -24,7 +24,6 @@ public class TestsEndToEndContext {
 	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 	LauncherService launcherService = context.getBean(LauncherService.class);
 	
-	private static final String PROCESSING = "src/test/resources/processing";
 	private static final String OUT = "src/test/resources/out/context/testScenarios";
 
 	@Before
@@ -46,7 +45,7 @@ public class TestsEndToEndContext {
 	public void testScenario1() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario1";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating context.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/context/testScenarios"), "context","error.xml"));
@@ -62,7 +61,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario2",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -75,7 +74,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario3",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -88,7 +87,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario4",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -101,7 +100,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario5",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -114,7 +113,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario6",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -127,7 +126,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario7",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -138,7 +137,7 @@ public class TestsEndToEndContext {
 	@Test
 	public void testScenario8() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario8";
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -151,7 +150,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario9",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -163,7 +162,7 @@ public class TestsEndToEndContext {
 	public void testScenario10() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario10";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during creating Context : the user"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/context/testScenarios"), "context","error.xml"));
@@ -176,7 +175,7 @@ public class TestsEndToEndContext {
 	@Test
 	public void testScenario11() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario11";
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -187,7 +186,7 @@ public class TestsEndToEndContext {
 	@Test
 	public void testScenario12() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario12";
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -199,7 +198,7 @@ public class TestsEndToEndContext {
 	public void testScenario13() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario13";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during creating Context : The interviewer"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/context/testScenarios"), "context","error.xml"));
@@ -213,7 +212,7 @@ public class TestsEndToEndContext {
 	public void testScenario16() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario16";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error during creating Context : The organization unit"));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/context/testScenarios"), "context","error.xml"));
@@ -226,7 +225,7 @@ public class TestsEndToEndContext {
 	@Test
 	public void testScenario17() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario17";
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -239,7 +238,7 @@ public class TestsEndToEndContext {
 	@Test
 	public void testScenario18() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario18";
-		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING));
+		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "warning.xml"));
 	}
@@ -253,7 +252,7 @@ public class TestsEndToEndContext {
 		assertEquals(BatchErrorCode.OK,
 				launcherService.validateLoadClean(BatchOption.LOADCONTEXT,
 						"src/test/resources/in/context/testScenarios/contextScenario19",
-						OUT, PROCESSING));
+						OUT));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(
 				Path.of("src/test/resources/out/context/testScenarios"), "context", "done.xml"));
 	}
@@ -265,7 +264,7 @@ public class TestsEndToEndContext {
 	public void testScenario20() throws Exception {
 		String in = "src/test/resources/in/context/testScenarios/contextScenario20";
 		try {
-			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT, PROCESSING);
+			launcherService.validateLoadClean(BatchOption.LOADCONTEXT, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating context.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/context/testScenarios"), "context","error.xml"));

@@ -50,8 +50,8 @@ public class TestsEndToEndDailyUpdate {
 		assertEquals(List.of("NVM"), stateDao.getStateBySurveyUnitId("24").stream().map(StateType::getType).collect(Collectors.toList()));
 		assertEquals(List.of("NVM","ANV"), stateDao.getStateBySurveyUnitId("25").stream().map(StateType::getType).collect(Collectors.toList()));
 		assertEquals(List.of("NVM","ANV","VIN"), stateDao.getStateBySurveyUnitId("26").stream().map(StateType::getType).collect(Collectors.toList()));
-		assertEquals(List.of("NVM","ANV","VIN","QNA"), stateDao.getStateBySurveyUnitId("27").stream().map(StateType::getType).collect(Collectors.toList()));
-		assertEquals(List.of("NVM","ANV","VIN","QNA","NVA"), stateDao.getStateBySurveyUnitId("28").stream().map(StateType::getType).collect(Collectors.toList()));
+		assertEquals(List.of("NVM","ANV","VIN"), stateDao.getStateBySurveyUnitId("27").stream().map(StateType::getType).collect(Collectors.toList()));
+		assertEquals(List.of("NVM","ANV","VIN","NVA"), stateDao.getStateBySurveyUnitId("28").stream().map(StateType::getType).collect(Collectors.toList()));
 	}
 	
 	@After

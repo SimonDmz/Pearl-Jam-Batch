@@ -75,10 +75,8 @@ INSERT INTO public.message(id, date, text, sender_id) VALUES (6, 2548853671000, 
 
 INSERT INTO public.campaign_message_recipient(campaign_id, message_id) VALUES ('simpsons2020x00', 1);
 INSERT INTO public.oumessage_recipient(organization_unit_id, message_id) VALUES ('OU-NORTH', 2);
-INSERT INTO public.interviewer_message_recipient(interviewer_id, message_id) VALUES ('INTW1', 3);
 INSERT INTO public.campaign_message_recipient(campaign_id, message_id) VALUES ('simpsons2020x00', 4);
 INSERT INTO public.message_status(interviewer_id, message_id, status) VALUES ('INTW1', 4, 2);
 INSERT INTO public.campaign_message_recipient(campaign_id, message_id) VALUES ('simpsons2020x00', 5);
 INSERT INTO public.oumessage_recipient(organization_unit_id, message_id) VALUES ('OU-NORTH', 5);
-INSERT INTO public.interviewer_message_recipient(interviewer_id, message_id) VALUES ('INTW1', 5);
 INSERT INTO public.message_status(interviewer_id, message_id, status) VALUES ('INTW1', 5, 2);

@@ -13,9 +13,6 @@ public class FolderService {
 	String getFolderOut;
 	
 	@Autowired
-	String getFolderProcessing;
-	
-	@Autowired
 	@Qualifier("filename")
 	String filename;
 	
@@ -28,7 +25,7 @@ public class FolderService {
 	}
 	
 	public String getFolderProcessing() {
-		return getFolderProcessing;	
+		return getFolderIn + "/processing";	
 	}
 	
 	public String getFilename() {

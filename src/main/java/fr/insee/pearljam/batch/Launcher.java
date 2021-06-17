@@ -43,8 +43,6 @@ public abstract class Launcher {
 	 */
 	public static String FOLDER_OUT;
 	
-	public static String FOLDER_PROCESSING;
-
 	/**
 	 * The Application context
 	 */
@@ -97,7 +95,6 @@ public abstract class Launcher {
 		// Check folder properties
 		FOLDER_IN = folderService.getFolderIn();
 		FOLDER_OUT = folderService.getFolderOut();
-		FOLDER_PROCESSING = folderService.getFolderProcessing();
 		if (StringUtils.isBlank(FOLDER_IN) || "${fr.insee.pearljam.folder.in}".equals(FOLDER_IN)) {
 			throw new FolderException("property fr.insee.queen.batch.folder.in is not define in properties");
 		}
@@ -138,15 +135,15 @@ public abstract class Launcher {
 			}
     }
     
-    if (!PathUtils.isDirectoryExist(FOLDER_PROCESSING)) {
-			logger.log(Level.WARN, "Folder tree '{}' does not exist", FOLDER_PROCESSING);
+    if (!PathUtils.isDirectoryExist(FOLDER_IN + "/processing")) {
+			logger.log(Level.WARN, "Folder tree '{}' does not exist", FOLDER_IN + "/processing");
 			try {
-				FileUtils.forceMkdir(new File(FOLDER_PROCESSING));
+				FileUtils.forceMkdir(new File(FOLDER_IN + "/processing"));
 			} catch (IOException e) {
-				throw new FolderException("Error during " + FOLDER_PROCESSING + " creation : " + e.getMessage());
+				throw new FolderException("Error during " + FOLDER_IN + "/processing  creation : " + e.getMessage());
 			}
 		}
-		logger.log(Level.INFO, "Folder tree '{}' is OK", FOLDER_PROCESSING);
+		logger.log(Level.INFO, "Folder tree '{}' is OK", FOLDER_IN + "/processing");
   }
 
   /**
@@ -202,7 +199,7 @@ public abstract class Launcher {
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);
 		}
-		return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT, FOLDER_PROCESSING);
+		return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
 		
 
 	}

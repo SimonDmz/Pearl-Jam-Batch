@@ -147,14 +147,14 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 	}
 
 	@Override
-	public List<String> getSurveyUnitANVToVIN() {
+	public List<String> getSurveyUnitAnvOrNnsToVIN() {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.interviewer_start_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
 				.append("FROM survey_unit su ")
 				.append("JOIN campaign c ON su.campaign_id=c.id ")
 				.append("JOIN visibility v ON v.campaign_id=c.id AND su.organization_unit_id=v.organization_unit_id) t ")
-				.append("WHERE t.lastState='ANV' ")
+				.append("WHERE t.lastState IN ('ANV', 'NNS') ")
 				.append("AND t.interviewer_start_date<?")
 				.toString();
 		return jdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
@@ -181,7 +181,8 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 				.append("FROM survey_unit su ")
 				.append("JOIN campaign c ON su.campaign_id=c.id ")
 				.append("JOIN visibility v ON v.campaign_id=c.id AND su.organization_unit_id=v.organization_unit_id) t ")
-				.append("WHERE t.end_date<?")
+				.append("WHERE t.lastState <> 'NVA' ")
+				.append("AND t.end_date<?")
 				.toString();
 		return jdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
 	}

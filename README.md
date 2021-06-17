@@ -35,13 +35,12 @@ fr.insee.pearljam.persistence.database.password = XXXXXXXX
 fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.folder.in=path/to/in
 fr.insee.pearljam.folder.out=path/to/out
-fr.insee.pearljam.folder.processing=path/to/processing
 
 # Context referential URL
 fr.insee.pearljam.context.referential.service.url.scheme=http
 fr.insee.pearljam.context.referential.service.url.host=localhost
 fr.insee.pearljam.context.referential.service.url.port=8080
-fr.insee.pearljam.context.referential.service.url.path=XXXXXXXX
+fr.insee.pearljam.context.referential.service.url.path=/XXXXXXXX
 
 #Maximum number of SU reaffected to an other interviewer during synchronization
 fr.insee.pearljam.context.synchronization.interviewers.reaffectation.threshold.absolute=2

@@ -113,25 +113,17 @@ public class TriggerService {
 			});
 			String strLstANV =String.join(",", lstSuANV);
 			String strLstNNS =String.join(",", lstSuNNS);
-			logger.log(Level.INFO, "There is {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(), strLstANV);
-			logger.log(Level.INFO, "There is {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(), strLstANV);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
 
-			// Get the list of Survey unit id to update from state ANV to VIN
-			lstSu = surveyUnitDao.getSurveyUnitANVToVIN();
+			// Get the list of Survey unit id to update from state ANV or NNS to VIN
+			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN();
 			lstSu.stream().forEach(suId -> 
 				stateDao.createState(System.currentTimeMillis(), "VIN", suId)
 			);
 			String strLstSu = String.join(",", lstSu);
-			logger.log(Level.INFO, "There is {} survey-units updated from state ANV to VIN : [{}]", lstSu.size(), strLstSu);
-
-			// Get the list of Survey unit id to update to state QNA
-			lstSu = surveyUnitDao.getSurveyUnitForQNA();
-			lstSu.stream().forEach(suId -> 
-				stateDao.createState(System.currentTimeMillis(), "QNA", suId)
-			);
-			strLstSu = String.join(",", lstSu);
-			logger.log(Level.INFO, "There is {} survey-units updated to state QNA : [{}]", lstSu.size(), strLstSu);
-
+			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
+			
 			// Get the list of Survey unit id to update to state NVA
 			lstSu = surveyUnitDao.getSurveyUnitForNVA();
 			lstSu.stream().forEach(suId -> {
@@ -139,7 +131,7 @@ public class TriggerService {
 				logger.log(Level.INFO, "Update survey-unit {} state NVA", suId);
 			});
 			strLstSu = String.join(",", lstSu);
-			logger.log(Level.INFO, "There is {} survey-units updated to state NVA : [{}]", lstSu.size(), strLstSu);
+			logger.log(Level.INFO, "There are {} survey-units updated to state NVA : [{}]", lstSu.size(), strLstSu);
 
 			// Get the list of notifications to delete
 			Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -148,12 +140,11 @@ public class TriggerService {
 			lstIdMsg.stream().forEach(id -> {
 				messageDao.deleteCampaignMessageById(id);
 				messageDao.deleteOuMessageById(id);
-				messageDao.deleteInterviewerMessageById(id);
 				messageDao.deleteStatusMessageById(id);
 				messageDao.deleteById(id);
 			});
 			String strLstIdMsg = String.join(",", String.valueOf(lstIdMsg));
-			logger.log(Level.INFO, "There is {} messages deleted : [{}]", lstIdMsg.size(), strLstIdMsg);
+			logger.log(Level.INFO, "There are {} messages deleted : [{}]", lstIdMsg.size(), strLstIdMsg);
 
 			connection.commit();
 		} catch (Exception e) {

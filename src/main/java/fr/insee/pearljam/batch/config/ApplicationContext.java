@@ -51,9 +51,6 @@ public class ApplicationContext {
 	@Value("${fr.insee.pearljam.folder.out}")
 	private String FOLDER_OUT;
 	
-	@Value("${fr.insee.pearljam.folder.processing}")
-	private String FOLDER_PROCESSING;
-	
 	@Value("${fr.insee.pearljam.context.referential.service.url.scheme:#{null}}")
 	private String contextReferentialScheme;
 	
@@ -131,11 +128,6 @@ public class ApplicationContext {
 	@Bean
 	public String getFolderOut() {
 		return FOLDER_OUT;
-	}
-	
-	@Bean
-	public String getFolderProcessing() {
-		return FOLDER_PROCESSING;
 	}
 	
 	/**

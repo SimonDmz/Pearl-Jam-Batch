@@ -65,7 +65,6 @@ public interface SurveyUnitDao {
 	
 	
 	List<String> getSurveyUnitNVM();
-	List<String> getSurveyUnitANVToVIN();
 	List<String> getSurveyUnitForQNA();
 	List<String> getSurveyUnitForNVA();
 	String getSurveyUnitInterviewerAffectation(String surveyUnitId);
@@ -78,5 +77,7 @@ public interface SurveyUnitDao {
 
 	void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit, String interviewerId,
 			String organizationUnitId);
+
+	List<String> getSurveyUnitAnvOrNnsToVIN();
 
 }

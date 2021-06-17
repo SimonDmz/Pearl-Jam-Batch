@@ -55,7 +55,7 @@ public class UnitTests {
 	private MockRestServiceServer mockServer;
     private ObjectMapper mapper = new ObjectMapper();
     
-	private static final String PROCESSING = "src/test/resources/processing";
+	private static final String PROCESSING = "src/test/resources/in/campaign/testScenarios/processing";
 
 	/**
 	 * This method is executed before each test in this class.

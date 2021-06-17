@@ -30,11 +30,6 @@ public class MessageDaoImpl implements MessageDao{
 		jdbcTemplate.update(qString, id);
 	}
 	
-	@Override
-	public void deleteInterviewerMessageById(Long id) {
-		String qString = "DELETE FROM interviewer_message_recipient WHERE message_id=?";
-		jdbcTemplate.update(qString, id);
-	}
 	
 	@Override
 	public void deleteOuMessageById(Long id) {

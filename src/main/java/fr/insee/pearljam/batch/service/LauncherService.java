@@ -69,10 +69,11 @@ public class LauncherService {
 	 * @throws ValidateException
 	 * @throws XMLStreamException 
 	 */
-	public BatchErrorCode validateLoadClean(BatchOption batchOption, String folderIn, String folderOut, String folderProcessing) throws BatchException, IOException, ValidateException, XMLStreamException {
+	public BatchErrorCode validateLoadClean(BatchOption batchOption, String folderIn, String folderOut) throws BatchException, IOException, ValidateException, XMLStreamException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		ValidateException ve = null;
 		String name = getName(batchOption);
+		String processingFolder = folderIn + "/processing";
 		if (PathUtils.isDirContainsFileExtension(Path.of(folderIn), name+".xml")) {
 			try {
 				switch (batchOption) {
@@ -87,12 +88,12 @@ public class LauncherService {
 						throw new ValidateException("Error validating "+name+".xml : unknown model");
 				}
 			} catch (ValidateException e) {
-				cleanAndReset(name, folderIn +"/"+ name +".xml", folderOut, folderProcessing, BatchErrorCode.KO_FONCTIONAL_ERROR, batchOption);
+				cleanAndReset(name, folderIn +"/"+ name +".xml", folderOut, processingFolder, BatchErrorCode.KO_FONCTIONAL_ERROR, batchOption);
 				throw new ValidateException("Error validating "+name+".xml : "+e.getMessage());
 			}
 			try {
 				logger.log(Level.INFO, "Start {}", batchOption.getLabel());
-				returnCode = load(batchOption, folderIn +"/"+ name +".xml", folderOut, folderProcessing);
+				returnCode = load(batchOption, folderIn +"/"+ name +".xml", folderOut, processingFolder);
 				logger.log(Level.INFO, "Finish {}", batchOption.getLabel());
 			} catch (SynchronizationException e) {
 				ve = new ValidateException("Error during process, error loading "+name+" : "+e.getMessage());
@@ -102,7 +103,7 @@ public class LauncherService {
 				returnCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
 			} finally {
 				try {
-					returnCode = cleanAndReset(name, folderIn +"/"+ name +".xml", folderOut, folderProcessing, returnCode, batchOption);
+					returnCode = cleanAndReset(name, folderIn +"/"+ name +".xml", folderOut, processingFolder, returnCode, batchOption);
 				} catch (IOException e) {
 					logger.log(Level.ERROR, "Error during process, error files have been created : {}", e.getMessage());
 					returnCode=BatchErrorCode.OK_TECHNICAL_WARNING;
