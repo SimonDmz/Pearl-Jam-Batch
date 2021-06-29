@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Campagne">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Step">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Goal" type="xs:string" />
+                    <xs:element name="Options" type="xs:string"/>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Questionnaires">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Questionnaire">
+                <xs:complexType mixed="true">
+                  <xs:sequence>
+                    <xs:element name="Id" type="xs:string" />
+                    <xs:element name="QuestionnaierModelId" type="xs:string" />
+                    <xs:element name="Data">
+<!--                       <xs:complexType> -->
+<!--                         <xs:sequence> -->
+<!--                           <xs:element name="EXTERNAL" /> -->
+<!--                           <xs:element name="COLLECTED" /> -->
+<!--                         </xs:sequence> -->
+<!--                       </xs:complexType> -->
+                    </xs:element>
+                    <xs:element name="Personalization">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="Variable">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Name" type="xs:string"/>
+                                <xs:element name="Value" type="xs:string"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Priority" type="xs:boolean" />
+                    <xs:element name="Persons">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="Person">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Title" type="xs:string" />
+                                <xs:element name="FirstName" type="xs:string" />
+                                <xs:element name="LastName" type="xs:string" />
+                                <xs:element name="Email" type="xs:string" />
+                                <xs:element name="DateOfBirth" type="xs:string" />
+                                <xs:element name="Privileged" type="xs:boolean" />
+                                <xs:element name="PhoneNumbers">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="PhoneNumber">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="Number" type="xs:long" />
+                                            <xs:element name="Source" type="xs:string" />
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="InseeAddress">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="GeographicalLocationId" type="xs:unsignedShort" />
+                          <xs:element name="L1" type="xs:string" />
+                          <xs:element name="L2" type="xs:string" />
+                          <xs:element name="L3" type="xs:string" />
+                          <xs:element name="L4" type="xs:string" />
+                          <xs:element name="L5" type="xs:string" />
+                          <xs:element name="L6" type="xs:string" />
+                          <xs:element name="L7" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="InseeSampleIdentiers">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Bs" type="xs:integer" />
+                          <xs:element name="Ec" type="xs:string" />
+                          <xs:element name="Le" type="xs:integer" />
+                          <xs:element name="Noi" type="xs:integer" />
+                          <xs:element name="Numfa" type="xs:integer" />
+                          <xs:element name="Rges" type="xs:integer" />
+                          <xs:element name="Ssech" type="xs:integer" />
+                          <xs:element name="Nolog" type="xs:integer" />
+                          <xs:element name="Nole" type="xs:integer" />
+                          <xs:element name="Autre" type="xs:string" />
+                          <xs:element name="Nograp" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="idenquete" type="xs:string" use="required" />
+      <xs:attribute name="millesime" type="xs:unsignedShort" use="required" />
+      <xs:attribute name="idperiode" type="xs:string" use="required" />
+      <xs:attribute name="label" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

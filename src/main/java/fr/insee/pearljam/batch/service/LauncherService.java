@@ -1,5 +1,4 @@
 package fr.insee.pearljam.batch.service;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.logging.log4j.Level;
@@ -20,6 +20,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.campaign.Campaign;
@@ -84,6 +87,9 @@ public class LauncherService {
 					case DELETECAMPAIGN:
 						XmlUtils.validateXMLSchema(Constants.MODEL_CAMPAIGN, folderIn + "/" + name +".xml");
 						break;
+					case SAMPLEPROCESSING:
+						XmlUtils.validateXMLSchema(Constants.MODEL_SAMPLEPROCESSING, folderIn + "/" + name +".xml");
+						break;
 					default:
 						throw new ValidateException("Error validating "+name+".xml : unknown model");
 				}
@@ -130,6 +136,8 @@ public class LauncherService {
 				return "campaign";
 			case LOADCONTEXT:
 				return "context";
+			case SAMPLEPROCESSING:
+				return "sampleProcessing";
 			default:
 				return null;
 		}
@@ -149,9 +157,11 @@ public class LauncherService {
 	 * @throws ValidateException
 	 * @throws SynchronizationException 
 	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
 	 * @throws ParseException 
 	 */
-	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws BatchException, SQLException, DataBaseException, ValidateException, SynchronizationException, IOException{
+	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws BatchException, SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, ParserConfigurationException, SAXException{
 		switch(batchOption) {
 			case LOADCAMPAIGN:
 				return loadCampaign(in, out, processing);
@@ -159,6 +169,8 @@ public class LauncherService {
 				return deleteCampaign(in, out);
 			case LOADCONTEXT:
 				return loadContext(in);
+			case SAMPLEPROCESSING:
+				return loadSampleProcessing(in, out, processing);
 			default:
 				return null;
 		}
@@ -208,7 +220,7 @@ public class LauncherService {
 		
 		String location;
 		String processedFilename = folderService.getFilename();
-		if(batchOption==BatchOption.LOADCAMPAIGN && !processedFilename.isBlank()) {
+		if((batchOption==BatchOption.LOADCAMPAIGN || batchOption==BatchOption.SAMPLEPROCESSING) && !processedFilename.isBlank()) {
 			location = processing + "/" + processedFilename;
 		}
 		else {
@@ -237,10 +249,9 @@ public class LauncherService {
 		return returnCode;
   }
   
-  public void moveCampaignFileToProcessing(String name, String in, 
+  public void moveFileToProcessing(String name, String in, 
 		  String processing, String campaignId) throws IOException, ValidateException {
 	  	String fileName = "";
-
 	  	fileName = new StringBuilder(name)
                 .append(".")
                 .append(campaignId)
@@ -249,7 +260,6 @@ public class LauncherService {
                 .append(".xml")
                 .toString();
     	folderService.setFilename(fileName);
-    
 		File file = new File(in);
 		if(file.exists()) {
 			Path temp = Files.move(Paths.get(in),
@@ -283,17 +293,16 @@ public class LauncherService {
 		Campaign campaign = XmlUtils.xmlToObject(in, Campaign.class);
 		CampaignService campaignService = context.getBean(CampaignService.class);
 		if(campaign!=null) {
-			String campaignId = campaign.getId().toUpperCase();
-		    moveCampaignFileToProcessing("campaign", in, processing, campaignId);
-		    
+			String campaignId = campaign.getId();
+		    moveFileToProcessing("campaign", in, processing, campaignId);
 			if(checkOrganizationUnits(campaign) && checkDateConsistency(campaign)) {
 				return campaignService.createOrUpdateCampaign(
 						campaign, 
-						campaignDao.existCampaign(campaignId), 
+						campaignDao.existCampaign(campaign.getId()), 
 						processing + "/" + folderService.getFilename(), 
 						out);
 			}else{
-				throw new ValidateException("Error during load campaign " + campaignId);
+				throw new ValidateException("Error during load campaign " + campaign.getId());
 			}
 		}else {
 			throw new ValidateException("Error : campaign is null");
@@ -346,7 +355,32 @@ public class LauncherService {
 			throw new ValidateException("Error : context is null");
 		}
 	}
-
+	
+	public BatchErrorCode loadSampleProcessing(String in, String out, String processing) throws ParserConfigurationException, SAXException, IOException, ValidateException {
+		BatchErrorCode returnCode = BatchErrorCode.OK;
+		ExtractionService extractionService = context.getBean(ExtractionService.class);
+		FolderService folderService = context.getBean(FolderService.class);
+		folderService.setCampaignName(in);
+		moveFileToProcessing("sampleprocessing", in, processing, folderService.getCampaignName());
+		NodeList stepsNodes = XmlUtils.getXmlNodeFile(processing + "/" + folderService.getFilename(), "Step");
+		List<String> steps = new ArrayList<>();
+		if(stepsNodes.getLength() != 0) {
+			for(int i= 0; i < stepsNodes.getLength(); i++) {
+				Node node = stepsNodes.item(i);
+				if(node.getAttributes().getNamedItem("name").getNodeValue() != null)
+					steps.add(node.getAttributes().getNamedItem("name").getNodeValue());
+			}
+			logger.log(Level.INFO, "Steps to execute : [{}]", steps);
+		} else {
+			logger.log(Level.INFO, "No steps to execute");
+			return BatchErrorCode.KO_FONCTIONAL_ERROR;
+		}
+		if(steps.contains("data-collection"))
+			returnCode = extractionService.extractSampleProcessing(processing + "/" + folderService.getFilename(), out, "data-collection");
+		if(steps.contains("pilotage"))
+			returnCode = extractionService.extractSampleProcessing(processing + "/" + folderService.getFilename(), out, "pilotage");
+		return returnCode;
+	}
 
 	/**
 	 * check existence in delimited organiaztion units

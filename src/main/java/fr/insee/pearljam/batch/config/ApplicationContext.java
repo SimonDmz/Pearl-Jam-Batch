@@ -69,7 +69,12 @@ public class ApplicationContext {
 	@Value("${keycloak.realm:#{null}}")
 	private String realm;
 	
+	@Value("${fr.insee.pearljam.folder.queen.in}")
+	private String FOLDER_IN_QUEEN;
+	
 	private String filename = "";
+	
+	private String campaignName = "";
 
 	
 	
@@ -130,6 +135,11 @@ public class ApplicationContext {
 		return FOLDER_OUT;
 	}
 	
+	@Bean
+	public String getFolderInQueen() {
+		return FOLDER_IN_QUEEN;
+	}
+	
 	/**
 	 * Bean to get the filename
 	 * @return
@@ -137,6 +147,15 @@ public class ApplicationContext {
 	@Bean(name = "filename")
 	public String getFilename() {
 		return filename;
+	}
+	
+	/**
+	 * Bean to get the campaign name
+	 * @return
+	 */
+	@Bean
+	public String getCampaignName() {
+		return campaignName;
 	}
 	
 	/***
@@ -153,8 +172,5 @@ public class ApplicationContext {
 	public String getKeycloakAuthUrl() {
 		return authServerURL + "/realms/" + realm + "/protocol/openid-connect/token";
 	}
-  
-  
-
 
 }

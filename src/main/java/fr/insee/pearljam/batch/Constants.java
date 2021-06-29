@@ -30,6 +30,10 @@ public class Constants {
 	 * The URL to to access to context.xsd
 	 */
 	public static final URL MODEL_CONTEXT = Constants.class.getResource(SCHEMAS_FOLDER_PATH+"/context.xsd");
+	/**
+	 * The URL to to access to sampleProcessing.xsd
+	 */
+	public static final URL MODEL_SAMPLEPROCESSING = Constants.class.getResource(SCHEMAS_FOLDER_PATH+"/sampleProcessing.xsd");
 	
 	/**
 	 * The message for return batch code
