@@ -188,17 +188,21 @@ public abstract class Launcher {
 					+ "] not exist, you must choose between [TRIGGERSTATES], [DELETECAMPAIGN], [LOADCAMPAIGN] or [LOADCONTEXT]");
 		}
 		logger.log(Level.INFO, "Batch is running with option {}", batchOption.getLabel());
-		if(batchOption==BatchOption.DAILYUPDATE) {
+		switch(batchOption) {
+		case DAILYUPDATE: 
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.updateStates();
-		} 
-		if(batchOption==BatchOption.SYNCHRONIZE) {
+		case SYNCHRONIZE:
 			checkSynchroFolder();
 			logger.log(Level.INFO, "Running synchronization with context referential");
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);
+		case EXTRACT:
+			triggerService = context.getBean(TriggerService.class);
+			return triggerService.extractCampaigns(FOLDER_OUT);
+		default:
+			return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
 		}
-		return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
 		
 
 	}

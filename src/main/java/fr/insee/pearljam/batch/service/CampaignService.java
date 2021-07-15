@@ -721,4 +721,16 @@ public class CampaignService {
 		}
 	}
 
+
+	public BatchErrorCode archiveCampaigns(String out) throws DataBaseException, BatchException {
+		initDaos();
+		BatchErrorCode errorCode = BatchErrorCode.OK; 
+		List<Campaign> lstCampaign = campaignDao.findAll();
+		for(Campaign c : lstCampaign) {
+			archiveCampaign(c, errorCode);
+			XmlUtils.objectToXML(out+"/"+ c.getId() + "." + getTimestampForPath() + ".archive.xml", c);
+		}
+		return errorCode;
+	}
+
 }

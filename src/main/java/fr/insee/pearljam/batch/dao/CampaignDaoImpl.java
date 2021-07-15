@@ -1,10 +1,13 @@
 package fr.insee.pearljam.batch.dao;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.batch.campaign.Campaign;
@@ -51,5 +54,26 @@ public class CampaignDaoImpl implements CampaignDao {
 
 		jdbcTemplate.update(qString, campaign.getLabel(), campaign.getId().toUpperCase());
 	}
+
+	@Override
+	public List<Campaign> findAll() {
+		String qString = "SELECT * FROM campaign";
+		return jdbcTemplate.query(qString, new CampaignTypeMapper());
+	}
+	
+	/**
+	 * Implements the mapping between the result of the query and the Campaign entity
+	 * @return CommentTypeMapper
+	 */
+	private static final class CampaignTypeMapper implements RowMapper<Campaign> {
+        public Campaign mapRow(ResultSet rs, int rowNum) throws SQLException         {
+        	Campaign c = new Campaign();
+            c.setId(rs.getString("id"));
+            c.setLabel(rs.getString("label"));
+            c.setOrganizationalUnits(null);
+            c.setSurveyUnits(null);
+            return c;
+        }
+    }
 	
 }

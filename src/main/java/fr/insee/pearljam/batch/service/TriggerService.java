@@ -2,10 +2,10 @@ package fr.insee.pearljam.batch.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.batch.dao.MessageDao;
 import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
+import fr.insee.pearljam.batch.exception.BatchException;
+import fr.insee.pearljam.batch.exception.DataBaseException;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
@@ -36,6 +38,8 @@ public class TriggerService {
 	SurveyUnitDao surveyUnitDao;
 	MessageDao messageDao;
 	
+	@Autowired
+	CampaignService campaignService;
 	
 	@Autowired
 	InterviewersSynchronizationService interviewersSynchronizationService;
@@ -153,6 +157,14 @@ public class TriggerService {
 		}
 		return BatchErrorCode.OK;
 			
+	}
+
+	public BatchErrorCode extractCampaigns(String out) throws ValidateException {
+		try {
+			return campaignService.archiveCampaigns(out);
+		} catch (DataBaseException | BatchException e) {
+			throw new ValidateException("Error during process, error extract : " + e.getMessage());
+		}
 	}
 
 }
