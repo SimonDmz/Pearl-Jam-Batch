@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.batch.dao.MessageDao;
 import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
-import fr.insee.pearljam.batch.exception.BatchException;
-import fr.insee.pearljam.batch.exception.DataBaseException;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
@@ -158,13 +156,4 @@ public class TriggerService {
 		return BatchErrorCode.OK;
 			
 	}
-
-	public BatchErrorCode extractCampaigns(String out) throws ValidateException {
-		try {
-			return campaignService.archiveCampaigns(out);
-		} catch (DataBaseException | BatchException e) {
-			throw new ValidateException("Error during process, error extract : " + e.getMessage());
-		}
-	}
-
 }

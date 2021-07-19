@@ -197,9 +197,6 @@ public abstract class Launcher {
 			logger.log(Level.INFO, "Running synchronization with context referential");
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);
-		case EXTRACT:
-			triggerService = context.getBean(TriggerService.class);
-			return triggerService.extractCampaigns(FOLDER_OUT);
 		default:
 			return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
 		}

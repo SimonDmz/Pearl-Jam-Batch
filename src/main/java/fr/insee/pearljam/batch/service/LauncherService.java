@@ -85,6 +85,7 @@ public class LauncherService {
 						break;
 					case LOADCAMPAIGN:
 					case DELETECAMPAIGN:
+					case EXTRACT:
 						XmlUtils.validateXMLSchema(Constants.MODEL_CAMPAIGN, folderIn + "/" + name +".xml");
 						break;
 					case SAMPLEPROCESSING:
@@ -132,8 +133,11 @@ public class LauncherService {
 	private String getName(BatchOption batchOption) {
 		switch(batchOption) {
 			case LOADCAMPAIGN:
-			case DELETECAMPAIGN:
 				return "campaign";
+			case DELETECAMPAIGN:
+				return "campaign.to.delete";
+			case EXTRACT:
+				return "campaign.to.extract";
 			case LOADCONTEXT:
 				return "context";
 			case SAMPLEPROCESSING:
@@ -167,6 +171,8 @@ public class LauncherService {
 				return loadCampaign(in, out, processing);
 			case DELETECAMPAIGN:
 				return deleteCampaign(in, out);
+			case EXTRACT:
+				return extractCampaign(in, out);
 			case LOADCONTEXT:
 				return loadContext(in);
 			case SAMPLEPROCESSING:
@@ -189,34 +195,7 @@ public class LauncherService {
 	 * @throws ValidateException
 	 */
 	public BatchErrorCode cleanAndReset(String name, String in, String out, String processing, BatchErrorCode returnCode, BatchOption batchOption) throws IOException, ValidateException {
-		String fileName = "";
-		switch(returnCode) {
-		case KO_TECHNICAL_ERROR: 
-		case KO_FONCTIONAL_ERROR:
-			if(batchOption==BatchOption.DELETECAMPAIGN) {
-				fileName = name + PathUtils.getTimestampForPath() + ".delete.error.xml";
-			} else {
-				fileName = name + PathUtils.getTimestampForPath() + ".error.xml";
-			}
-			break;
-		case OK_TECHNICAL_WARNING:
-		case OK_FONCTIONAL_WARNING:
-			if(batchOption==BatchOption.DELETECAMPAIGN) {
-				fileName = name + PathUtils.getTimestampForPath() + ".delete.error.xml";
-			} else {
-				fileName = name + PathUtils.getTimestampForPath() + ".warning.xml";
-			}
-			break;
-		case OK:
-			if(batchOption==BatchOption.DELETECAMPAIGN) {
-				fileName = name + PathUtils.getTimestampForPath() + ".delete.done.xml";
-			} else {
-				fileName = name + PathUtils.getTimestampForPath() + ".done.xml";
-			}
-			break;
-		default:
-			throw new ValidateException("Unknown return code");
-		}
+		String fileName = getFileName(name, batchOption, returnCode);
 		
 		String location;
 		String processedFilename = folderService.getFilename();
@@ -249,7 +228,48 @@ public class LauncherService {
 		return returnCode;
   }
   
-  public void moveFileToProcessing(String name, String in, 
+  private String getFileName(String name, BatchOption batchOption, BatchErrorCode returnCode) throws ValidateException {
+	  String ending = "" ;
+	  switch(returnCode) {
+		case KO_TECHNICAL_ERROR: 
+		case KO_FONCTIONAL_ERROR:
+			ending = "error.xml";
+			break;
+		case OK_TECHNICAL_WARNING:
+		case OK_FONCTIONAL_WARNING:
+			ending = "warning.xml";
+			break;
+		case OK:
+			ending = "done.xml";
+			break;
+		default:
+			throw new ValidateException("Unknown return code");
+		}
+	  	String designation = null;
+	  	String finalName = name;
+	  	switch(batchOption) {
+	  	case DELETECAMPAIGN:
+	  		designation = "delete";
+	  		finalName = "campaign";
+	  		break;
+	  	case EXTRACT:
+	  		designation = "extract";
+	  		finalName = "campaign";
+	  		break;
+	  	default:
+	  		designation = "";
+	  		break;
+	  	}
+	  	return new StringBuilder(finalName)
+	  			.append(".")
+	  			.append(PathUtils.getTimestampForPath())
+	  			.append(".")
+	  			.append(designation)
+	  			.append(".")
+	  			.append(ending).toString();
+	}
+
+public void moveFileToProcessing(String name, String in, 
 		  String processing, String campaignId) throws IOException, ValidateException {
 	  	String fileName = "";
 	  	fileName = new StringBuilder(name)
@@ -327,6 +347,33 @@ public class LauncherService {
 		if(campaign!=null) {
 			if(campaignDao.existCampaign(campaign.getId())) {
 				return campaignService.deleteCampaign(campaign, out);
+			}else{
+				logger.log(Level.ERROR, "The campaign {} does not exist", campaign.getId());
+				return BatchErrorCode.OK_FONCTIONAL_WARNING;
+			}
+		}else {
+			throw new ValidateException("Error : campaign is null");
+		}
+	}
+	
+	/**
+	 * Specific function for extract Campaign
+	 * 
+	 * @param in
+	 * @param out
+	 * @return BatchErrorCode
+	 * @throws BatchException
+	 * @throws ValidateException
+	 * @throws SQLException
+	 * @throws DataBaseException
+	 */
+	public BatchErrorCode extractCampaign(String in, String out) throws ValidateException, DataBaseException, BatchException {
+		Campaign campaign = XmlUtils.xmlToObject(in, Campaign.class);
+		CampaignDao campaignDao = context.getBean(CampaignDao.class);
+		CampaignService campaignService = context.getBean(CampaignService.class);
+		if(campaign!=null) {
+			if(campaignDao.existCampaign(campaign.getId())) {
+				return campaignService.extractCampaign(campaign, out);
 			}else{
 				logger.log(Level.ERROR, "The campaign {} does not exist", campaign.getId());
 				return BatchErrorCode.OK_FONCTIONAL_WARNING;

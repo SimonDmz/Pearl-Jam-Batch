@@ -30,6 +30,7 @@
 	<xs:element name="Comments" type="CommentsType"/>
 	<xs:element name="Comment" type="CommentType"/>
 	<xs:element name="ContactOutcome" type="ContactOutcomeType"/>
+	<xs:element name="ClosingCause" type="ClosingCauseType"/>
 	<xs:element name="ContactAttempts" type="ContactAttemptsType"/>
 	<xs:element name="ContactAttempt" type="ContactAttemptType"/>
 
@@ -116,6 +117,7 @@
 			<xs:element ref="Comments" minOccurs="0"/>
 			<xs:element ref="ContactOutcome" minOccurs="0"/>
 			<xs:element ref="ContactAttempts" minOccurs="0"/>
+			<xs:element ref="ClosingCause" minOccurs="0"/>
 			<!-- <xs:complexType name="Persons">
 				<xs:sequence>
 					<xs:element name="Person" type="PersonType" maxOccurs="unbounded"/>
@@ -253,6 +255,19 @@
 				</xs:simpleType>
 			</xs:element>
 			<xs:element name="totalNumberOfContactAttempts" type="xs:int" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="ClosingCauseType">
+		<xs:sequence>
+			<xs:element name="type" type="xs:string" />
+			<xs:element name="date">
+				<xs:simpleType>
+       				<xs:restriction base="xs:string">
+						<xs:pattern value="[0-3][0-9]/[01][0-9]/[0-9]{4} [0-2][0-9]:[0-5][0-9]:[0-6][0-9]"></xs:pattern>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 

@@ -43,6 +43,7 @@ import liquibase.resource.ResourceAccessor;
 		UnitTests.class,
 		TestsEndToEndCampaign.class,
 		TestsEndToEndDeleteCampaign.class, 
+		TestsEndToEndExtractCampaign.class, 
 		TestsEndToEndContext.class, 
 		TestsEndToEndSynchro.class,
 		TestsEndToEndDailyUpdate.class

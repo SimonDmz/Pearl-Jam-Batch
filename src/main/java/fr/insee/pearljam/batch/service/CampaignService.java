@@ -168,7 +168,7 @@ public class CampaignService {
 		initDaos();
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		// Archive datas in XML file
-		returnCode = archiveCampaign(campaign, returnCode);
+		returnCode = archiveCampaign(campaign, returnCode, true);
 		XmlUtils.objectToXML(out+"/campaign." + getTimestampForPath() + ".delete.archive.xml", campaign);
 		// Complete campaign deletion
 		deleteCampaign(campaign, this.deleteAllSurveyUnits);
@@ -180,10 +180,11 @@ public class CampaignService {
 	 * 
 	 * @param campaign
 	 * @param returnCode
+	 * @param delete 
 	 * @return BatchErrorCode
 	 * @throws DataBaseException
 	 */
-	private BatchErrorCode archiveCampaign(Campaign campaign, BatchErrorCode returnCode) throws DataBaseException {
+	private BatchErrorCode archiveCampaign(Campaign campaign, BatchErrorCode returnCode, boolean delete) throws DataBaseException {
 		this.deleteAllSurveyUnits = false;
 		OrganizationalUnitsType ou = new OrganizationalUnitsType();
 		List<SurveyUnitType> listSurveyUnit = new ArrayList<>();
@@ -242,9 +243,12 @@ public class CampaignService {
 					// Contact Outcome
 					surveyUnitType.setContactOutcome(contactOutcomeDao.getContactOutcomeTypeBySurveyUnitId(surveyUnitType.getId()));
 					
+					// Closing Cause
+					surveyUnitType.setClosingCause(closingCauseDao.getClosingCauseTypeBySurveyUnitId(surveyUnitType.getId()));
+					
 					// InseeSampleIdentifiers
 					surveyUnitType.setInseeSampleIdentiers(sampleIdentifierDao.getSampleIdentiersBySurveyUnitId(surveyUnitType.getId()));
-				
+					
 				} catch (Exception e) {
 					throw new DataBaseException("Error during the archiving of the file campaign."+ getTimestampForPath() +".delete.archive.xml : " + e.getMessage());
 				}
@@ -266,7 +270,7 @@ public class CampaignService {
 				surveyUnitType.setStates(state);
 				
 				// SU
-				if(!this.deleteAllSurveyUnits) {
+				if(!this.deleteAllSurveyUnits || !delete) {
 					listSurveyUnit.add(surveyUnitType);
 				}
 			} else {
@@ -274,7 +278,7 @@ public class CampaignService {
 				returnCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
 			}
 		}
-		if(!this.deleteAllSurveyUnits) {
+		if(!this.deleteAllSurveyUnits && delete) {
 			campaign.getSurveyUnits().getSurveyUnit().removeAll(campaign.getSurveyUnits().getSurveyUnit());
 			campaign.getSurveyUnits().getSurveyUnit().addAll(listSurveyUnit);
 		}
@@ -722,15 +726,13 @@ public class CampaignService {
 	}
 
 
-	public BatchErrorCode archiveCampaigns(String out) throws DataBaseException, BatchException {
+	public BatchErrorCode extractCampaign(Campaign campaign, String out) throws DataBaseException, BatchException {
 		initDaos();
-		BatchErrorCode errorCode = BatchErrorCode.OK; 
-		List<Campaign> lstCampaign = campaignDao.findAll();
-		for(Campaign c : lstCampaign) {
-			archiveCampaign(c, errorCode);
-			XmlUtils.objectToXML(out+"/"+ c.getId() + "." + getTimestampForPath() + ".archive.xml", c);
-		}
-		return errorCode;
+		BatchErrorCode returnCode = BatchErrorCode.OK;
+		// Archive datas in XML file
+		returnCode = archiveCampaign(campaign, returnCode, false);
+		XmlUtils.objectToXML(out+"/campaign." + getTimestampForPath() + ".extract.xml", campaign);
+		return returnCode;
 	}
 
 }

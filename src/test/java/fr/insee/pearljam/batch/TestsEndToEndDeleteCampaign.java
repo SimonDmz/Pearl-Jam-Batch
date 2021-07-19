@@ -52,8 +52,8 @@ public class TestsEndToEndDeleteCampaign {
 		try {
 			launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
-			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
-			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
+			assertEquals(true, ve.getMessage().contains("Error validating campaign.to.delete.xml : "));
+			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.error.xml"));
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class TestsEndToEndDeleteCampaign {
 			launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
-			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
+			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.error.xml"));
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class TestsEndToEndDeleteCampaign {
 			launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, in, OUT);
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
-			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
+			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.warning.xml"));
 		}
 	}
 	
@@ -94,7 +94,7 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario4() throws Exception {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario4", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.warning.xml"));
 	}
 	
 	/**
@@ -104,8 +104,8 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario5() throws Exception {
 		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario5", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.done.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 	}
 	
 	/**
@@ -115,8 +115,8 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario6() throws Exception {
 		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario6", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.done.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 	}
 	
 	/**
@@ -126,8 +126,8 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario7() throws Exception {
 		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario7", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.done.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 	}
 	
 	/**
@@ -137,8 +137,8 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario8() throws Exception {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario8", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.warning.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 	}
 	
 	/**
@@ -148,8 +148,8 @@ public class TestsEndToEndDeleteCampaign {
 	@Test
 	public void testScenario9() throws Exception {
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario9", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.error.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.warning.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 	}
 	
 	/**
@@ -161,14 +161,14 @@ public class TestsEndToEndDeleteCampaign {
 	public void testScenario10() throws Exception {
 		MessageDao messageDao = context.getBean(MessageDao.class);
 		assertEquals(BatchErrorCode.OK, launcherService.validateLoadClean(BatchOption.DELETECAMPAIGN, "src/test/resources/in/delete/testScenarios/deleteScenario7", OUT));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.done.xml"));
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/delete/testScenarios"), "campaign","delete.archive.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.archive.xml"));
 		assertEquals(false, messageDao.isIdPresentForCampaignId("SIMPSONS2020X00"));
 	}
 	
 	@After
 	public void cleanOutFolder() {
-		purgeDirectory(new File("src/test/resources/out/delete/testScenarios"));
+		purgeDirectory(new File(OUT));
 	}
 	
 	void purgeDirectory(File dir) {
