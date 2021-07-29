@@ -46,7 +46,8 @@ import liquibase.resource.ResourceAccessor;
 		TestsEndToEndExtractCampaign.class, 
 		TestsEndToEndContext.class, 
 		TestsEndToEndSynchro.class,
-		TestsEndToEndDailyUpdate.class
+		TestsEndToEndDailyUpdate.class,
+		TestsEndToEndSampleProcessing.class
 	})
 public class PearlJamBatchApplicationTests {
 
@@ -58,7 +59,13 @@ public class PearlJamBatchApplicationTests {
 	 */
 	@SuppressWarnings("rawtypes")
 	@ClassRule
-	public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres")
+	public static PostgreSQLContainer postgreSQLContainerPilotage = new PostgreSQLContainer("postgres")
+	.withDatabaseName("pearljam").withUsername("pearljam").withPassword("pearljam");
+	
+	
+	@SuppressWarnings("rawtypes")
+	@ClassRule
+	public static PostgreSQLContainer postgreSQLContainerDataCollection = new PostgreSQLContainer("postgres")
 			.withDatabaseName("queen").withUsername("queen").withPassword("queen");
 
 	/**
@@ -70,17 +77,28 @@ public class PearlJamBatchApplicationTests {
 	@BeforeClass
 	public static void init() throws IOException {
 		logger.info("Tests starts");
-		postgreSQLContainer.start();
+		postgreSQLContainerPilotage.start();
 		// tempFolder("sample.xml");
-		System.setProperty("fr.insee.pearljam.persistence.database.host", postgreSQLContainer.getContainerIpAddress());
+		System.setProperty("fr.insee.pearljam.persistence.database.host", postgreSQLContainerPilotage.getContainerIpAddress());
 		System.setProperty("fr.insee.pearljam.persistence.database.port",
-				Integer.toString(postgreSQLContainer.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT)));
-		System.setProperty("fr.insee.pearljam.persistence.database.schema", postgreSQLContainer.getDatabaseName());
-		System.setProperty("fr.insee.pearljam.persistence.database.user", postgreSQLContainer.getUsername());
-		System.setProperty("fr.insee.pearljam.persistence.database.password", postgreSQLContainer.getPassword());
+				Integer.toString(postgreSQLContainerPilotage.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT)));
+		System.setProperty("fr.insee.pearljam.persistence.database.schema", postgreSQLContainerPilotage.getDatabaseName());
+		System.setProperty("fr.insee.pearljam.persistence.database.user", postgreSQLContainerPilotage.getUsername());
+		System.setProperty("fr.insee.pearljam.persistence.database.password", postgreSQLContainerPilotage.getPassword());
 		System.setProperty("fr.insee.pearljam.persistence.database.driver", "org.postgresql.Driver");
 		System.setProperty("fr.insee.pearljam.folder.in", "src/test/resources/in");
 		System.setProperty("fr.insee.pearljam.folder.out", "src/test/resources/out");
+		
+		System.setProperty("fr.insee.queen.persistence.database.host", postgreSQLContainerDataCollection.getContainerIpAddress());
+		System.setProperty("fr.insee.queen.persistence.database.port",
+				Integer.toString(postgreSQLContainerDataCollection.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT)));
+		System.setProperty("fr.insee.queen.persistence.database.schema", postgreSQLContainerDataCollection.getDatabaseName());
+		System.setProperty("fr.insee.queen.persistence.database.user", postgreSQLContainerDataCollection.getUsername());
+		System.setProperty("fr.insee.queen.persistence.database.password", postgreSQLContainerDataCollection.getPassword());
+		System.setProperty("fr.insee.queen.persistence.database.driver", "org.postgresql.Driver");
+		System.setProperty("fr.insee.queen.folder.in", "src/test/resources/in");
+		System.setProperty("fr.insee.queen.folder.out", "src/test/resources/out");
+		
 		System.setProperty(
 				"fr.insee.pearljam.context.synchronization.interviewers.reaffectation.threshold.absolute",
 				"2");
@@ -104,20 +122,32 @@ public class PearlJamBatchApplicationTests {
 	 * @throws Exception
 	 */
 	public static void initData() throws Exception {
-		
-
-		PGSimpleDataSource ds = new PGSimpleDataSource();
+		PGSimpleDataSource dsPilotage = new PGSimpleDataSource();
 		// Datasource initialization
-		ds.setUrl(postgreSQLContainer.getJdbcUrl());
-		ds.setUser(postgreSQLContainer.getUsername());
-		ds.setPassword(postgreSQLContainer.getPassword());
-		DatabaseConnection dbconn = new JdbcConnection(ds.getConnection());
-		ResourceAccessor ra = new FileSystemResourceAccessor("src/test/resources/sql");
-		Liquibase liquibase = new Liquibase("master.xml", ra, dbconn);
-		liquibase.dropAll();
-		liquibase.update(new Contexts());
-		liquibase.close();
-		System.out.println("DB created");
+		dsPilotage.setUrl(postgreSQLContainerPilotage.getJdbcUrl());
+		dsPilotage.setUser(postgreSQLContainerPilotage.getUsername());
+		dsPilotage.setPassword(postgreSQLContainerPilotage.getPassword());
+		DatabaseConnection dbconnPilotage = new JdbcConnection(dsPilotage.getConnection());
+		ResourceAccessor raPilotage = new FileSystemResourceAccessor("src/test/resources/sql");
+		Liquibase liquibasePilotage = new Liquibase("masterPilotage.xml", raPilotage, dbconnPilotage);
+		liquibasePilotage.dropAll();
+		liquibasePilotage.update(new Contexts());
+		liquibasePilotage.close();
+		System.out.println("DB Pilotage created");
+
+		
+		PGSimpleDataSource dsDataCollection = new PGSimpleDataSource();
+		// Datasource initialization
+		dsDataCollection.setUrl(postgreSQLContainerPilotage.getJdbcUrl());
+		dsDataCollection.setUser(postgreSQLContainerPilotage.getUsername());
+		dsDataCollection.setPassword(postgreSQLContainerPilotage.getPassword());
+		DatabaseConnection dbconnDataCollection = new JdbcConnection(dsDataCollection.getConnection());
+		ResourceAccessor raDataCollection = new FileSystemResourceAccessor("src/test/resources/sql");
+		Liquibase liquibaseDataCollection = new Liquibase("masterDataCollection.xml", raDataCollection, dbconnDataCollection);
+		liquibaseDataCollection.dropAll();
+		liquibaseDataCollection.update(new Contexts());
+		liquibaseDataCollection.close();
+		System.out.println("DB DataCollection created");
 	}
 
 	/**

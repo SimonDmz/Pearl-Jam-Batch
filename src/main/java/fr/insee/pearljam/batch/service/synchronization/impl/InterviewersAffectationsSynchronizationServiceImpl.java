@@ -1,4 +1,4 @@
-package fr.insee.pearljam.batch.service.impl;
+package fr.insee.pearljam.batch.service.synchronization.impl;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.service.ContextReferentialService;
-import fr.insee.pearljam.batch.service.InterviewersAffectationsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsSynchronizationService;
 import fr.insee.pearljam.batch.template.CreatedInterviewersAffectations;
 import fr.insee.pearljam.batch.template.InterviewerAffectation;
 import fr.insee.pearljam.batch.template.InterviewerAffectationSynchronizationError;
@@ -51,7 +52,8 @@ public class InterviewersAffectationsSynchronizationServiceImpl implements Inter
 	private Float relThreshold;
 	
 	@Autowired
-	Connection connection;
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 	
 	@Autowired
 	ContextReferentialService opaleService;

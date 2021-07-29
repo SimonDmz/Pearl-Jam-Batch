@@ -1,4 +1,4 @@
-package fr.insee.pearljam.batch.service;
+package fr.insee.pearljam.batch.service.synchronization;
 
 import java.sql.SQLException;
 

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,8 @@ public class ContextService {
 	AnnotationConfigApplicationContext context;
 
 	@Autowired
-	Connection connection;
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 
 	UserTypeDao userDao;
 	InterviewerTypeDao interviewerDao;
@@ -67,7 +69,7 @@ public class ContextService {
 		interviewerDao = this.context.getBean(InterviewerTypeDao.class);
 		userDao = this.context.getBean(UserTypeDao.class);
 		BatchErrorCode returnCode = BatchErrorCode.OK;
-		connection.setAutoCommit(false);
+		pilotageConnection.setAutoCommit(false);
 		try{
 			// Create Users
 			returnCode = createUsers(context.getUsers(), returnCode);
@@ -77,16 +79,16 @@ public class ContextService {
 			returnCode = createGeographicalLocations(context.getGeographicalLocations(), returnCode);
 			// Create Organizational Units
 			returnCode = createOrganizationalUnits(context.getOrganizationalUnits(), returnCode);
-			connection.commit();
+			pilotageConnection.commit();
 			      
       returnCode = checkUsersOUAssociations(returnCode);
 		}catch (Exception e) {
 			logger.log(Level.ERROR, "Rollback ... Error during creating Context : {}", e.getMessage());
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			throw new DataBaseException("Error during creating Context : " + e.getMessage());
 		}finally {
-			connection.setAutoCommit(true);
+			pilotageConnection.setAutoCommit(true);
 		}
 		return returnCode;
 	}

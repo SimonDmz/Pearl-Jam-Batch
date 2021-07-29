@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import fr.insee.pearljam.batch.config.ApplicationConfig;
 import fr.insee.pearljam.batch.config.ApplicationContext;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.ArgumentException;
@@ -19,9 +20,9 @@ import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.DataBaseException;
 import fr.insee.pearljam.batch.exception.FolderException;
 import fr.insee.pearljam.batch.exception.ValidateException;
-import fr.insee.pearljam.batch.service.DatabaseService;
-import fr.insee.pearljam.batch.service.FolderService;
-import fr.insee.pearljam.batch.service.LauncherService;
+import fr.insee.pearljam.batch.service.PilotageDBService;
+import fr.insee.pearljam.batch.service.PilotageFolderService;
+import fr.insee.pearljam.batch.service.PilotageLauncherService;
 import fr.insee.pearljam.batch.service.TriggerService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 import fr.insee.pearljam.batch.utils.PathUtils;
@@ -47,9 +48,9 @@ public abstract class Launcher {
 	 */
 	static AnnotationConfigApplicationContext context;
 
-	static DatabaseService databaseService;
-	static FolderService folderService;
-	static LauncherService launcherService;
+	static PilotageDBService pilotageDBService;
+	static PilotageFolderService pilotageFolderService;
+	static PilotageLauncherService pilotageLauncherService;
 	static TriggerService triggerService;
 	
 	/**
@@ -59,9 +60,9 @@ public abstract class Launcher {
 
 	public static void main(String[] args) throws IOException, ValidateException, SQLException, XMLStreamException {
 		context = new AnnotationConfigApplicationContext(ApplicationContext.class);
-		databaseService = context.getBean(DatabaseService.class);
-		folderService = context.getBean(FolderService.class);
-		launcherService = context.getBean(LauncherService.class);
+		pilotageDBService = context.getBean(PilotageDBService.class);
+		pilotageFolderService = context.getBean(PilotageFolderService.class);
+		pilotageLauncherService = context.getBean(PilotageLauncherService.class);
 		BatchErrorCode batchErrorCode = BatchErrorCode.OK;
 		try {
 			initBatch();
@@ -76,7 +77,7 @@ public abstract class Launcher {
 		} 
 		finally {
 			logger.log(Level.INFO, Constants.MSG_RETURN_CODE, batchErrorCode);
-			databaseService.closeConnection();
+			pilotageDBService.closeConnection();
 			context.close();
 			System.exit(batchErrorCode.getCode());
 		}
@@ -92,19 +93,19 @@ public abstract class Launcher {
 	 */
 	public static void initBatch() throws FolderException, DataBaseException, SQLException {
 		// Check folder properties
-		FOLDER_IN = folderService.getFolderIn();
-		FOLDER_OUT = folderService.getFolderOut();
+		FOLDER_IN = ApplicationConfig.FOLDER_IN;
+		FOLDER_OUT = ApplicationConfig.FOLDER_OUT;
 		if (StringUtils.isBlank(FOLDER_IN) || "${fr.insee.pearljam.folder.in}".equals(FOLDER_IN)) {
-			throw new FolderException("property fr.insee.queen.batch.folder.in is not define in properties");
+			throw new FolderException("property fr.insee.pearljam.batch.folder.in is not define in properties");
 		}
 		if (StringUtils.isBlank(FOLDER_OUT) || "${fr.insee.pearljam.folder.out}".equals(FOLDER_OUT)) {
-			throw new FolderException("property fr.insee.queen.batch.folder.out is not define in properties");
+			throw new FolderException("property fr.insee.pearljam.batch.folder.out is not define in properties");
 		}
 		logger.log(Level.INFO, "Folder properties are OK");
 
 		// Check database
 		
-		databaseService.checkDatabaseAccess();
+		pilotageDBService.checkDatabaseAccess();
 		logger.log(Level.INFO, "Database is OK");
 	}
 
@@ -198,7 +199,7 @@ public abstract class Launcher {
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);
 		default:
-			return launcherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
+			return pilotageLauncherService.validateLoadClean(batchOption, FOLDER_IN, FOLDER_OUT);
 		}
 		
 

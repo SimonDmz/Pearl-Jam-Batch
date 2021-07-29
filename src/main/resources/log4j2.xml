@@ -28,7 +28,7 @@
 		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Logger name="fr.insee.queen.batch" level="info" additivity="false">
+		<Logger name="fr.insee.pearljam.batch" level="info" additivity="false">
 			<AppenderRef ref="File-Appender" level="info" />
 			<AppenderRef ref="Console-Appender" level="info" />
 		</Logger>

@@ -14,15 +14,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @Service
-public class FolderService {
-	@Autowired
-	String getFolderIn;
-	
-	@Autowired
-	String getFolderOut;
-	
-	@Autowired
-	String getFolderInQueen;
+public class PilotageFolderService {
 	
 	@Autowired
 	@Qualifier("filename")
@@ -30,22 +22,6 @@ public class FolderService {
 	
 	@Autowired
 	String getCampaignName;
-	
-	public String getFolderIn() {
-		return getFolderIn;
-	}
-	
-	public String getFolderOut() {
-		return getFolderOut;	
-	}
-	
-	public String getFolderProcessing() {
-		return getFolderIn + "/processing";	
-	}
-	
-	public String getFolderInQueen() {
-		return getFolderInQueen;
-	}
 	
 	public String getFilename() {
 		return filename;	
@@ -63,9 +39,9 @@ public class FolderService {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.parse(new File( xmlPath ));
-		StringBuilder campaignId = new StringBuilder(document.getElementsByTagName("Campagne").item(0).getAttributes().getNamedItem("idenquete").getNodeValue());
+		StringBuilder campaignId = new StringBuilder(document.getElementsByTagName("Campagne").item(0).getAttributes().getNamedItem("idSource").getNodeValue());
 		campaignId.append(document.getElementsByTagName("Campagne").item(0).getAttributes().getNamedItem("millesime").getNodeValue());
-		campaignId.append(document.getElementsByTagName("Campagne").item(0).getAttributes().getNamedItem("idperiode").getNodeValue());
+		campaignId.append(document.getElementsByTagName("Campagne").item(0).getAttributes().getNamedItem("idPeriode").getNodeValue());
 		this.getCampaignName = campaignId.toString();
 	}
 }

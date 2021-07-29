@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,7 +38,8 @@ import fr.insee.pearljam.batch.campaign.PersonType;
 public class PersonDaoImpl implements PersonDao{
 	
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 	
 	private static final Logger logger = LogManager.getLogger(PersonDaoImpl.class);
 	
@@ -55,10 +57,10 @@ public class PersonDaoImpl implements PersonDao{
 			logger.log(Level.ERROR, e.getMessage());
 		}
 		String lowercaseTitle = person.getTitle().toLowerCase();
-		if(lowercaseTitle.contains("miss")) {
+		if(lowercaseTitle.contains("miss") || lowercaseTitle.contains("mme")) {
 			parsedTitle = 1;
 		}
-		else if(lowercaseTitle.equals("mister")) {
+		else if(lowercaseTitle.equals("mister") || lowercaseTitle.equals("m.")) {
 			parsedTitle = 0;
 		}
 		else {
@@ -68,7 +70,7 @@ public class PersonDaoImpl implements PersonDao{
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		final Long tempDate = parsedDate;
 		final Integer tempTitle = parsedTitle;
-		jdbcTemplate.update(
+		pilotageJdbcTemplate.update(
 		    new PreparedStatementCreator() {
 		        public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 		            PreparedStatement ps = connection.prepareStatement(qString, Statement.RETURN_GENERATED_KEYS);
@@ -89,7 +91,7 @@ public class PersonDaoImpl implements PersonDao{
 	@Override
 	public void deletePersonBySurveyUnitId(String surveyUnitId) {
 		String qString = "DELETE FROM person WHERE survey_unit_id=?";
-		jdbcTemplate.update(qString, surveyUnitId);
+		pilotageJdbcTemplate.update(qString, surveyUnitId);
 	}
 	
 
@@ -120,7 +122,7 @@ public class PersonDaoImpl implements PersonDao{
 	@Override
 	public List<Entry<Long, PersonType>> getPersonsBySurveyUnitId(String id) {
 		String qString = "SELECT person.* FROM person WHERE survey_unit_id=?";
-		return jdbcTemplate.query(qString, new Object[] {id}, new PersonTypeTypeMapper());
+		return pilotageJdbcTemplate.query(qString, new Object[] {id}, new PersonTypeTypeMapper());
 	}
 	
 	

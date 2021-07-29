@@ -107,7 +107,7 @@
 	<xs:complexType name="SurveyUnitType">
 		<xs:all>
 			<xs:element name="Id" type="xs:string"  />
-			<xs:element minOccurs="0" maxOccurs="1" name="InterwieverId" type="xs:string" />
+			<xs:element minOccurs="0" maxOccurs="1" name="InterviewerId" type="xs:string" />
 			<xs:element minOccurs="0" maxOccurs="1" name="OrganizationalUnitId" type="xs:string" />
 			<xs:element name="Priority" type="xs:boolean" />
 			<xs:element ref="InseeAddress" />

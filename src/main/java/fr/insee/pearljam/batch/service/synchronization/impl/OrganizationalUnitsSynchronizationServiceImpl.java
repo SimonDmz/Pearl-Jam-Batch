@@ -1,4 +1,4 @@
-package fr.insee.pearljam.batch.service.impl;
+package fr.insee.pearljam.batch.service.synchronization.impl;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import fr.insee.pearljam.batch.enums.ContextReferentialSyncLogIds;
 import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.ContextReferentialService;
-import fr.insee.pearljam.batch.service.OrganizationalUnitsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsSynchronizationService;
 import fr.insee.pearljam.batch.template.CreatedOrganizationUnits;
 import fr.insee.pearljam.batch.template.OrganizationUnitSynchronizationError;
 import fr.insee.pearljam.batch.template.OrganizationUnitSynchronizationErrors;
@@ -36,7 +37,8 @@ public class OrganizationalUnitsSynchronizationServiceImpl implements Organizati
 	private String logIds;
 	
 	@Autowired
-	Connection connection;
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 	
 	@Autowired
 	ContextReferentialService opaleService;

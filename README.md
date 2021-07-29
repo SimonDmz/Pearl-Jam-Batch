@@ -17,7 +17,7 @@ mvn clean install
 Use the folowing cmd :
 ``` shell
 echo $@
-java8 -Xms64m -Xmx512m -classpath '/opt/insee/queen/developpement/lib/*' -Dlog4j.configurationFile=file:/opt/insee/queen/developpement/properties/log4j2.xml -Dproperties.path=/opt/insee/queen/developpement/properties -DcheminLog=/opt/insee/queen/developpement/log fr.insee.queen.batch.Lanceur $@
+java8 -Xms64m -Xmx512m -classpath '/opt/insee/queen/developpement/lib/*' -Dlog4j.configurationFile=file:/opt/insee/queen/developpement/properties/log4j2.xml -Dproperties.path=/opt/insee/queen/developpement/properties -DcheminLog=/opt/insee/queen/developpement/log fr.insee.pearljam.batch.Lanceur $@
 CODE_ERREUR=$? [DELETECAMPAIGN] || [LOADCAMPAIGN] || [LOADCONTEXT] || [DAILYUPDATE] || [SYNCHRONIZE] || [SAMPLEPROCESSING])
 echo "CODE ERREUR=$CODE_ERREUR"
 exit $CODE_ERREUR

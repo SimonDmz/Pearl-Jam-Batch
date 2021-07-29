@@ -1,4 +1,4 @@
-package fr.insee.pearljam.batch.service;
+package fr.insee.pearljam.batch.service.synchronization;
 
 import java.sql.SQLException;
 
@@ -12,9 +12,8 @@ import fr.insee.pearljam.batch.utils.BatchErrorCode;
 
 
 @Service
+public interface OrganizationalUnitsAffectationsSynchronizationService {
 
-public interface InterviewersAffectationsSynchronizationService {
-
-	public BatchErrorCode synchronizeSurveyUnitInterviewerAffectation(String out) throws SQLException, TooManyReaffectationsException, SynchronizationException, BatchException;
+	public BatchErrorCode synchronizeSurveyUnitOrganizationUnitAffectation(String out) throws SQLException, TooManyReaffectationsException, SynchronizationException, BatchException;
 	
 }

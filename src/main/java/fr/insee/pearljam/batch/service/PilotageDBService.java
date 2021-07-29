@@ -8,14 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.batch.exception.DataBaseException;
 
 @Service
-public class DatabaseService {
+public class PilotageDBService {
 	@Autowired
-	Connection connection;
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 	
 	List<String> missingTable = new ArrayList<>();
 	List<String> lstTable = List.of("interviewer", "sample_identifier", "contact_attempt", "geographical_location",
@@ -30,7 +32,7 @@ public class DatabaseService {
 	public void checkDatabaseAccess() throws DataBaseException, SQLException {
 		ResultSet rs = null;
 		try {
-			DatabaseMetaData metaData = connection.getMetaData();
+			DatabaseMetaData metaData = pilotageConnection.getMetaData();
 			for (String tableName : lstTable) {
 				rs = metaData.getTables(null, null, tableName, null);
 				if (!rs.next())
@@ -48,6 +50,6 @@ public class DatabaseService {
 	
 	
 	public void closeConnection() throws SQLException {
-		if (connection!=null) connection.close();
+		if (pilotageConnection!=null) pilotageConnection.close();
 	}
 }
