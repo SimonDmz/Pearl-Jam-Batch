@@ -503,27 +503,36 @@ public class CampaignService {
 			if (!campaign.getSurveyUnits().getSurveyUnit().isEmpty()) {
 				for (SurveyUnitType surveyUnitType : campaign.getSurveyUnits().getSurveyUnit()) {
 					// check if survey unit exist and associated to an other campaign
-					if (!surveyUnitDao.existSurveyUnitForCampaign(surveyUnitType.getId(), campaignId)) {
-						if (StringUtils.isNotBlank(surveyUnitType.getInseeAddress().getGeographicalLocationId())) {
-							if (geographicalLocationDao.existGeographicalLocation(
-									String.valueOf(surveyUnitType.getInseeAddress().getGeographicalLocationId()))) {
-								createOrUpdateSurveyUnit(surveyUnitType, campaignId);
-								// Remove SU from file error.list
-								removeSurveyUnitNode(doc, surveyUnitType.getId());
-								lstSUSuccess.add(surveyUnitType.getId());
+					if (StringUtils.isBlank(surveyUnitType.getInterviewerId()) 
+							|| "none".equals(surveyUnitType.getInterviewerId())
+							|| interviewerTypeDao.existInterviewer(surveyUnitType.getInterviewerId())) {
+						// check if survey unit exist and associated to an other campaign
+						if (!surveyUnitDao.existSurveyUnitForCampaign(surveyUnitType.getId(), campaignId)) {
+							if (StringUtils.isNotBlank(surveyUnitType.getInseeAddress().getGeographicalLocationId())) {
+								if (geographicalLocationDao.existGeographicalLocation(
+										String.valueOf(surveyUnitType.getInseeAddress().getGeographicalLocationId()))) {
+									createOrUpdateSurveyUnit(surveyUnitType, campaignId);
+									// Remove SU from file error.list
+									removeSurveyUnitNode(doc, surveyUnitType.getId());
+									lstSUSuccess.add(surveyUnitType.getId());
+								} else {
+									logger.log(Level.WARN, "The Geographical Location {} for the survey unit {}, is not in database",
+											surveyUnitType.getInseeAddress().getGeographicalLocationId(), surveyUnitType.getId());
+									lstSUError.add(surveyUnitType.getId());
+								}
 							} else {
-								logger.log(Level.WARN, "The Geographical Location {} for the survey unit {}, is not in database",
-										surveyUnitType.getInseeAddress().getGeographicalLocationId(), surveyUnitType.getId());
+								logger.log(Level.WARN,
+										"The GeographicalLocationId is null or equals to 0");
 								lstSUError.add(surveyUnitType.getId());
 							}
 						} else {
-							logger.log(Level.WARN,
-									"The GeographicalLocationId is null or equals to 0");
+							logger.log(Level.WARN, "The Survey Unit {} is already associated to an other campaign",
+									surveyUnitType.getId());
 							lstSUError.add(surveyUnitType.getId());
 						}
-					} else {
-						logger.log(Level.WARN, "The Survey Unit {} is already associated to an other campaign",
-								surveyUnitType.getId());
+					}else {
+						logger.log(Level.WARN, "The interviewer {} not exits in DB",
+								surveyUnitType.getInterviewerId());
 						lstSUError.add(surveyUnitType.getId());
 					}
 				}

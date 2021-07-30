@@ -53,7 +53,7 @@
 																		</xs:sequence>
 																	</xs:complexType>
 																</xs:element>
-																<xs:element name="Affectation">
+																<xs:element minOccurs="0" maxOccurs="1" name="Affectation">
 																	<xs:complexType>
 																		<xs:sequence>
 																			<xs:element name="UniteOrganisationnelleId" type="xs:string" />
@@ -67,7 +67,7 @@
 													<xs:element name="Contacts">
 														<xs:complexType>
 															<xs:sequence>
-																<xs:element maxOccurs="unbounded" name="Contact">
+																<xs:element  minOccurs="0" maxOccurs="unbounded" name="Contact">
 																	<xs:complexType>
 																		<xs:sequence>
 																			<xs:element name="Principal" type="xs:boolean" />
@@ -86,7 +86,7 @@
 																			<xs:element name="Telephones">
 																				<xs:complexType>
 																					<xs:sequence>
-																						<xs:element maxOccurs="unbounded" name="Telephone">
+																						<xs:element minOccurs="1" maxOccurs="unbounded" name="Telephone">
 																							<xs:complexType>
 																								<xs:sequence>
 																									<xs:element name="Source" type="xs:string" />
