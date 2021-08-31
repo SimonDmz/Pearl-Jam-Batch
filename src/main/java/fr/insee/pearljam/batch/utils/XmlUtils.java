@@ -102,11 +102,12 @@ public class XmlUtils {
 	 * @throws BatchException
 	 */
 	public static void validateXMLSchema(URL model, String xmlPath) throws ValidateException, IOException, XMLStreamException {
-		FileInputStream fis = null;
-		XMLStreamReader xmlEncoding = null;
-		FileReader fr = null;
 		ValidateException ve = null;
-		try {
+		
+		XMLStreamReader xmlEncoding= null;
+		try (FileInputStream fis = new FileInputStream(new File(xmlPath));
+			FileReader fr = new FileReader(xmlPath);
+			) {
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			Schema schema = factory.newSchema(model);
 			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
@@ -114,8 +115,6 @@ public class XmlUtils {
 			Validator validator = schema.newValidator();
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			fis = new FileInputStream(new File(xmlPath));
-			fr = new FileReader(xmlPath);
 			xmlEncoding = XMLInputFactory.newInstance().createXMLStreamReader(fr);
 			if(xmlEncoding.getCharacterEncodingScheme().equals("UTF8") || xmlEncoding.getCharacterEncodingScheme().equals(StandardCharsets.UTF_8.toString())) {
 				validator.validate(new StreamSource(fis));
@@ -124,8 +123,6 @@ public class XmlUtils {
 			ve = new ValidateException("Error during validation : " + e.getMessage());
 		} finally {
 			if(xmlEncoding!=null)xmlEncoding.close();
-			if(fr!=null)fr.close();
-			if(fis!=null)fis.close();
 		}
 		if(ve!=null)throw ve;
 		logger.log(Level.INFO, "{} validate with {}", xmlPath, model.getFile());
@@ -156,7 +153,7 @@ public class XmlUtils {
 	}
 	
 	
-	public static void objectToXML(String filename, Object object) throws BatchException{
+	public static File objectToXML(String filename, Object object) throws BatchException{
 		try {
             //Create JAXB Context
             JAXBContext jaxbContext = JAXBContext.newInstance(object.getClass());
@@ -167,11 +164,12 @@ public class XmlUtils {
             File file = new File(filename);
             //Writes XML file to file-system
             jaxbMarshaller.marshal(object, file); 
+            return file;
 		}catch (JAXBException e) {
 			throw new BatchException("Error during transfo object to xml : " + e.getMessage());
 		}
     }
-	
+
 	/**
 	 * This method takes a document and an id in entry, it removes the reportingUnit node
 	 * identified by its id in the document
@@ -205,12 +203,8 @@ public class XmlUtils {
 	 */
 	public static void updateSampleFileErrorList(StreamResult sr, String fileName) {
 		// writing to file
-		FileOutputStream fop = null;
-		File fileNew;
-		try {
-			fileNew = new File(fileName);
-			fop = new FileOutputStream(fileNew);
-			// if file doesnt exists, then create it
+		File fileNew = new File(fileName);
+		try (FileOutputStream fop = new FileOutputStream(fileNew);){
 			if (!fileNew.exists() && !fileNew.createNewFile()) {
 				logger.log(Level.ERROR, "Failed to create file %s", fileName);
 			}
@@ -219,17 +213,8 @@ public class XmlUtils {
 			byte[] contentInBytes = xmlString.getBytes();
 			fop.write(contentInBytes);
 			fop.flush();
-			fop.close();
 		} catch (IOException e) {
 			logger.log(Level.ERROR, e.getMessage());
-		} finally {
-			try {
-				if (fop != null) {
-					fop.close();
-				}
-			} catch (IOException e) {
-				logger.log(Level.ERROR, e.getMessage());
-			}
 		}
 	}
 	

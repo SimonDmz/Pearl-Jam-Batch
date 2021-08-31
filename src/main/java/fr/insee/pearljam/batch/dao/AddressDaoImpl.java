@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ import fr.insee.pearljam.batch.campaign.InseeAddressType;
 public class AddressDaoImpl implements AddressDao {
 
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 
 	/**
 	 * Retrieve the AddressId by the GeographicLocationId passed in parameter
@@ -32,13 +34,13 @@ public class AddressDaoImpl implements AddressDao {
 	@Override
 	public Long getAddressIdByGeographicalLocationId(String geographicalLocationId) {
 		String qString = "SELECT id FROM address WHERE geographical_location_id=?";
-		return jdbcTemplate.queryForObject(qString, new Object[] { geographicalLocationId }, Long.class);
+		return pilotageJdbcTemplate.queryForObject(qString, new Object[] { geographicalLocationId }, Long.class);
 	}
 
 	@Override
 	public Long createAddress(InseeAddressType inseeAddress) {
 		String qString = "INSERT INTO address (dtype, l1, l2, l3, l4, l5, l6, l7, geographical_location_id) VALUES ('InseeAddress',?,?,?,?,?,?,?,?) RETURNING id";
-		return jdbcTemplate.queryForObject(qString,
+		return pilotageJdbcTemplate.queryForObject(qString,
 				new Object[] { inseeAddress.getL1(), inseeAddress.getL2(), inseeAddress.getL3(), inseeAddress.getL4(),
 						inseeAddress.getL5(), inseeAddress.getL6(), inseeAddress.getL7(),
 						inseeAddress.getGeographicalLocationId() },
@@ -51,14 +53,14 @@ public class AddressDaoImpl implements AddressDao {
 				.append("SET l1=?, l2=?, l3=?, l4=?, l5=?, l6=?, l7=?, geographical_location_id=? " + "FROM survey_unit su ")
 				.append("WHERE su.address_id=adrs.id AND su.id=?")
 				.toString();
-		jdbcTemplate.update(qString, inseeAddress.getL1(), inseeAddress.getL2(), inseeAddress.getL3(),
+		pilotageJdbcTemplate.update(qString, inseeAddress.getL1(), inseeAddress.getL2(), inseeAddress.getL3(),
 				inseeAddress.getL4(), inseeAddress.getL5(), inseeAddress.getL6(), inseeAddress.getL7(),
 				inseeAddress.getGeographicalLocationId(), surveyUnitId);
 	}
 	
 	public InseeAddressType getAddressBySurveyUnitId(String surveyUnitId) {
 		String qString = "SELECT * FROM address ad INNER JOIN survey_unit su on su.address_id = ad.id WHERE su.id=?";
-		List<InseeAddressType> addList = jdbcTemplate.query(qString, new Object[] {surveyUnitId}, new AddressMapper());
+		List<InseeAddressType> addList = pilotageJdbcTemplate.query(qString, new Object[] {surveyUnitId}, new AddressMapper());
 		if(!addList.isEmpty()) {
 			return addList.get(0);
 		} else {
@@ -83,6 +85,6 @@ public class AddressDaoImpl implements AddressDao {
 	
 	public void deleteAddressById(Long addressId) {
 		String qString = "DELETE FROM address WHERE id=?";
-		jdbcTemplate.update(qString, addressId);
+		pilotageJdbcTemplate.update(qString, addressId);
 	}
 }

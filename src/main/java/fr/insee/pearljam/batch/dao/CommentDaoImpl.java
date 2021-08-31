@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,12 @@ import fr.insee.pearljam.batch.campaign.CommentType;
 public class CommentDaoImpl implements CommentDao{
 	
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 	
 	public List<CommentType> getCommentBySurveyUnitId(String surveyUnitId) {
 		String qString = "SELECT * FROM comment WHERE survey_unit_id=?";
-		return jdbcTemplate.query(qString, new Object[] {surveyUnitId}, new CommentTypeMapper());
+		return pilotageJdbcTemplate.query(qString, new Object[] {surveyUnitId}, new CommentTypeMapper());
 		
 	}
 	/**
@@ -42,6 +44,6 @@ public class CommentDaoImpl implements CommentDao{
 	
 	public void deleteCommentBySurveyUnitId(String surveyUnitId) throws SQLException {
 		String qString = "DELETE FROM comment WHERE survey_unit_id=?";
-		jdbcTemplate.update(qString, surveyUnitId);
+		pilotageJdbcTemplate.update(qString, surveyUnitId);
 	}
 }

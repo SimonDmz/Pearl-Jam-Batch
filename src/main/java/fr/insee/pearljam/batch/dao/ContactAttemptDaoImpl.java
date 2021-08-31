@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,12 @@ import fr.insee.pearljam.batch.campaign.ContactAttemptType;
 public class ContactAttemptDaoImpl implements ContactAttemptDao {
 	
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 	
 	public List<ContactAttemptType> getContactAttemptTypeBySurveyUnitId(String surveyUnitId){
 		String qString = "SELECT * FROM contact_attempt WHERE survey_unit_id=?";
-		return jdbcTemplate.query(qString, new Object[] {surveyUnitId}, new ContactAttemptTypeMapper());
+		return pilotageJdbcTemplate.query(qString, new Object[] {surveyUnitId}, new ContactAttemptTypeMapper());
 	}
 
 	/**
@@ -42,6 +44,6 @@ public class ContactAttemptDaoImpl implements ContactAttemptDao {
 	
 	public void deleteContactAttemptBySurveyUnitId(String surveyUnitId) throws SQLException {
 		String qString = "DELETE FROM contact_attempt WHERE survey_unit_id=?";
-		jdbcTemplate.update(qString, surveyUnitId);
+		pilotageJdbcTemplate.update(qString, surveyUnitId);
 	}
 }

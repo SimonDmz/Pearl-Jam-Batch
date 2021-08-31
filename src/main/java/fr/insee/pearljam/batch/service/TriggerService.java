@@ -2,16 +2,17 @@ package fr.insee.pearljam.batch.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,10 @@ import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.exception.ValidateException;
+import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.InterviewersSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsAffectationsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsSynchronizationService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 
 @Service
@@ -31,11 +36,14 @@ public class TriggerService {
 	AnnotationConfigApplicationContext context;
 
 	@Autowired
-	Connection connection;
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 	StateDao stateDao;
 	SurveyUnitDao surveyUnitDao;
 	MessageDao messageDao;
 	
+	@Autowired
+	CampaignService campaignService;
 	
 	@Autowired
 	InterviewersSynchronizationService interviewersSynchronizationService;
@@ -51,7 +59,7 @@ public class TriggerService {
 	
 	public BatchErrorCode synchronizeWithOpale(String folderOut) throws SQLException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
-		connection.setAutoCommit(false);
+		pilotageConnection.setAutoCommit(false);
 		try {
 			returnCode = updateErrorCode(returnCode, interviewersSynchronizationService.synchronizeInterviewers(folderOut));
 			returnCode = updateErrorCode(returnCode, interviewersAffectationsSynchronizationService.synchronizeSurveyUnitInterviewerAffectation(folderOut));
@@ -59,16 +67,16 @@ public class TriggerService {
 			returnCode = updateErrorCode(returnCode, organizationalUnitsAffectationsSynchronizationService.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut));
 		} catch (TooManyReaffectationsException e) {
 			returnCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			logger.error("Error during survey-unit / interviewers affectation synchronization, rolling back : {}", e.getMessage());
 		} catch (Exception e) {
 			returnCode = BatchErrorCode.KO_TECHNICAL_ERROR;
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			logger.error("Error during organizational units synchronization, rolling back : {}", e.getMessage());
 		} finally {
-			connection.setAutoCommit(true);
+			pilotageConnection.setAutoCommit(true);
 		}
 		
 
@@ -100,10 +108,10 @@ public class TriggerService {
 		List<String> lstSu = new ArrayList<>();
 		List<Long> lstIdMsg = new ArrayList<>();
 		try {
-			connection.setAutoCommit(false);
+			pilotageConnection.setAutoCommit(false);
 			// Get the list of Survey unit id to update from state NVM to ANV or NNS
 			surveyUnitDao.getSurveyUnitNVM().stream().forEach(suId -> {
-				if (StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterwieverId())) {
+				if (StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterviewerId())) {
 					stateDao.createState(System.currentTimeMillis(), "ANV", suId);
 					lstSuANV.add(suId);
 				} else {
@@ -146,13 +154,12 @@ public class TriggerService {
 			String strLstIdMsg = String.join(",", String.valueOf(lstIdMsg));
 			logger.log(Level.INFO, "There are {} messages deleted : [{}]", lstIdMsg.size(), strLstIdMsg);
 
-			connection.commit();
+			pilotageConnection.commit();
 		} catch (Exception e) {
-			connection.setAutoCommit(true);
+			pilotageConnection.setAutoCommit(true);
 			throw new ValidateException("Error during process, error update states : " + e.getMessage());
 		}
 		return BatchErrorCode.OK;
 			
 	}
-
 }

@@ -17,8 +17,8 @@ mvn clean install
 Use the folowing cmd :
 ``` shell
 echo $@
-java8 -Xms64m -Xmx512m -classpath '/path/to/lib/*' -Dlog4j.configurationFile=file:/path/to/log4j2/config/log4j2.xml -Dproperties.path=/path/to/properties -DcheminLog=/path/to/log fr.insee.queen.batch.Lanceur $@
-CODE_ERREUR=$? [DELETECAMPAIGN] || [LOADCAMPAIGN] || [LOADCONTEXT] || [DAILYUPDATE] || [SYNCHRONIZE])
+java8 -Xms64m -Xmx512m -classpath '/opt/insee/queen/developpement/lib/*' -Dlog4j.configurationFile=file:/opt/insee/queen/developpement/properties/log4j2.xml -Dproperties.path=/opt/insee/queen/developpement/properties -DcheminLog=/opt/insee/queen/developpement/log fr.insee.pearljam.batch.Lanceur $@
+CODE_ERREUR=$? [DELETECAMPAIGN] || [LOADCAMPAIGN] || [LOADCONTEXT] || [DAILYUPDATE] || [SYNCHRONIZE] || [SAMPLEPROCESSING])
 echo "CODE ERREUR=$CODE_ERREUR"
 exit $CODE_ERREUR
 ```
@@ -35,6 +35,7 @@ fr.insee.pearljam.persistence.database.password = XXXXXXXX
 fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.folder.in=path/to/in
 fr.insee.pearljam.folder.out=path/to/out
+fr.insee.pearljam.folder.queen.in=path/to/in
 
 # Context referential URL
 fr.insee.pearljam.context.referential.service.url.scheme=http

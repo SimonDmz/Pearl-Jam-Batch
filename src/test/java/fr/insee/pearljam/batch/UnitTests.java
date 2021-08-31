@@ -28,7 +28,7 @@ import fr.insee.pearljam.batch.dto.KeycloakResponseDto;
 import fr.insee.pearljam.batch.dto.SimpleIdDto;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.ArgumentException;
-import fr.insee.pearljam.batch.service.LauncherService;
+import fr.insee.pearljam.batch.service.PilotageLauncherService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 import fr.insee.pearljam.batch.utils.PathUtils;
 import fr.insee.pearljam.batch.utils.XmlUtils;
@@ -47,7 +47,7 @@ public class UnitTests {
     private RestTemplate restTemplate = context.getBean(RestTemplate.class);
 	
 	/* Create a temporary service for the tests*/	
-    private LauncherService launcherService = context.getBean(LauncherService.class);
+    private PilotageLauncherService pilotageLauncherService = context.getBean(PilotageLauncherService.class);
 	
 	private String keycloakTokenUrl = (String) context.getBean("keycloakAuthUrl");
 	private String contextReferentialBaseUrl = (String) context.getBean("contextReferentialBaseUrl");
@@ -153,7 +153,7 @@ public class UnitTests {
 		expectExternalCall(keycloakTokenUrl, resp);
 		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/simpsons2022_2", idDto);
 
-		assertEquals(BatchErrorCode.OK, launcherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaign.xml", "src/test/resources/out/unitTests", PROCESSING));
+		assertEquals(BatchErrorCode.OK, pilotageLauncherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaign.xml", "src/test/resources/out/unitTests", PROCESSING));
 	}
 	
 	@Test
@@ -170,7 +170,7 @@ public class UnitTests {
 		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/su1234", idDto);
 
         
-		launcherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario9/campaign.xml", "src/test/resources/out/unitTests", PROCESSING);
+		pilotageLauncherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario9/campaign.xml", "src/test/resources/out/unitTests", PROCESSING);
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"), "campaign","error.list"));
 	}
 	
@@ -185,7 +185,7 @@ public class UnitTests {
 	public void cleandAndResetCampaignWithoutError() throws Exception {
 		File deleteOutFile = new File("src/test/resources/out/unitTests");
 		FileUtils.cleanDirectory(deleteOutFile);
-		launcherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.OK, BatchOption.LOADCAMPAIGN);
+		pilotageLauncherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.OK, BatchOption.LOADCAMPAIGN);
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"),"campaign", ".done.xml"));
 	}
 	
@@ -198,7 +198,7 @@ public class UnitTests {
 	public void cleandAndResetCampaignWithError() throws Exception {
 		File deleteOutFile = new File("src/test/resources/out/unitTests");
 		FileUtils.cleanDirectory(deleteOutFile);
-		launcherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.KO_FONCTIONAL_ERROR, BatchOption.LOADCAMPAIGN);
+		pilotageLauncherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.KO_FONCTIONAL_ERROR, BatchOption.LOADCAMPAIGN);
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"),"campaign", ".error.xml"));
 	}
 	

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -29,20 +30,21 @@ import fr.insee.pearljam.batch.exception.BatchException;
 public class VisibilityDaoImpl implements VisibilityDao {
 
 	@Autowired 
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 		
 	private static final Logger logger = LogManager.getLogger(VisibilityDaoImpl.class);
 	
 	@Override
 	public boolean existVisibility(String campaignId, String organizationalUnitId){
 		String qString = "SELECT COUNT(*) FROM visibility WHERE campaign_id=? AND organization_unit_id=?";
-		Long nbRes = jdbcTemplate.queryForObject(qString, new Object[]{campaignId, organizationalUnitId}, Long.class);
+		Long nbRes = pilotageJdbcTemplate.queryForObject(qString, new Object[]{campaignId, organizationalUnitId}, Long.class);
 		return nbRes>0;	
 	}
 	
 	public List<OrganizationalUnitType> getAllVisibilitiesByCampaignId(String campaignId) {
 		String qString = "SELECT * FROM visibility WHERE campaign_id=?";
-		return jdbcTemplate.query(qString, new Object[] {campaignId}, new OrganizationalUnitTypeMapper());
+		return pilotageJdbcTemplate.query(qString, new Object[] {campaignId}, new OrganizationalUnitTypeMapper());
 		
 	}
 	
@@ -83,7 +85,7 @@ public class VisibilityDaoImpl implements VisibilityDao {
 			interviewerStartDate = null;
 			managementStartDate = null;
 		}
-	    jdbcTemplate.update(qString, campaign.getId().toUpperCase(), organizationalUnitType.getId(), collectionEndDate, 
+	    pilotageJdbcTemplate.update(qString, campaign.getId().toUpperCase(), organizationalUnitType.getId(), collectionEndDate, 
 	    		collectionStartDate, endDate, identificationPhaseStartDate, interviewerStartDate, managementStartDate);
 	}
 	
@@ -110,7 +112,7 @@ public class VisibilityDaoImpl implements VisibilityDao {
 			logger.log(Level.ERROR, e.getMessage());
 			throw new BatchException("Error during update of the visibility for campaign "+campaign.getId()+" : "+e.getMessage());
 		}
-		jdbcTemplate.update(qString, collectionEndDate, collectionStartDate, endDate, identificationPhaseStartDate, 
+		pilotageJdbcTemplate.update(qString, collectionEndDate, collectionStartDate, endDate, identificationPhaseStartDate, 
 				interviewerStartDate, managementStartDate, campaign.getId().toUpperCase(), organizationalUnitType.getId());
 	}
 	
@@ -138,12 +140,12 @@ public class VisibilityDaoImpl implements VisibilityDao {
 			logger.log(Level.ERROR, e.getMessage());
 			throw new BatchException("Error during update of the visibility for campaign "+campaign.getId()+" : "+e.getMessage());
 		}
-		jdbcTemplate.update(qString, organizationalUnitType.getId(), collectionEndDate, collectionStartDate, endDate, identificationPhaseStartDate, 
+		pilotageJdbcTemplate.update(qString, organizationalUnitType.getId(), collectionEndDate, collectionStartDate, endDate, identificationPhaseStartDate, 
 				interviewerStartDate, managementStartDate, campaign.getId());
 	}
 	
 	public void deleteVisibilityByCampaignId(String campaignId) {
 		String qString = "DELETE FROM visibility WHERE campaign_id=?";
-		jdbcTemplate.update(qString, campaignId);
+		pilotageJdbcTemplate.update(qString, campaignId);
 	}
 }

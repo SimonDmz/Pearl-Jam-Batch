@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ import fr.insee.pearljam.batch.campaign.PhoneNumberType;
 public class PhoneNumberDaoImpl implements PhoneNumberDao {
 
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	@Qualifier("pilotageJdbcTemplate")
+	JdbcTemplate pilotageJdbcTemplate;
 
 	@Override
 	public void createPhoneNumber(PhoneNumberType phoneNumber, Long personId) {
@@ -41,13 +43,13 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
 				source = null;
 		}
 		
-		jdbcTemplate.update(qString, phoneNumber.getNumber(), source, personId);
+		pilotageJdbcTemplate.update(qString, phoneNumber.getNumber(), source, personId);
 	}
 
 	@Override
 	public void deletePhoneNumbersByPersonId(Long personId) {
 		String qString = "DELETE FROM phone_number WHERE person_id=?";
-		jdbcTemplate.update(qString, personId);
+		pilotageJdbcTemplate.update(qString, personId);
 	}
 	
 	@Override
@@ -55,7 +57,7 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
 		String qString = new StringBuilder("DELETE FROM phone_number WHERE person_id IN ")
 				.append("(SELECT id FROM person WHERE survey_unit_id=?)")
 				.toString();
-		jdbcTemplate.update(qString, surveyUnitId);
+		pilotageJdbcTemplate.update(qString, surveyUnitId);
 	}
 	
 	private static final class PhoneNumberTypeMapper implements RowMapper<PhoneNumberType> {
@@ -85,6 +87,6 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
 	@Override
 	public List<PhoneNumberType> getPhoneNumbersByPersonId(Long id) {
 		String qString = "SELECT phone_number.* FROM phone_number WHERE person_id=?";
-		return jdbcTemplate.query(qString, new Object[] {id}, new PhoneNumberTypeMapper());
+		return pilotageJdbcTemplate.query(qString, new Object[] {id}, new PhoneNumberTypeMapper());
 	}
 }

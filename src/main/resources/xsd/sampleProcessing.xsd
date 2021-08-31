@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Campagne">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Steps">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="Step">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Goal" type="xs:string" />
+										<xs:element name="Options" type="xs:string" />
+									</xs:sequence>
+									<xs:attribute name="name" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Questionnaires">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="Questionnaire">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element maxOccurs="1" name="InformationsGenerales">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="UniteEnquetee">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Identifiant" type="xs:string" />
+																<xs:element name="Prioritaire" type="xs:boolean" />
+																<xs:element name="LocalisationGeographique" type="xs:string" />
+																<xs:element name="IdentifiantsInsee">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="Bs" type="xs:integer" />
+																			<xs:element name="Ec" type="xs:string" />
+																			<xs:element name="Le" type="xs:integer" />
+																			<xs:element name="Noi" type="xs:integer" />
+																			<xs:element name="Numfa" type="xs:integer" />
+																			<xs:element name="Rges" type="xs:integer" />
+																			<xs:element name="Ssech" type="xs:integer" />
+																			<xs:element name="Nolog" type="xs:integer" />
+																			<xs:element name="Nole" type="xs:integer" />
+																			<xs:element name="Autre" type="xs:string" />
+																			<xs:element name="Nograp" type="xs:string" />
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element minOccurs="0" maxOccurs="1" name="Affectation">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="UniteOrganisationnelleId" type="xs:string" />
+																			<xs:element name="EnqueteurId" type="xs:string" />
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Contacts">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element  minOccurs="0" maxOccurs="unbounded" name="Contact">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="Principal" type="xs:boolean" />
+																			<xs:element name="CiviliteReferent">
+																				<xs:simpleType>
+																			      	<xs:restriction base="xs:string">
+																			          	<xs:enumeration value="Mme"/>
+																			          	<xs:enumeration value="M."/>
+																			      	</xs:restriction>
+																				</xs:simpleType>
+																			</xs:element>
+																			<xs:element name="NomReferent" type="xs:string" />
+																			<xs:element name="PrenomReferent" type="xs:string" />
+																			<xs:element name="MailReferent" type="xs:string" />
+																			<xs:element name="DateNaissance" type="xs:string" />
+																			<xs:element name="Telephones">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element minOccurs="1" maxOccurs="unbounded" name="Telephone">
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element name="Source" type="xs:string" />
+																									<xs:element name="Favori" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+																									<xs:element name="Numero" type="xs:long" />
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="Adresse"  minOccurs="0" maxOccurs="1">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="NumeroVoie" type="xs:string" />
+																						<xs:element name="IndiceRepetition" type="xs:string" />
+																						<xs:element name="TypeVoie" type="xs:string" />
+																						<xs:element name="LibelleVoie" type="xs:string" />
+																						<xs:element name="ComplementAdresse" type="xs:string" />
+																						<xs:element name="MentionSpeciale" type="xs:string" />
+																						<xs:element name="CodePostal" type="xs:string" />
+																						<xs:element name="LibelleCommune" type="xs:string" />
+																						<xs:element name="CodeCommune" type="xs:string" />
+																						<xs:element name="LibellePays" type="xs:string" />
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element maxOccurs="1" name="InformationsPersonnalisees">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Data" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="idModele" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="idSource" type="xs:string" use="required" />
+			<xs:attribute name="millesime" type="xs:unsignedShort" use="required" />
+			<xs:attribute name="idPeriode" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

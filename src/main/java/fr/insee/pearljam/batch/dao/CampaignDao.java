@@ -1,5 +1,7 @@
 package fr.insee.pearljam.batch.dao;
 
+import java.util.List;
+
 import fr.insee.pearljam.batch.campaign.Campaign;
 
 /**
@@ -30,5 +32,7 @@ public interface CampaignDao {
 	 * @param campaign
 	 */
 	void updateCampaignById(Campaign campaign);
+
+	List<Campaign> findAll();
     
 }

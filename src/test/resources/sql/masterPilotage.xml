@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+	<changeSet author="bclaudel" id="1" context="not prod">
+	    <sql dbms="postgresql" endDelimiter=";">
+	        CREATE SCHEMA IF NOT EXISTS public
+	    </sql>
+	</changeSet>
+	<include file="pilotage/000_init.xml" relativeToChangelogFile="true"/>
+	
+	<!-- Data for dev on POSTGRES DB  -->
+	<include file="pilotage/insert_data.xml" relativeToChangelogFile="true"/>
+	
+	<!-- Add tables to manage notifications -->
+	<include file="pilotage/130_notification.xml" relativeToChangelogFile="true"/>
+	
+	<!-- Add tables to manage notifications -->
+	<include file="pilotage/200_dates.xml" relativeToChangelogFile="true"/>
+	
+	<include file="pilotage/update_data.xml" relativeToChangelogFile="true"/>
+
+	<!-- Rework of data model -->
+	<include file="pilotage/300_data_model_changes.xml" relativeToChangelogFile="true"/>
+	<include file="pilotage/301_removing_interviewer_msg_recipent.xml" relativeToChangelogFile="true"/>
+
+
+	<include file="pilotage/300_update_data.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

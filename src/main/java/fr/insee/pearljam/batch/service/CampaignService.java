@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -95,35 +96,46 @@ public class CampaignService {
 
 	@Autowired
 	AnnotationConfigApplicationContext context;
-
 	@Autowired
-	Connection connection;
-	
+	@Qualifier("pilotageConnection")
+	Connection pilotageConnection;
 	@Autowired
 	ContextReferentialService contextReferentialService;
-	
 	@Autowired
 	PersonDao personDao;
-	
 	@Autowired
 	ClosingCauseDao closingCauseDao;
-	
+	@Autowired
 	CampaignDao campaignDao;
+	@Autowired
 	SurveyUnitDao surveyUnitDao;
+	@Autowired
 	StateDao stateDao;
+	@Autowired
 	AddressDao addressDao;
+	@Autowired
 	SampleIdentifierDao sampleIdentifierDao;
+	@Autowired
 	GeographicalLocationDao geographicalLocationDao;
+	@Autowired
 	VisibilityDao visibilityDao;
+	@Autowired
 	PhoneNumberDao phoneNumberDao;
+	@Autowired
 	CommentDao commentDao;
+	@Autowired
 	ContactAttemptDao contactAttemptDao;
+	@Autowired
 	ContactOutcomeDao contactOutcomeDao;
+	@Autowired
 	OrganizationalUnitTypeDao organizationalUnitTypeDao;
+	@Autowired
 	PreferenceDao preferenceDao;
+	@Autowired
 	UserTypeDao userDao;
+	@Autowired
 	MessageDao messageDao;
-	
+	@Autowired
 	InterviewerTypeDao interviewerTypeDao;
 
 	boolean deleteAllSurveyUnits = false;
@@ -168,7 +180,7 @@ public class CampaignService {
 		initDaos();
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		// Archive datas in XML file
-		returnCode = archiveCampaign(campaign, returnCode);
+		returnCode = archiveCampaign(campaign, returnCode, true);
 		XmlUtils.objectToXML(out+"/campaign." + getTimestampForPath() + ".delete.archive.xml", campaign);
 		// Complete campaign deletion
 		deleteCampaign(campaign, this.deleteAllSurveyUnits);
@@ -180,10 +192,11 @@ public class CampaignService {
 	 * 
 	 * @param campaign
 	 * @param returnCode
+	 * @param delete 
 	 * @return BatchErrorCode
 	 * @throws DataBaseException
 	 */
-	private BatchErrorCode archiveCampaign(Campaign campaign, BatchErrorCode returnCode) throws DataBaseException {
+	private BatchErrorCode archiveCampaign(Campaign campaign, BatchErrorCode returnCode, boolean delete) throws DataBaseException {
 		this.deleteAllSurveyUnits = false;
 		OrganizationalUnitsType ou = new OrganizationalUnitsType();
 		List<SurveyUnitType> listSurveyUnit = new ArrayList<>();
@@ -242,9 +255,12 @@ public class CampaignService {
 					// Contact Outcome
 					surveyUnitType.setContactOutcome(contactOutcomeDao.getContactOutcomeTypeBySurveyUnitId(surveyUnitType.getId()));
 					
+					// Closing Cause
+					surveyUnitType.setClosingCause(closingCauseDao.getClosingCauseTypeBySurveyUnitId(surveyUnitType.getId()));
+					
 					// InseeSampleIdentifiers
 					surveyUnitType.setInseeSampleIdentiers(sampleIdentifierDao.getSampleIdentiersBySurveyUnitId(surveyUnitType.getId()));
-				
+					
 				} catch (Exception e) {
 					throw new DataBaseException("Error during the archiving of the file campaign."+ getTimestampForPath() +".delete.archive.xml : " + e.getMessage());
 				}
@@ -266,7 +282,7 @@ public class CampaignService {
 				surveyUnitType.setStates(state);
 				
 				// SU
-				if(!this.deleteAllSurveyUnits) {
+				if(!this.deleteAllSurveyUnits || !delete) {
 					listSurveyUnit.add(surveyUnitType);
 				}
 			} else {
@@ -274,7 +290,7 @@ public class CampaignService {
 				returnCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
 			}
 		}
-		if(!this.deleteAllSurveyUnits) {
+		if(!this.deleteAllSurveyUnits && delete) {
 			campaign.getSurveyUnits().getSurveyUnit().removeAll(campaign.getSurveyUnits().getSurveyUnit());
 			campaign.getSurveyUnits().getSurveyUnit().addAll(listSurveyUnit);
 		}
@@ -290,17 +306,16 @@ public class CampaignService {
 	 * @throws DataBaseException
 	 */
 	private void deleteCampaign(Campaign campaign, boolean allSurveyUnitAndCampaign) throws SQLException, DataBaseException {
-		connection.setAutoCommit(false);
+		pilotageConnection.setAutoCommit(false);
 		try {
+			deleteSurveyUnit(campaign, allSurveyUnitAndCampaign);
 			if(allSurveyUnitAndCampaign) {
-				deleteSurveyUnit(campaign, allSurveyUnitAndCampaign);
 				logger.log(Level.INFO, "All survey units of campaign {}", campaign.getId() + " have been deleted");
 				preferenceDao.deletePreferenceByCampaignId(campaign.getId());
 				visibilityDao.deleteVisibilityByCampaignId(campaign.getId());
 				campaignDao.deleteCampaign(campaign);
 				logger.log(Level.INFO, "Campaign {}", campaign.getId() + ", have been deleted");
 			} else {
-				deleteSurveyUnit(campaign, allSurveyUnitAndCampaign);
 				String strList = String.join(",", campaign.getSurveyUnits().getSurveyUnit().stream().map(SurveyUnitType::getId)
 						.collect(Collectors.toList()));
 				logger.log(Level.INFO, 
@@ -309,11 +324,11 @@ public class CampaignService {
 						strList);
 			}
 		} catch (Exception e) {
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			throw new DataBaseException("Error during delete of datas in DB ... Rollback : " + e.getMessage());
 		} finally {
-			connection.setAutoCommit(true);
+			pilotageConnection.setAutoCommit(true);
 		}
 	}
 	
@@ -324,29 +339,34 @@ public class CampaignService {
 	 * @param allSurveyUnit
 	 * @throws SQLException
 	 */
-	private void deleteSurveyUnit(Campaign campaign, boolean allSurveyUnit) throws SQLException {
+	private void deleteSurveyUnit(Campaign campaign,  boolean allSurveyUnit) throws SQLException {
 		messageDao.deleteByCampaign(campaign.getId());
 		for(SurveyUnitType surveyUnit : campaign.getSurveyUnits().getSurveyUnit()) {
-			Long addressId = surveyUnitDao.getAddressIdBySurveyUnitId(surveyUnit.getId());
-			Long sampleIdentifirId = surveyUnitDao.getSampleIdentifiersIdBySurveyUnitId(surveyUnit.getId());
-			commentDao.deleteCommentBySurveyUnitId(surveyUnit.getId());
-			contactAttemptDao.deleteContactAttemptBySurveyUnitId(surveyUnit.getId());
-			contactOutcomeDao.deleteContactOutcomeBySurveyUnitId(surveyUnit.getId());
-			phoneNumberDao.deletePhoneNumbersBySurveyUnitId(surveyUnit.getId());
-			closingCauseDao.deleteAllClosingCausesOfSurveyUnit(surveyUnit.getId());
-			personDao.deletePersonBySurveyUnitId(surveyUnit.getId());
-			stateDao.deleteStateBySurveyUnitId(surveyUnit.getId());
-			surveyUnitDao.deleteSurveyUnitById(surveyUnit.getId());
-			addressDao.deleteAddressById(addressId);
-			sampleIdentifierDao.deleteSampleIdentifiersById(sampleIdentifirId);
-			if(!allSurveyUnit) {
-				surveyUnitDao.deleteSurveyUnitById(surveyUnit.getId());
-			}
+			deleteSurveyUnit(surveyUnit, allSurveyUnit);
 		}
 		if(allSurveyUnit) {
 			surveyUnitDao.deleteSurveyUnitByCampaignId(campaign.getId());
 		}
 	}
+
+	private void deleteSurveyUnit(SurveyUnitType surveyUnit, boolean allSurveyUnit) throws SQLException {
+		Long addressId = surveyUnitDao.getAddressIdBySurveyUnitId(surveyUnit.getId());
+		Long sampleIdentifirId = surveyUnitDao.getSampleIdentifiersIdBySurveyUnitId(surveyUnit.getId());
+		commentDao.deleteCommentBySurveyUnitId(surveyUnit.getId());
+		contactAttemptDao.deleteContactAttemptBySurveyUnitId(surveyUnit.getId());
+		contactOutcomeDao.deleteContactOutcomeBySurveyUnitId(surveyUnit.getId());
+		phoneNumberDao.deletePhoneNumbersBySurveyUnitId(surveyUnit.getId());
+		closingCauseDao.deleteAllClosingCausesOfSurveyUnit(surveyUnit.getId());
+		personDao.deletePersonBySurveyUnitId(surveyUnit.getId());
+		stateDao.deleteStateBySurveyUnitId(surveyUnit.getId());
+		surveyUnitDao.deleteSurveyUnitById(surveyUnit.getId());
+		addressDao.deleteAddressById(addressId);
+		sampleIdentifierDao.deleteSampleIdentifiersById(sampleIdentifirId);
+		if(!allSurveyUnit) {
+			surveyUnitDao.deleteSurveyUnitById(surveyUnit.getId());
+		}
+	}
+
 
 	/**
 	 * Check if delete concern all survey unit or not
@@ -386,7 +406,7 @@ public class CampaignService {
 			throws SQLException, DataBaseException, SynchronizationException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		initDaos();
-		connection.setAutoCommit(false);
+		pilotageConnection.setAutoCommit(false);
 		try {
 			String campaignId = campaign.getId().toUpperCase();
 			if (campaignExist) {
@@ -434,19 +454,19 @@ public class CampaignService {
 			returnCode = createSurveyUnits(campaign, in, out, returnCode);
 			
 
-			connection.commit();
+			pilotageConnection.commit();
 		} 
 		catch (SynchronizationException e) {
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			throw new SynchronizationException(e.getMessage());
 		}
 		catch (Exception e) {
-			connection.rollback();
-			connection.setAutoCommit(true);
+			pilotageConnection.rollback();
+			pilotageConnection.setAutoCommit(true);
 			throw new DataBaseException("Error during insert datas in DB ... Rollback : " + e.getMessage());
 		} finally {
-			connection.setAutoCommit(true);
+			pilotageConnection.setAutoCommit(true);
 		}
 		return returnCode;
 	}
@@ -483,86 +503,36 @@ public class CampaignService {
 			if (!campaign.getSurveyUnits().getSurveyUnit().isEmpty()) {
 				for (SurveyUnitType surveyUnitType : campaign.getSurveyUnits().getSurveyUnit()) {
 					// check if survey unit exist and associated to an other campaign
-					if (!surveyUnitDao.existSurveyUnitForCampaign(surveyUnitType.getId(), campaignId)) {
-						if (StringUtils.isNotBlank(surveyUnitType.getInseeAddress().getGeographicalLocationId())) {
-							if (geographicalLocationDao.existGeographicalLocation(
-									String.valueOf(surveyUnitType.getInseeAddress().getGeographicalLocationId()))) {
-								if (!surveyUnitDao.existSurveyUnit(surveyUnitType.getId())) {
-									// Create address
-									Long addressId = addressDao.createAddress(surveyUnitType.getInseeAddress());
-									// Create sample identifier
-									Long sampleIdentifierId = sampleIdentifierDao
-											.createSampleIdentifier(surveyUnitType.getInseeSampleIdentiers());
-									
-									String interviewerAffectation = getInterviewerAffectation(surveyUnitType);
-									String organizationUnitAffectation = getOrganizationUnitAffectation(surveyUnitType);
-									
-									// Create Survey Unit
-									surveyUnitDao.createSurveyUnit(campaignId, surveyUnitType, addressId,
-											sampleIdentifierId, interviewerAffectation, organizationUnitAffectation);
-									
-									// Create persons
-									if(surveyUnitType.getPersons() != null) {
-										for(PersonType person : surveyUnitType.getPersons().getPerson()) {
-											Long personId = personDao.createPerson(person, surveyUnitType.getId());
-											// Create phone numbers
-											for (PhoneNumberType phoneNumber : person.getPhoneNumbers().getPhoneNumber()) {
-												phoneNumberDao.createPhoneNumber(phoneNumber, personId);
-											}
-										}
-									}
-									
-									
-									// Create State for the Survey Unit
-									if(interviewerAffectation != null) {
-										stateDao.createState(System.currentTimeMillis(), "NVM", surveyUnitType.getId());
-									}
-									
-									logger.log(Level.INFO, "The Survey Unit {} has been created",
-											surveyUnitType.getId());
-									logger.log(Level.INFO, "The State for the Survey Unit {} has been created",
-											surveyUnitType.getId());
+					if (StringUtils.isBlank(surveyUnitType.getInterviewerId()) 
+							|| "none".equals(surveyUnitType.getInterviewerId())
+							|| interviewerTypeDao.existInterviewer(surveyUnitType.getInterviewerId())) {
+						// check if survey unit exist and associated to an other campaign
+						if (!surveyUnitDao.existSurveyUnitForCampaign(surveyUnitType.getId(), campaignId)) {
+							if (StringUtils.isNotBlank(surveyUnitType.getInseeAddress().getGeographicalLocationId())) {
+								if (geographicalLocationDao.existGeographicalLocation(
+										String.valueOf(surveyUnitType.getInseeAddress().getGeographicalLocationId()))) {
+									createOrUpdateSurveyUnit(surveyUnitType, campaignId);
+									// Remove SU from file error.list
+									removeSurveyUnitNode(doc, surveyUnitType.getId());
+									lstSUSuccess.add(surveyUnitType.getId());
 								} else {
-									// Update address
-									addressDao.updateAddress(surveyUnitType.getInseeAddress(), surveyUnitType.getId());
-									// Update sample identifier
-									sampleIdentifierDao.updateSampleIdentifier(surveyUnitType.getInseeSampleIdentiers(),
-											surveyUnitType.getId());
-									// Update Survey Unit
-									String interviewerAffectation = getInterviewerAffectation(surveyUnitType);
-									String organizationUnitAffectation = getOrganizationUnitAffectation(surveyUnitType);
-									surveyUnitDao.updateSurveyUnitById(campaignId, surveyUnitType, interviewerAffectation, organizationUnitAffectation);
-									
-									// Replace persons
-									phoneNumberDao.deletePhoneNumbersBySurveyUnitId(surveyUnitType.getId());
-									personDao.deletePersonBySurveyUnitId(surveyUnitType.getId());
-									for(PersonType person : surveyUnitType.getPersons().getPerson()) {
-										Long personId = personDao.createPerson(person, surveyUnitType.getId());
-										// Create phone numbers
-										for (PhoneNumberType phoneNumber : person.getPhoneNumbers().getPhoneNumber()) {
-											phoneNumberDao.createPhoneNumber(phoneNumber, personId);
-										}
-									}
-							
-									logger.log(Level.INFO, "The Survey Unit {} has been updated",
-											surveyUnitType.getId());
+									logger.log(Level.WARN, "The Geographical Location {} for the survey unit {}, is not in database",
+											surveyUnitType.getInseeAddress().getGeographicalLocationId(), surveyUnitType.getId());
+									lstSUError.add(surveyUnitType.getId());
 								}
-								// Remove SU from file error.list
-								removeSurveyUnitNode(doc, surveyUnitType.getId());
-								lstSUSuccess.add(surveyUnitType.getId());
 							} else {
-								logger.log(Level.WARN, "The Geographical Location {} for the survey unit {}, is not in database",
-										surveyUnitType.getInseeAddress().getGeographicalLocationId(), surveyUnitType.getId());
+								logger.log(Level.WARN,
+										"The GeographicalLocationId is null or equals to 0");
 								lstSUError.add(surveyUnitType.getId());
 							}
 						} else {
-							logger.log(Level.WARN,
-									"The GeographicalLocationId is null or equals to 0");
+							logger.log(Level.WARN, "The Survey Unit {} is already associated to an other campaign",
+									surveyUnitType.getId());
 							lstSUError.add(surveyUnitType.getId());
 						}
-					} else {
-						logger.log(Level.WARN, "The Survey Unit {} is already associated to an other campaign",
-								surveyUnitType.getId());
+					}else {
+						logger.log(Level.WARN, "The interviewer {} not exits in DB",
+								surveyUnitType.getInterviewerId());
 						lstSUError.add(surveyUnitType.getId());
 					}
 				}
@@ -590,14 +560,84 @@ public class CampaignService {
 		return returnCode;
 	}
 	
+	SurveyUnitType createOrUpdateSurveyUnit(SurveyUnitType surveyUnitType, String campaignId) throws SynchronizationException {
+		SurveyUnitType oldSu = null;
+		if (!surveyUnitDao.existSurveyUnit(surveyUnitType.getId())) {
+			createSurveyUnit(surveyUnitType, campaignId);
+			logger.log(Level.INFO, "The Survey Unit {} has been created",
+					surveyUnitType.getId());
+		} else {
+			oldSu = surveyUnitDao.getSurveyUnitById(surveyUnitType.getId());
+			updateSurveyUnit(surveyUnitType, campaignId);
+			logger.log(Level.INFO, "The Survey Unit {} has been updated",
+					surveyUnitType.getId());
+		}
+		return oldSu;
+	}
+
+
+	private void createSurveyUnit(SurveyUnitType surveyUnitType, String campaignId) throws SynchronizationException {
+		// Create address
+		Long addressId = addressDao.createAddress(surveyUnitType.getInseeAddress());
+		// Create sample identifier
+		Long sampleIdentifierId = sampleIdentifierDao .createSampleIdentifier(surveyUnitType.getInseeSampleIdentiers());
+		
+		String interviewerAffectation = getInterviewerAffectation(surveyUnitType);
+		String organizationUnitAffectation = getOrganizationUnitAffectation(surveyUnitType);
+		
+		// Create Survey Unit
+		surveyUnitDao.createSurveyUnit(campaignId, surveyUnitType, addressId, sampleIdentifierId, interviewerAffectation, organizationUnitAffectation);
+		
+		// Create persons
+		if(surveyUnitType.getPersons() != null) {
+			for(PersonType person : surveyUnitType.getPersons().getPerson()) {
+				Long personId = personDao.createPerson(person, surveyUnitType.getId());
+				// Create phone numbers
+				for (PhoneNumberType phoneNumber : person.getPhoneNumbers().getPhoneNumber()) {
+					phoneNumberDao.createPhoneNumber(phoneNumber, personId);
+				}
+			}
+		}
+		
+		// Create State for the Survey Unit
+		if(interviewerAffectation != null) {
+			stateDao.createState(System.currentTimeMillis(), "NVM", surveyUnitType.getId());
+		}
+	}
+
+
+	private void updateSurveyUnit(SurveyUnitType surveyUnitType, String campaignId) throws SynchronizationException {
+		// Update address
+		addressDao.updateAddress(surveyUnitType.getInseeAddress(), surveyUnitType.getId());
+		// Update sample identifier
+		sampleIdentifierDao.updateSampleIdentifier(surveyUnitType.getInseeSampleIdentiers(),
+				surveyUnitType.getId());
+		// Update Survey Unit
+		String interviewerAffectation = getInterviewerAffectation(surveyUnitType);
+		String organizationUnitAffectation = getOrganizationUnitAffectation(surveyUnitType);
+		surveyUnitDao.updateSurveyUnitById(campaignId, surveyUnitType, interviewerAffectation, organizationUnitAffectation);
+		
+		// Replace persons
+		phoneNumberDao.deletePhoneNumbersBySurveyUnitId(surveyUnitType.getId());
+		personDao.deletePersonBySurveyUnitId(surveyUnitType.getId());
+		for(PersonType person : surveyUnitType.getPersons().getPerson()) {
+			Long personId = personDao.createPerson(person, surveyUnitType.getId());
+			// Create phone numbers
+			for (PhoneNumberType phoneNumber : person.getPhoneNumbers().getPhoneNumber()) {
+				phoneNumberDao.createPhoneNumber(phoneNumber, personId);
+			}
+		}
+	}
+
+
 	private String getInterviewerAffectation(SurveyUnitType surveyUnitType) throws SynchronizationException {
 		String affectation = null;
 		
-		if (surveyUnitType.getInterwieverId() != null && surveyUnitType.getInterwieverId().equalsIgnoreCase("none")) {
+		if (surveyUnitType.getInterviewerId() != null && surveyUnitType.getInterviewerId().equalsIgnoreCase("none")) {
 			return null;
 		}
-		if(surveyUnitType.getInterwieverId() != null && !surveyUnitType.getInterwieverId().isBlank()) {
-			return surveyUnitType.getInterwieverId();
+		if(surveyUnitType.getInterviewerId() != null && !surveyUnitType.getInterviewerId().isBlank()) {
+			return surveyUnitType.getInterviewerId();
 		}
 		
 		InterviewerDto intwDto = contextReferentialService.getSurveyUnitInterviewerAffectation(surveyUnitType.getId());
@@ -718,6 +758,49 @@ public class CampaignService {
 			for (String ou : lstOu) {
 				getOrganizationUnits(organizationUnits, ou, saveAllLevels);
 			}
+		}
+	}
+
+
+	public BatchErrorCode extractCampaign(Campaign campaign, String out) throws DataBaseException, BatchException {
+		initDaos();
+		BatchErrorCode returnCode = BatchErrorCode.OK;
+		// Archive datas in XML file
+		returnCode = archiveCampaign(campaign, returnCode, false);
+		XmlUtils.objectToXML(out+"/campaign." + getTimestampForPath() + ".extract.xml", campaign);
+		return returnCode;
+	}
+
+
+	public boolean validateInput(SurveyUnitType surveyUnitType, String campaignId) {
+		if (surveyUnitDao.existSurveyUnitForCampaign(surveyUnitType.getId(), campaignId)) {
+			logger.log(Level.WARN, "The Survey Unit {} is already associated to an other campaign", surveyUnitType.getId());
+			return false;
+		}
+		if (StringUtils.isBlank(surveyUnitType.getInseeAddress().getGeographicalLocationId())) {
+			logger.log(Level.WARN, "The GeographicalLocationId is null or equals to 0");
+			return false;
+		}
+		if (!geographicalLocationDao.existGeographicalLocation( String.valueOf(surveyUnitType.getInseeAddress().getGeographicalLocationId()))) {
+			logger.log(Level.WARN, "The Geographical Location {} for the survey unit {}, not exist in database", surveyUnitType.getInseeAddress().getGeographicalLocationId(), surveyUnitType.getId());		
+			return false;
+		}
+		if (StringUtils.isNotBlank(surveyUnitType.getInterviewerId()) 
+				&& !"none".equals(surveyUnitType.getInterviewerId())
+				&& !interviewerTypeDao.existInterviewer(surveyUnitType.getInterviewerId())) {
+			logger.log(Level.WARN, "The interviewer {} for the survey unit {}, not exist in database", surveyUnitType.getInterviewerId(), surveyUnitType.getId());
+			return false;
+		}
+		// OU
+		return true;
+	}
+
+
+	public void rollbackSurveyUnit(String surveyUnitId, SurveyUnitType oldSu, String campaignId) throws SynchronizationException, SQLException {
+		if(oldSu == null) {
+			deleteSurveyUnit(surveyUnitDao.getSurveyUnitById(surveyUnitId), false);
+		} else {
+			updateSurveyUnit(oldSu, campaignId);
 		}
 	}
 
