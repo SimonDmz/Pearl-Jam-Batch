@@ -16,8 +16,44 @@ jobs:
           uses: actions/setup-java@v1
           with:
             java-version: 11
+        - name: Get queen-batch version
+          id: queenbatch
+          run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=queenbatch.version -q -DforceStdout)"
+        - name: Download queen-batch
+          run: curl -L https://github.com/InseeFr/Lunatic-Model/releases/download/2.2.3-rc/queen -o queen-batch.jar
+        - name: Install queen-batch
+          run: mvn install:install-file -Dfile=queen-batch-${{steps.lunatic.outputs.prop}}.jar -DgroupId=fr.insee.lunatic -DartifactId=lunatic-model -Dversion=${{steps.lunatic.outputs.prop}} -Dpackaging=jar
+        Dfile=lib/lunatic-model-${{steps.lunatic.outputs.prop}}.jar -DgroupId=fr.insee.lunatic -DartifactId=lunatic-model -Dversion=${{steps.lunatic.outputs.prop}} -Dpackaging=jar
         - name: Build with Maven
           run: mvn install --file pom.xml
+        - name: Upload jar
+          uses: actions/upload-artifact@v2
+          with:
+            name: jar
+            path: target/*.jar
+    release:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout current branch
+          uses: actions/checkout@v2
+        - name: Get current version
+          id: version
+          run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)"
+        - run: echo ${{steps.version.outputs.prop}}
+        - name: Release snapshot
+          id: release-snapshot
+          uses: actions/create-release@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{steps.version.outputs.prop}}-rc
+            release_name: Release Candidate ${{steps.version.outputs.prop}}
+            draft: false
+            prerelease: false
+
+
+        - name: Build with Maven
+          run: LUNATIC_MODEL_VERSION =$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.model.version -q -DforceStdout) && mvn install:install-file -Dfile=lib/lunatic-model-$LUNATIC_MODEL_VERSION.jar -DgroupId=fr.insee.lunatic -DartifactId=lunatic-model -Dversion=$LUNATIC_MODEL_VERSION -Dpackaging=jar mvn install --file pom.xml
         - name: Upload jar
           uses: actions/upload-artifact@v2
           with:

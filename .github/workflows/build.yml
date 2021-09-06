@@ -14,14 +14,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Get current version
-        id: version
-        run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)"
-      - run: echo ${{steps.version.outputs.prop}}
+      - name: Get queen-batch version
+        id: queenbatch
+        run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=queenbatch.version -q -DforceStdout)"
+      - name: Download queenbatch
+        run: curl -L https://github.com/InseeFr/Queen-Batch/releases/download/{{steps.queenbatch.outputs.prop}}/queen-batch.jar -o queen-batch.jar  
+      - name: Install queen-batch
+        run: mvn install:install-file -Dfile=queen-batch.jar -DgroupId=fr.insee.queen -DartifactId=queen-batch -Dversion=${{steps.queenbatch.outputs.prop}} -Dpackaging=jar
       - name: Build with Maven
         run: mvn install --file pom.xml
-      - name: Upload jar
-        uses: actions/upload-artifact@v2
-        with:
-          name: jar
-          path: target/*.jar
