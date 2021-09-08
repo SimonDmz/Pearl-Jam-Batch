@@ -22,4 +22,4 @@ jobs:
       - name: Install queen-batch
         run: mvn install:install-file -Dfile=queen-batch.jar -DgroupId=fr.insee.queen -DartifactId=queen-batch -Dversion=${{steps.queenbatch.outputs.prop}} -Dpackaging=jar
       - name: Build with Maven
-        run: mvn install --file pom.xml
+        run: mvn clean install
