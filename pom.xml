@@ -19,7 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<saxon.version>9.7.0-8</saxon.version>
-		<queenbatch.version>4.1.4</queenbatch.version>
+		<queenbatch.version>4.1.4-rc</queenbatch.version>
 	</properties>
 
 	<dependencies>
