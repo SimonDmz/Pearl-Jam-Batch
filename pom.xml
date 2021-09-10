@@ -19,7 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<saxon.version>9.7.0-8</saxon.version>
-		<queenbatch.version>4.1.4</queenbatch.version>
+		<queenbatch.version>4.1.5</queenbatch.version>
 	</properties>
 
 	<dependencies>
@@ -394,7 +394,6 @@
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptors>
 						<descriptor>src/main/assembly/jar.xml</descriptor>
-						        
 					</descriptors>
 				</configuration>
 				<executions>

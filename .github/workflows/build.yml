@@ -21,5 +21,9 @@ jobs:
         run: curl -L https://github.com/InseeFr/Queen-Batch/releases/download/${{steps.queenbatch.outputs.prop}}/queen-batch.jar -o queen-batch.jar  
       - name: Install queen-batch
         run: mvn install:install-file -Dfile=queen-batch.jar -DgroupId=fr.insee.queen -DartifactId=queen-batch -Dversion=${{steps.queenbatch.outputs.prop}} -Dpackaging=jar
+      - name: Download lunatic-model
+        run: curl -L https://github.com/InseeFr/Lunatic-Model/releases/download/2.2.3-rc/lunatic-model.jar -o lunatic-model.jar  
+      - name: Install lunatic-model
+        run: mvn install:install-file -Dfile=queen-batch.jar -DgroupId=fr.insee.queen -DartifactId=queen-batch -Dversion=2.2.3 -Dpackaging=jar
       - name: Build with Maven
         run: mvn clean install
