@@ -28,7 +28,6 @@ jobs:
       - name: Clone lunatic-model
         run:  |
               ls
-              cd ..
               git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}-rc
               ls
       - name: Install lunatic-model
@@ -38,7 +37,8 @@ jobs:
               mvn clean install -DskipTests 
       - name: Install queen-batch
         run:  |
-              cd ../Queen-Batch                                         
+              ls
+              cd Queen-Batch                                         
               mvn clean install -DskipTests
       - name: Build with Maven
         run: mvn clean install
