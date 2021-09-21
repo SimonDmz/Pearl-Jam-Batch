@@ -19,12 +19,31 @@ jobs:
         - name: Get queen-batch version
           id: queenbatch
           run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=queenbatch.version -q -DforceStdout)"
-        - name: Download queenbatch
-          run: curl -L https://github.com/InseeFr/Queen-Batch/releases/download/${{steps.queenbatch.outputs.prop}}/queen-batch.jar -o queen-batch.jar  
+        - name: Clone queen-batch
+          run: git clone https://github.com/InseeFr/Queen-Batch.git --depth 1 --branch ${{steps.queenbatch.outputs.prop}}-rc
+        - name: Get lunatic-model version    
+          id: lunaticmodel
+          run:  |
+                ls 
+                cd Queen-Batch 
+                echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.model.version -q -DforceStdout)"
+        - name: Clone lunatic-model
+          run:  |
+                ls
+                git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}-rc
+                ls
+        - name: Install lunatic-model
+          run:  |
+                ls
+                cd Lunatic-Model                      
+                mvn clean install -DskipTests 
         - name: Install queen-batch
-          run: mvn install:install-file -Dfile=queen-batch.jar -DgroupId=fr.insee.queen -DartifactId=queen-batch -Dversion=${{steps.queenbatch.outputs.prop}} -Dpackaging=jar
+          run:  |
+                ls
+                cd Queen-Batch                                         
+                mvn clean install -DskipTests
         - name: Build with Maven
-          run: mvn install --file pom.xml
+          run: mvn clean install
         - name: Get current version
           id: version
           run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)"
@@ -38,14 +57,4 @@ jobs:
             tag_name: ${{steps.version.outputs.prop}}
             release_name: Release ${{steps.version.outputs.prop}}
             draft: false
-            prerelease: false
-        - name: Upload Release Asset
-          id: upload-release-asset 
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: target/pearljam-batch-${{steps.version.outputs.prop}}.jar
-            asset_name: pearljam-batch.jar
-            asset_content_type: application/java-archive
+            prerelease: false     
