@@ -23,7 +23,7 @@ jobs:
         id: lunaticmodel
         run:  | 
               cd Queen-Batch 
-              echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.version -q -DforceStdout)"
+              echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.model.version -q -DforceStdout)"
       - name: Clone lunatic-model
         run:  |
               cd ..
