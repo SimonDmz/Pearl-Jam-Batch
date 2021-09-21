@@ -30,6 +30,7 @@ jobs:
               ls
               cd ..
               git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}-rc
+              ls
       - name: Install lunatic-model
         run:  |
               ls
