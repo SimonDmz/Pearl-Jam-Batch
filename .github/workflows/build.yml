@@ -21,16 +21,20 @@ jobs:
         run: git clone https://github.com/InseeFr/Queen-Batch.git --depth 1 --branch ${{steps.queenbatch.outputs.prop}}
       - name: Get lunatic-model version    
         id: lunaticmodel
-        run: cd Queen-Batch 
-        run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.version -q -DforceStdout)"
+        run:  | 
+              cd Queen-Batch 
+              echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.version -q -DforceStdout)"
       - name: Clone lunatic-model
-        run: cd ..
-        run: git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}
+        run:  |
+              cd ..
+              git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}
       - name: Install lunatic-model
-        run: cd Lunatic-Model                      
-        run:  mvn clean install -DskipTests 
+        run:  |
+              cd Lunatic-Model                      
+              mvn clean install -DskipTests 
       - name: Install queen-batch
-        run: cd ../Queen-Batch                                         
-        run: mvn clean install -DskipTests
+        run:  |
+              cd ../Queen-Batch                                         
+              mvn clean install -DskipTests
       - name: Build with Maven
         run: mvn clean install
