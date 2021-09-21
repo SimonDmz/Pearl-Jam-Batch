@@ -8,7 +8,7 @@ on:
       - '*'
 
 jobs:
-    build:
+    build-release:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
@@ -16,24 +16,35 @@ jobs:
           uses: actions/setup-java@v1
           with:
             java-version: 11
+        - name: Get queen-batch version
+          id: queenbatch
+          run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=queenbatch.version -q -DforceStdout)"
+        - name: Clone queen-batch
+          run: git clone https://github.com/InseeFr/Queen-Batch.git --depth 1 --branch ${{steps.queenbatch.outputs.prop}}-rc
+        - name: Get lunatic-model version    
+          id: lunaticmodel
+          run:  |
+                cd Queen-Batch 
+                echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=lunatic.model.version -q -DforceStdout)"
+        - name: Clone lunatic-model
+          run:  |
+                git clone https://github.com/InseeFr/Lunatic-Model.git --depth 1 --branch ${{steps.lunaticmodel.outputs.prop}}-rc
+        - name: Install lunatic-model
+          run:  |
+                cd Lunatic-Model                      
+                mvn clean install -DskipTests 
+        - name: Install queen-batch
+          run:  |
+                cd Queen-Batch                                         
+                mvn clean install -DskipTests
         - name: Build with Maven
-          run: mvn install --file pom.xml
-        - name: Upload jar
-          uses: actions/upload-artifact@v2
-          with:
-            name: jar
-            path: target/*.jar
-    release:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout current branch
-          uses: actions/checkout@v2
+          run: mvn clean install
         - name: Get current version
           id: version
           run: echo "::set-output name=prop::$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)"
         - run: echo ${{steps.version.outputs.prop}}
-        - name: Release snapshot
-          id: release-snapshot
+        - name: Create Release
+          id: create_release
           uses: actions/create-release@latest
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,4 +52,4 @@ jobs:
             tag_name: ${{steps.version.outputs.prop}}-rc
             release_name: Release Candidate ${{steps.version.outputs.prop}}
             draft: false
-            prerelease: false
+            prerelease: false    
