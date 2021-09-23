@@ -179,14 +179,14 @@ public abstract class Launcher {
 			throws ArgumentException, ValidateException, BatchException, IOException, SQLException, XMLStreamException, FolderException {
 		if (options.length == 0) {
 			throw new ArgumentException(
-					"No batch type found in parameter, you must choose between [TRIGGERSTATES], [DELETECAMPAIGN], [LOADCAMPAIGN] or [LOADCONTEXT]");
+					"No batch type found in parameter, you must choose between [DELETECAMPAIGN] || [LOADCAMPAIGN] || [LOADCONTEXT] || [DAILYUPDATE] || [SYNCHRONIZE] || [SAMPLEPROCESSING]");
 		}
 		BatchOption batchOption = null;
 		try {
 			batchOption = BatchOption.valueOf(options[0].trim());
 		} catch (Exception e) {
 			throw new ArgumentException("Batch type [" + options[0].trim()
-					+ "] not exist, you must choose between [TRIGGERSTATES], [DELETECAMPAIGN], [LOADCAMPAIGN] or [LOADCONTEXT]");
+					+ "] does not exist, you must choose between [DELETECAMPAIGN] || [LOADCAMPAIGN] || [LOADCONTEXT] || [DAILYUPDATE] || [SYNCHRONIZE] || [SAMPLEPROCESSING]");
 		}
 		logger.log(Level.INFO, "Batch is running with option {}", batchOption.getLabel());
 		switch(batchOption) {
