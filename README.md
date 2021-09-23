@@ -24,7 +24,7 @@ exit $CODE_ERREUR
 ```
 
 #### Properties file
-Some properties are externalize in ${path.properties}/queen-bo.properties.  
+Some properties are externalized in ${path.properties}/pearljam-bo.properties.  
 Bellow, properties to define :
 ``` shell
 fr.insee.pearljam.persistence.database.host = localhost
@@ -36,6 +36,7 @@ fr.insee.pearljam.persistence.database.driver = org.postgresql.Driver
 fr.insee.pearljam.folder.in=path/to/in
 fr.insee.pearljam.folder.out=path/to/out
 fr.insee.pearljam.folder.queen.in=path/to/in
+fr.insee.pearljam.folder.queen.out=path/to/out
 
 # Context referential URL
 fr.insee.pearljam.context.referential.service.url.scheme=http
@@ -61,6 +62,19 @@ keycloak.client.secret=XXXXXX
 
 # Log created and updated elements in the result file? ( YES | NO | IN_SEPARATE_FILE )
 fr.insee.pearljam.context.synchronization.log.elements=YES
+
+# Queen-batch configuration
+fr.insee.queen.application.persistenceType=JPA
+
+fr.insee.queen.persistence.database.host = localhost
+fr.insee.queen.persistence.database.port = 5432
+fr.insee.queen.persistence.database.schema = XXXXXXXX
+fr.insee.queen.persistence.database.user = XXXXXXXX
+fr.insee.queen.persistence.database.password = XXXXXXXX
+fr.insee.queen.persistence.database.driver = org.postgresql.Driver
+
+fr.insee.queen.key.paradata.id=idSu
+fr.insee.queen.key.paradata.events=events
 
 ```
 
