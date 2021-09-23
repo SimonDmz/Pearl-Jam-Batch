@@ -49,7 +49,7 @@ public class PropertyLogger  {
                     model = reader.read(
                             new InputStreamReader(
                                     PropertyLogger.class.getResourceAsStream(
-                                            "/META-INF/maven/fr.insee/pearljam-batch/pom.xml"
+                                            "/META-INF/maven/fr.insee.pearljam/pearljam-batch/pom.xml"
                                     )
                             )
                     );
