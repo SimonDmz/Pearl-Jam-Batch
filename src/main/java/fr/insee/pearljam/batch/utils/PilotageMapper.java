@@ -67,18 +67,19 @@ public class PilotageMapper {
 			person.setEmail(contact.getMailReferent());
 			person.setPrivileged(contact.isPrincipal());
 			person.setDateOfBirth(contact.getDateNaissance());
-			person.setPhoneNumbers( getInseeSampleIdentiersFromSampleProcessing(contact.getTelephones()));
+			person.setPhoneNumbers( getPhoneNumbersFromSampleProcessing(contact.getTelephones()));
 			persons.getPerson().add(person);
 		}
 		return persons;
 	}
 
-	private static PhoneNumbersType getInseeSampleIdentiersFromSampleProcessing(Telephones telephones) {
+	private static PhoneNumbersType getPhoneNumbersFromSampleProcessing(Telephones telephones) {
 		PhoneNumbersType phoneNumbers = new PhoneNumbersType();
 		for (Telephone tel : telephones.getTelephone()) {
 			PhoneNumberType phoneNumber = new PhoneNumberType();
-			phoneNumber.setNumber(Long.toString(tel.getNumero()));
+			phoneNumber.setNumber(tel.getNumero());
 			phoneNumber.setSource(tel.getSource());
+			phoneNumber.setFavorite(tel.isFavori());
 			phoneNumbers.getPhoneNumber().add(phoneNumber);
 		}
 		return phoneNumbers;
