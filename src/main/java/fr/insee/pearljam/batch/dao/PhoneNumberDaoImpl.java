@@ -27,7 +27,7 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
 
 	@Override
 	public void createPhoneNumber(PhoneNumberType phoneNumber, Long personId) {
-		String qString = "INSERT INTO phone_number (favorite, number, source, person_id) VALUES (false, ?,?, ?)";
+		String qString = "INSERT INTO phone_number (favorite, number, source, person_id) VALUES (?, ?,?, ?)";
 		Integer source;
 		switch(phoneNumber.getSource().toLowerCase()) {
 			case "fiscal":
@@ -42,8 +42,13 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
 			default:
 				source = null;
 		}
+		Boolean favorite=false;
+		if(phoneNumber.isFavorite()!=null && phoneNumber.isFavorite()){
+
+			favorite=true;
+		}
 		
-		pilotageJdbcTemplate.update(qString, phoneNumber.getNumber(), source, personId);
+		pilotageJdbcTemplate.update(qString, favorite,phoneNumber.getNumber(), source, personId);
 	}
 
 	@Override

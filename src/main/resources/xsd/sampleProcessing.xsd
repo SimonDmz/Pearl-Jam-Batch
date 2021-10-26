@@ -91,7 +91,7 @@
 																								<xs:sequence>
 																									<xs:element name="Source" type="xs:string" />
 																									<xs:element name="Favori" type="xs:boolean" minOccurs="0" maxOccurs="1" />
-																									<xs:element name="Numero" type="xs:long" />
+																									<xs:element name="Numero" type="xs:string" />
 																								</xs:sequence>
 																							</xs:complexType>
 																						</xs:element>
