@@ -11,12 +11,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.HabilitationService;
 
+@Service
 public class HabilitationServiceImpl implements HabilitationService {
     private static final Logger LOGGER = LogManager.getLogger(HabilitationServiceImpl.class);
     @Autowired
