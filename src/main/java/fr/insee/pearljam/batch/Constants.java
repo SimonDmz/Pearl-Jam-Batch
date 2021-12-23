@@ -16,21 +16,18 @@ public class Constants {
 	public static final String ESPACE = " ";
 
 	public static final String NATIONAL = "NATIONAL";
-	
+
 	public static final String DATACOLLECTION = "datacollection";
 	public static final String PILOTAGE = "pilotage";
-	
-	
+
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_TO_DELETE = "campaign.to.delete";
 	public static final String CAMPAIGN_TO_EXTRACT = "campaign.to.extract";
 	public static final String CONTEXT = "context";
 	public static final String SAMPLEPROCESSING = "sampleProcessing";
-	
-	
+
 	public static final String ERROR_CAMPAIGN_NULL = "Error : campaign is null";
 
-	
 	/**
 	 * Format for the dates
 	 */
@@ -40,16 +37,17 @@ public class Constants {
 	/**
 	 * The URL to to access to campaign.xsd
 	 */
-	public static final URL MODEL_CAMPAIGN = Constants.class.getResource(SCHEMAS_FOLDER_PATH+"/campaign.xsd");
+	public static final URL MODEL_CAMPAIGN = Constants.class.getResource(SCHEMAS_FOLDER_PATH + "/campaign.xsd");
 	/**
 	 * The URL to to access to context.xsd
 	 */
-	public static final URL MODEL_CONTEXT = Constants.class.getResource(SCHEMAS_FOLDER_PATH+"/context.xsd");
+	public static final URL MODEL_CONTEXT = Constants.class.getResource(SCHEMAS_FOLDER_PATH + "/context.xsd");
 	/**
 	 * The URL to to access to sampleProcessing.xsd
 	 */
-	public static final URL MODEL_SAMPLEPROCESSING = Constants.class.getResource(SCHEMAS_FOLDER_PATH+"/sampleProcessing.xsd");
-	
+	public static final URL MODEL_SAMPLEPROCESSING = Constants.class
+			.getResource(SCHEMAS_FOLDER_PATH + "/sampleProcessing.xsd");
+
 	/**
 	 * The message for return batch code
 	 */
@@ -62,9 +60,9 @@ public class Constants {
 	 * The message when file move success
 	 */
 	public static final String MSG_FILE_MOVE_SUCCESS = "File {} renamed and moved successfully";
-	
+
 	public static final String AUTHORIZATION = "Authorization";
-	
+
 	// Opale endpoints
 	public static final String API_OPALE_INTERVIEWERS = "/sabiane/interviewers";
 	public static final String API_OPALE_ORGANIZATION_UNITS = "/sabiane/organization-units";
@@ -73,6 +71,13 @@ public class Constants {
 	public static final String API_OPALE_SURVEY_UNIT_OU_AFFECTATION = "/sabiane/organization-units/survey-unit/%s";
 	public static final String API_OPALE_SURVEY_UNIT_INTERVIEWER_AFFECTATION = "/sabiane/survey-unit/%s/interviewer";
 
-	private Constants() {}
-	
+	// LDAP service constants
+	public static final String LDAP_APP_NAME = "Capi3G";
+	public static final String LDAP_APP_GROUP_INTERVIEWER = "enqueteursabiane_Capi3G";
+
+	// LDAP service endpoints
+	public static final String API_LDAP_ADD_APP_GROUP_USERID = "/gestion/ajout/application/%s/groupe/%s/utilisateur/%s";
+
+	private Constants() {
+	}
 }

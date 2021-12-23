@@ -18,6 +18,7 @@ import fr.insee.pearljam.batch.enums.ContextReferentialSyncLogIds;
 import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.ContextReferentialService;
+import fr.insee.pearljam.batch.service.HabilitationService;
 import fr.insee.pearljam.batch.service.synchronization.InterviewersSynchronizationService;
 import fr.insee.pearljam.batch.template.CreatedInterviewers;
 import fr.insee.pearljam.batch.template.InterviewerSynchronizationError;
@@ -28,107 +29,106 @@ import fr.insee.pearljam.batch.utils.BatchErrorCode;
 import fr.insee.pearljam.batch.utils.Utils;
 import fr.insee.pearljam.batch.utils.XmlUtils;
 
-
-
 @Service
 public class InterviewersSynchronizationServiceImpl implements InterviewersSynchronizationService {
 	private static final Logger logger = LogManager.getLogger(InterviewersSynchronizationServiceImpl.class);
 
 	@Value("${fr.insee.pearljam.context.synchronization.log.elements:#{null}}")
 	private String logIds;
-	
+
 	@Autowired
 	@Qualifier("pilotageConnection")
 	Connection pilotageConnection;
-	
+
 	@Autowired
 	ContextReferentialService opaleService;
-	
+
 	@Autowired
 	InterviewerTypeDao interviewerTypeDao;
-	
+
 	@Autowired
 	OrganizationalUnitTypeDao organizationalUnitTypeDao;
-	
+
+	@Autowired
+	HabilitationService habilitationService;
+
 	public BatchErrorCode synchronizeInterviewers(String out) throws SynchronizationException, BatchException {
 		logger.info("Interviewers synchronization started");
 		// processed, created, updated
-		Long[] counters = {0L, 0L, 0L};
+		Long[] counters = { 0L, 0L, 0L };
 		List<String> createdIds = new ArrayList<>();
 		List<String> updatedIds = new ArrayList<>();
 		List<InterviewerSynchronizationError> errors = new ArrayList<>();
 		BatchErrorCode code = BatchErrorCode.OK;
-		
+
 		List<InterviewerDto> interviewers;
 		interviewers = opaleService.getInterviewersFromOpale();
-	
-		for(InterviewerDto interviewer : interviewers) {
-			code = processInterviewer(interviewer,counters, 
-				createdIds, updatedIds, errors, code);
+
+		for (InterviewerDto interviewer : interviewers) {
+			code = processInterviewer(interviewer, counters,
+					createdIds, updatedIds, errors, code);
 		}
-		
-		if(logIds != null && logIds.equals(ContextReferentialSyncLogIds.YES.getLabel())) {
+
+		if (logIds != null && logIds.equals(ContextReferentialSyncLogIds.YES.getLabel())) {
 			InterviewersSynchronizationResult sync = new InterviewersSynchronizationResult(
-					code.getLabel(), 
-					counters[0], counters[1], counters[2],  
+					code.getLabel(),
+					counters[0], counters[1], counters[2],
 					new CreatedInterviewers(createdIds),
 					new UpdatedInterviewers(updatedIds),
-					new InterviewerSynchronizationErrors(errors)
-				);
-			XmlUtils.objectToXML(out+"/synchro/sync.ITW." + Utils.getTimestamp() + ".xml", sync);
-		}
-		else {
+					new InterviewerSynchronizationErrors(errors));
+			XmlUtils.objectToXML(out + "/synchro/sync.ITW." + Utils.getTimestamp() + ".xml", sync);
+		} else {
 			InterviewersSynchronizationResult sync = new InterviewersSynchronizationResult(
-					code.getLabel(), 
-					counters[0], counters[1], counters[2],  
+					code.getLabel(),
+					counters[0], counters[1], counters[2],
 					null,
 					null,
-					new InterviewerSynchronizationErrors(errors)
-				);
+					new InterviewerSynchronizationErrors(errors));
 			String timestamp = Utils.getTimestamp();
-			XmlUtils.objectToXML(out+"/synchro/sync.ITW." + timestamp + ".xml", sync);
-			if(logIds != null && logIds.equals(ContextReferentialSyncLogIds.IN_SEPARATE_FILES.getLabel())) {
-				XmlUtils.objectToXML(out+"/synchro/sync.ITW.created." + timestamp + ".xml", new CreatedInterviewers(createdIds));
-				XmlUtils.objectToXML(out+"/synchro/sync.ITW.updated." + timestamp + ".xml", new UpdatedInterviewers(updatedIds));
+			XmlUtils.objectToXML(out + "/synchro/sync.ITW." + timestamp + ".xml", sync);
+			if (logIds != null && logIds.equals(ContextReferentialSyncLogIds.IN_SEPARATE_FILES.getLabel())) {
+				XmlUtils.objectToXML(out + "/synchro/sync.ITW.created." + timestamp + ".xml",
+						new CreatedInterviewers(createdIds));
+				XmlUtils.objectToXML(out + "/synchro/sync.ITW.updated." + timestamp + ".xml",
+						new UpdatedInterviewers(updatedIds));
 			}
 		}
 
 		logger.info("Interviewers synchronization ended");
 		return code;
 	}
-	
+
 	public BatchErrorCode processInterviewer(
 			InterviewerDto interviewer,
-			Long[] counters, 
-			List<String> createdIds, 
+			Long[] counters,
+			List<String> createdIds,
 			List<String> updatedIds,
 			List<InterviewerSynchronizationError> errors,
 			BatchErrorCode code) {
 		BatchErrorCode returnCode = code;
 		try {
-			if(interviewerTypeDao.existInterviewer(interviewer.getIdep())) {
-				if(interviewerTypeDao.isDifferentFromDto(interviewer)) {
+			if (interviewerTypeDao.existInterviewer(interviewer.getIdep())) {
+				if (interviewerTypeDao.isDifferentFromDto(interviewer)) {
 					interviewerTypeDao.updateInterviewerFromDto(interviewer);
 					counters[2] += 1;
 					updatedIds.add(interviewer.getIdep());
 				}
-			}
-			else {
+			} else {
+				habilitationService.addInterviewerHabilitation(interviewer.getIdep());
 				interviewerTypeDao.createInterviewerFromDto(interviewer);
 				counters[1] += 1;
 				createdIds.add(interviewer.getIdep());
 			}
-			counters[0] +=1;
-		}
-		catch(Exception e) {
+			counters[0] += 1;
+		} catch (Exception e) {
 			errors.add(new InterviewerSynchronizationError(
 					interviewer.getIdep(),
 					"Unexpected error while processing interviewer",
-					"An exception occured while processing the interviewer with id " + interviewer.getIdep() + " : " + e.getMessage()
-				));
+					"An exception occured while processing the interviewer with id " + interviewer.getIdep() + " : "
+							+ e.getMessage()));
 			returnCode = BatchErrorCode.OK_TECHNICAL_WARNING;
 		}
 		return returnCode;
 	}
-	
+
 }
