@@ -98,11 +98,11 @@ public class TestsEndToEndSynchro {
 		InterviewersAffectationsResponseDto intSuResp = makeIntAffRespDto();
 		OrganizationUnitsAffectationsResponseDto ouSuResp = makeOuAffRespDto();
 		
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		expectExternalCallWithToken("/sabiane/interviewers", intResp);
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -179,11 +179,11 @@ public class TestsEndToEndSynchro {
 		interviewerAffs.add(intAff1);
 		intSuResp.setInterviewers(interviewerAffs);
 		
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		expectExternalCallWithToken("/sabiane/interviewers", intResp);
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -223,11 +223,11 @@ public class TestsEndToEndSynchro {
 			ouSuResp.setOrganizationUnits(ouAffs);;
 		
 		
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		expectExternalCallWithToken("/sabiane/interviewers", intResp);
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
@@ -266,11 +266,11 @@ public class TestsEndToEndSynchro {
 			organizationUnits.add(ou1);
 			ouResp.setOrganizationUnits(organizationUnits);
 		
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		expectExternalCallWithToken("/sabiane/interviewers", intResp);
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -346,12 +346,12 @@ public class TestsEndToEndSynchro {
 		
 		
 		ouSuResp.setOrganizationUnits(ouAffs);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		expectExternalCallWithToken("/sabiane/interviewers", intResp);
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		
+		expectExternalCallWithToken(habilitationParametrizedUrl, true);
+
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.SU_ITW",".xml"));
