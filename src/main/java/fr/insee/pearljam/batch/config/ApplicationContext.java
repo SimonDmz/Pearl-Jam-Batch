@@ -83,8 +83,13 @@ public class ApplicationContext {
 		ApplicationConfig.realm = envSpring.getProperty("keycloak.realm");
 		ApplicationConfig.FOLDER_IN_QUEEN = envSpring.getProperty("fr.insee.pearljam.folder.queen.in");
 		ApplicationConfig.FOLDER_OUT_QUEEN = envSpring.getProperty("fr.insee.pearljam.folder.queen.out");
+
+		ApplicationConfig.ldapServiceUrlScheme=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.scheme");
+		ApplicationConfig.ldapServiceUrlHost=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.host");
+		ApplicationConfig.ldapServiceUrlPort=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.port");
+		ApplicationConfig.ldapServiceUrlPath=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.path");
 	}
-	
+
 	/**
 	 * Bean to get the filename
 	 * @return
@@ -103,15 +108,15 @@ public class ApplicationContext {
 	public String getCampaignName() {
 		return campaignName;
 	}
-	
+
 	@Bean
 	public PlatformTransactionManager txManager() {
 	    return new DataSourceTransactionManager(pilotageDataSource()); // (2)
 	}
 	
 	/***
-	 * This method create a new Datasource object
-	 * @return new Datasource
+	 * This method build the context referential base URL
+	 * @return context referential base URL
 	 */
 	@Bean(name = "contextReferentialBaseUrl")
 	public String getContextReferentialBaseUrl() {
@@ -119,11 +124,26 @@ public class ApplicationContext {
 				+ ApplicationConfig.contextReferentialPath;
 	}
 	
+	/***
+	 * This method build the keycloak Auth URL
+	 * @return keycloak Auth URL
+	 */
 	@Bean(name = "keycloakAuthUrl")
 	public String getKeycloakAuthUrl() {
 		return ApplicationConfig.authServerURL + "/realms/" + ApplicationConfig.realm + "/protocol/openid-connect/token";
 	}
-	
+
+	/***
+	 * This method build the context referential base URL
+	 * @return context referential base URL
+	 */
+	@Bean(name = "habilitationApiBaseUrl")
+	public String getHabilitationApiBaseUrl() {
+		return String.format("%s://%s:%s/%s", ApplicationConfig.ldapServiceUrlScheme,
+				ApplicationConfig.ldapServiceUrlHost, ApplicationConfig.ldapServiceUrlPort,
+				ApplicationConfig.ldapServiceUrlPath);
+	}
+
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();

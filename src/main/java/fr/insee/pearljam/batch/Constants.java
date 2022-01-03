@@ -71,10 +71,6 @@ public class Constants {
 	public static final String API_OPALE_SURVEY_UNIT_OU_AFFECTATION = "/sabiane/organization-units/survey-unit/%s";
 	public static final String API_OPALE_SURVEY_UNIT_INTERVIEWER_AFFECTATION = "/sabiane/survey-unit/%s/interviewer";
 
-	// LDAP service constants
-	public static final String LDAP_APP_NAME = "Capi3G";
-	public static final String LDAP_APP_GROUP_INTERVIEWER = "enqueteursabiane_Capi3G";
-
 	// LDAP service endpoints
 	public static final String API_LDAP_ADD_APP_GROUP_USERID = "/gestion/ajout/application/%s/groupe/%s/utilisateur/%s";
 

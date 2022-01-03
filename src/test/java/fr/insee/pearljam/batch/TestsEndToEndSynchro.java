@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -69,7 +70,14 @@ public class TestsEndToEndSynchro {
     
     private static final String outFolder = "src/test/resources/out/contextReferentialSynchro";
     
-	private static final String habilitationParametrizedUrl = String.format(Constants.API_LDAP_ADD_APP_GROUP_USERID, Constants.LDAP_APP_NAME, Constants.LDAP_APP_GROUP_INTERVIEWER,"");
+
+	@Value("${fr.insee.pearljam.ldap.service.url.port:#{null}}")
+    private static String appName;
+
+    @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
+    private static String interviewerGroup;
+
+	private static final String habilitationParametrizedUrl = String.format(Constants.API_LDAP_ADD_APP_GROUP_USERID, appName, interviewerGroup,"");
 
 	/**
 	 * This method is executed before each test in this class.

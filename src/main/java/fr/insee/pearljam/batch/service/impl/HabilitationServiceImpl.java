@@ -17,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.HabilitationService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import fr.insee.pearljam.batch.config.ApplicationContext;
 
 @Service
 public class HabilitationServiceImpl implements HabilitationService {
@@ -24,46 +26,41 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Autowired
     RestTemplate restTemplate;
 
-    @Value("${fr.insee.pearljam.ldap.service.url.scheme:#{null}}")
-    private String scheme;
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 
-    @Value("${fr.insee.pearljam.ldap.service.url.host:#{null}}")
-    private String host;
+    private String habilitationApiRootUrl = (String) context.getBean("habilitationApiBaseUrl");
 
     @Value("${fr.insee.pearljam.ldap.service.url.port:#{null}}")
-    private String port;
+    private String appName;
+    
+    @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
+    private String interviewerGroup;
 
-    @Value("${fr.insee.pearljam.ldap.service.url.path:#{null}}")
-    private String path;
+    @Value("${fr.insee.pearljam.ldap.service.login:#{null}}")
+    private String ldapServiceLogin;
 
-    @Value("${fr.insee.pearljam.ldap.service.url.login:#{null}}")
-    private String login;
-
-    @Value("${fr.insee.pearljam.ldap.service.url.pw:#{null}}")
-    private String password;
+    @Value("${fr.insee.pearljam.ldap.service.pw:#{null}}")
+    private String ldapServicePassword;
 
     String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_APP_GROUP_USERID;
-    String interviewerGroup = Constants.LDAP_APP_GROUP_INTERVIEWER;
-    String appName = Constants.LDAP_APP_NAME;
 
     @Override
     public void addInterviewerHabilitation(String interviewerIdep) throws SynchronizationException {
 
-        String rootUrl = String.format("%s://%s:%s/%s", scheme, host, port, path);
         String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup, interviewerIdep);
 
-        LOGGER.debug("rootUrl");
-        LOGGER.debug(rootUrl);
+        LOGGER.debug("habilitationApiRootUrl");
+        LOGGER.debug(habilitationApiRootUrl);
         LOGGER.debug("parametrizedUrl");
         LOGGER.debug(parametrizedUrl);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBasicAuth(login, password);
-
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+       
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
-        ResponseEntity<JsonObject> response = restTemplate.exchange(rootUrl + "/" + parametrizedUrl,
+        ResponseEntity<JsonObject> response = restTemplate.exchange(habilitationApiRootUrl + "/" + parametrizedUrl,
                 HttpMethod.POST,
                 entity, JsonObject.class);
         JsonObject body = response.getBody();
