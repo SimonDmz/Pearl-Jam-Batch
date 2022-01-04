@@ -5,6 +5,7 @@ import javax.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +19,6 @@ import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.HabilitationService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import fr.insee.pearljam.batch.config.ApplicationContext;
 
 @Service
 public class HabilitationServiceImpl implements HabilitationService {
@@ -26,9 +26,9 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Autowired
     RestTemplate restTemplate;
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
-
-    private String habilitationApiRootUrl = (String) context.getBean("habilitationApiBaseUrl");
+    @Autowired
+	@Qualifier("habilitationApiBaseUrl")
+    private String habilitationApiRootUrl;
 
     @Value("${fr.insee.pearljam.ldap.service.url.port:#{null}}")
     private String appName;
