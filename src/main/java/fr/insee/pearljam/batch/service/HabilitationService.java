@@ -8,4 +8,6 @@ import fr.insee.pearljam.batch.exception.SynchronizationException;
 public interface HabilitationService {
 
     public void addInterviewerHabilitation(String interviewerIdep) throws SynchronizationException;
+
+    public void isAvailable() throws SynchronizationException;
 }

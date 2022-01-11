@@ -25,6 +25,7 @@ import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsS
 import fr.insee.pearljam.batch.service.synchronization.InterviewersSynchronizationService;
 import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsAffectationsSynchronizationService;
 import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.SynchronizationUtilsService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 
 @Service
@@ -57,13 +58,17 @@ public class TriggerService {
 	@Autowired
 	OrganizationalUnitsAffectationsSynchronizationService organizationalUnitsAffectationsSynchronizationService;
 	
+	@Autowired
+	SynchronizationUtilsService synchronizationUtilsService;
+
 	public BatchErrorCode synchronizeWithOpale(String folderOut) throws SQLException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
+			synchronizationUtilsService.checkServices();
 			returnCode = updateErrorCode(returnCode, interviewersSynchronizationService.synchronizeInterviewers(folderOut));
 			returnCode = updateErrorCode(returnCode, interviewersAffectationsSynchronizationService.synchronizeSurveyUnitInterviewerAffectation(folderOut));
-			returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
+			// returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
 			returnCode = updateErrorCode(returnCode, organizationalUnitsAffectationsSynchronizationService.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut));
 		} catch (TooManyReaffectationsException e) {
 			returnCode = BatchErrorCode.KO_FONCTIONAL_ERROR;

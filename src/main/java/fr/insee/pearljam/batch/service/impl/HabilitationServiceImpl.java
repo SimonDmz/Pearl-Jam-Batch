@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,6 @@ import org.springframework.web.client.RestTemplate;
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.HabilitationService;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @Service
 public class HabilitationServiceImpl implements HabilitationService {
@@ -27,13 +27,16 @@ public class HabilitationServiceImpl implements HabilitationService {
     RestTemplate restTemplate;
 
     @Autowired
-	@Qualifier("habilitationApiBaseUrl")
+    @Qualifier("habilitationApiBaseUrl")
     private String habilitationApiRootUrl;
 
-    @Value("${fr.insee.pearljam.ldap.service.url.port:#{null}}")
+    @Value("${fr.insee.pearljam.ldap.service.realm:#{null}}")
+    private String realm;
+
+    @Value("${fr.insee.pearljam.ldap.service.app.name:#{null}}")
     private String appName;
-    
-    @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
+
+    @Value("${fr.insee.pearljam.ldap.service.realm:#{null}}")
     private String interviewerGroup;
 
     @Value("${fr.insee.pearljam.ldap.service.login:#{null}}")
@@ -42,12 +45,15 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Value("${fr.insee.pearljam.ldap.service.pw:#{null}}")
     private String ldapServicePassword;
 
-    String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_APP_GROUP_USERID;
+    String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_REALM_APP_GROUP_USERID;
+
+    private static final String NO_RESPONSE_MSG = "Could not get response from habilitation API";
 
     @Override
     public void addInterviewerHabilitation(String interviewerIdep) throws SynchronizationException {
 
-        String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup, interviewerIdep);
+        String parametrizedUrl = String.format(addUserInGroupInAppFormat, realm, appName, interviewerGroup,
+                interviewerIdep);
 
         LOGGER.debug("habilitationApiRootUrl");
         LOGGER.debug(habilitationApiRootUrl);
@@ -55,9 +61,9 @@ public class HabilitationServiceImpl implements HabilitationService {
         LOGGER.debug(parametrizedUrl);
 
         HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
-       
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
         ResponseEntity<JsonObject> response = restTemplate.exchange(habilitationApiRootUrl + "/" + parametrizedUrl,
@@ -67,6 +73,25 @@ public class HabilitationServiceImpl implements HabilitationService {
 
         if (!response.hasBody() || body.get("erreur") != null)
             throw new SynchronizationException("Can't add interviewer habilitation : " + body.get("erreur").toString());
+
+    }
+
+    @Override
+    public void isAvailable() throws SynchronizationException {
+
+        String uri = String.join("/", habilitationApiRootUrl, Constants.API_LDAP_HEALTHCHECK);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+        HttpStatus returnedCode = response.getStatusCode();
+        if (!returnedCode.is2xxSuccessful()) {
+            throw new SynchronizationException(NO_RESPONSE_MSG);
+        }
 
     }
 }
