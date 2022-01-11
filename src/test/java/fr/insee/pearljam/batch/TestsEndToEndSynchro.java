@@ -77,7 +77,7 @@ public class TestsEndToEndSynchro {
     @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
     private static String interviewerGroup;
 
-	private static final String habilitationParametrizedUrl = String.format(Constants.API_LDAP_ADD_APP_GROUP_USERID, appName, interviewerGroup,"");
+	private static final String habilitationParametrizedUrl = String.format(Constants.API_LDAP_ADD_REALM_APP_GROUP_USERID, appName, interviewerGroup,"");
 
 	/**
 	 * This method is executed before each test in this class.
