@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Primary;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import fr.insee.pearljam.batch.service.ContextReferentialService;
+import fr.insee.pearljam.batch.service.HabilitationService;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
@@ -214,4 +215,10 @@ public class PearlJamBatchApplicationTests {
     public ContextReferentialService contextReferentialService() {
         return Mockito.mock(ContextReferentialService.class);
     }
+
+	@Bean
+	@Primary
+	public HabilitationService habilitationService() {
+		return Mockito.mock(HabilitationService.class);
+	}
 }

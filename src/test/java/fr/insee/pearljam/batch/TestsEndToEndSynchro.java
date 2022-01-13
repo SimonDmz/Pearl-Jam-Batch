@@ -18,7 +18,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,15 +69,6 @@ public class TestsEndToEndSynchro {
     
     private static final String outFolder = "src/test/resources/out/contextReferentialSynchro";
     
-
-	@Value("${fr.insee.pearljam.ldap.service.url.port:#{null}}")
-    private static String appName;
-
-    @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
-    private static String interviewerGroup;
-
-	private static final String habilitationParametrizedUrl = String.format(Constants.API_LDAP_ADD_REALM_APP_GROUP_USERID, appName, interviewerGroup,"");
-
 	/**
 	 * This method is executed before each test in this class.
 	 * It setup the environment by inserting the data and copying the necessaries files.
@@ -110,7 +100,6 @@ public class TestsEndToEndSynchro {
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -191,7 +180,6 @@ public class TestsEndToEndSynchro {
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -235,7 +223,6 @@ public class TestsEndToEndSynchro {
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
@@ -278,7 +265,6 @@ public class TestsEndToEndSynchro {
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -358,7 +344,6 @@ public class TestsEndToEndSynchro {
 		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
 		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
 		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
-		expectExternalCallWithToken(habilitationParametrizedUrl, true);
 
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
