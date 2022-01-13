@@ -30,13 +30,10 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Qualifier("habilitationApiBaseUrl")
     private String habilitationApiRootUrl;
 
-    @Value("${fr.insee.pearljam.ldap.service.realm:#{null}}")
-    private String realm;
-
     @Value("${fr.insee.pearljam.ldap.service.app.name:#{null}}")
     private String appName;
 
-    @Value("${fr.insee.pearljam.ldap.service.realm:#{null}}")
+    @Value("${fr.insee.pearljam.ldap.service.group.interviewer:#{null}}")
     private String interviewerGroup;
 
     @Value("${fr.insee.pearljam.ldap.service.login:#{null}}")
@@ -45,20 +42,20 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Value("${fr.insee.pearljam.ldap.service.pw:#{null}}")
     private String ldapServicePassword;
 
-    String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_REALM_APP_GROUP_USERID;
+    String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_APP_GROUP_USERID;
 
     private static final String NO_RESPONSE_MSG = "Could not get response from habilitation API";
 
     @Override
     public void addInterviewerHabilitation(String interviewerIdep) throws SynchronizationException {
 
-        String parametrizedUrl = String.format(addUserInGroupInAppFormat, realm, appName, interviewerGroup,
+        String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup,
                 interviewerIdep);
 
-        LOGGER.debug("habilitationApiRootUrl");
-        LOGGER.debug(habilitationApiRootUrl);
-        LOGGER.debug("parametrizedUrl");
-        LOGGER.debug(parametrizedUrl);
+        LOGGER.warn("habilitationApiRootUrl");
+        LOGGER.warn(habilitationApiRootUrl);
+        LOGGER.warn("parametrizedUrl");
+        LOGGER.warn(parametrizedUrl);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
