@@ -67,6 +67,7 @@ public class TriggerService {
 		try {
 			synchronizationUtilsService.checkServices();
 			returnCode = updateErrorCode(returnCode, interviewersSynchronizationService.synchronizeInterviewers(folderOut));
+			pilotageConnection.commit();
 			returnCode = updateErrorCode(returnCode, interviewersAffectationsSynchronizationService.synchronizeSurveyUnitInterviewerAffectation(folderOut));
 			// returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
 			returnCode = updateErrorCode(returnCode, organizationalUnitsAffectationsSynchronizationService.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut));
