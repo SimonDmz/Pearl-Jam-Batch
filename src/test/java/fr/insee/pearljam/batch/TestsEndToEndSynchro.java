@@ -18,6 +18,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,7 +60,12 @@ public class TestsEndToEndSynchro {
 	
 	private String keycloakTokenUrl = (String) context.getBean("keycloakAuthUrl");
 	private String contextReferentialBaseUrl = (String) context.getBean("contextReferentialBaseUrl");
-			
+
+	@Autowired
+    @Qualifier("habilitationApiBaseUrl")
+    private String habilitationApiRootUrl;
+
+
 	private InterviewerTypeDao interviewerDao = context.getBean(InterviewerTypeDao.class);
 	private OrganizationalUnitTypeDao ouDao = context.getBean(OrganizationalUnitTypeDao.class);
 	private SurveyUnitDao suDao = context.getBean(SurveyUnitDao.class);
@@ -96,10 +103,10 @@ public class TestsEndToEndSynchro {
 		InterviewersAffectationsResponseDto intSuResp = makeIntAffRespDto();
 		OrganizationUnitsAffectationsResponseDto ouSuResp = makeOuAffRespDto();
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.OK, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -126,10 +133,11 @@ public class TestsEndToEndSynchro {
 	@Test
 	public void testCannotReachContextReferential() throws Exception {
 		
-		expectExternalCallWithToken("/sabiane/interviewers", null);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", null);
-		expectExternalCallWithToken("/sabiane/organization-units", null);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", null);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", null);
 		
 		assertEquals(BatchErrorCode.KO_TECHNICAL_ERROR, triggerService.synchronizeWithOpale(outFolder));
 		
@@ -176,10 +184,11 @@ public class TestsEndToEndSynchro {
 		interviewerAffs.add(intAff1);
 		intSuResp.setInterviewers(interviewerAffs);
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -218,11 +227,11 @@ public class TestsEndToEndSynchro {
 			ouAffs.add(ouAffDto);
 			ouSuResp.setOrganizationUnits(ouAffs);;
 		
-		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
@@ -261,10 +270,11 @@ public class TestsEndToEndSynchro {
 			organizationUnits.add(ou1);
 			ouResp.setOrganizationUnits(organizationUnits);
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -338,12 +348,13 @@ public class TestsEndToEndSynchro {
 		ouAffDto2.setSurveyUnits(suIdListOu2);
 		ouAffs.add(ouAffDto2);
 		
-		
 		ouSuResp.setOrganizationUnits(ouAffs);
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 
 		assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING, triggerService.synchronizeWithOpale(outFolder));
 		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(outFolder + "/synchro"), "sync.ITW",".xml"));
@@ -406,10 +417,11 @@ public class TestsEndToEndSynchro {
 		interviewerAffs.add(intAff1);
 		intSuResp.setInterviewers(interviewerAffs);
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.KO_FONCTIONAL_ERROR, triggerService.synchronizeWithOpale(outFolder));
 	
@@ -453,11 +465,11 @@ public class TestsEndToEndSynchro {
 		intAff1.setSurveyUnits(suIdList);
 		interviewerAffs.add(intAff1);
 		intSuResp.setInterviewers(interviewerAffs);
-		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.KO_FONCTIONAL_ERROR, triggerService.synchronizeWithOpale(outFolder));
 	
@@ -510,10 +522,11 @@ public class TestsEndToEndSynchro {
 		ouAffs.add(ouAffDto);
 		ouSuResp.setOrganizationUnits(ouAffs);
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.KO_FONCTIONAL_ERROR, triggerService.synchronizeWithOpale(outFolder));
 
@@ -554,10 +567,11 @@ public class TestsEndToEndSynchro {
 		ouAffs.add(ouAffDto);
 		ouSuResp.setOrganizationUnits(ouAffs);
 		
-		expectExternalCallWithToken("/sabiane/interviewers", intResp);
-		expectExternalCallWithToken("/sabiane/interviewers/survey-units", intSuResp);
-		expectExternalCallWithToken("/sabiane/organization-units", ouResp);
-		expectExternalCallWithToken("/sabiane/organization-units/survey-units", ouSuResp);
+		expectExternalCallWithToken(habilitationApiRootUrl +"/healthcheck", null);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers", intResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/interviewers/survey-units", intSuResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units", ouResp);
+		expectExternalCallWithToken(contextReferentialBaseUrl +"/sabiane/organization-units/survey-units", ouSuResp);
 		
 		assertEquals(BatchErrorCode.KO_FONCTIONAL_ERROR, triggerService.synchronizeWithOpale(outFolder));
 
@@ -656,7 +670,7 @@ public class TestsEndToEndSynchro {
 		keycloackResp.setAccess_token("token");
 		
 		expectExternalCall(keycloakTokenUrl, keycloackResp);
-		expectExternalCall(contextReferentialBaseUrl + url, resp);
+		expectExternalCall(url, resp);
 	}
 	
 	private void expectExternalCall(String url, Object resp) throws JsonProcessingException {
