@@ -16,6 +16,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,14 @@ public class TestsEndToEndSynchro {
     
     private static final String outFolder = "src/test/resources/out/contextReferentialSynchro";
     
+
+	@BeforeClass
+	public void setProperties() {
+		System.setProperty("fr.insee.pearljam.ldap.service.pw", "pw");
+		System.setProperty("fr.insee.pearljam.ldap.service.login", "login");
+
+	}
+
 	/**
 	 * This method is executed before each test in this class.
 	 * It setup the environment by inserting the data and copying the necessaries files.
