@@ -70,11 +70,12 @@ public class Constants {
 	public static final String API_OPALE_ORGANIZATION_UNITS_AFFECTATIONS = "/sabiane/organization-units/survey-units";
 	public static final String API_OPALE_SURVEY_UNIT_OU_AFFECTATION = "/sabiane/organization-units/survey-unit/%s";
 	public static final String API_OPALE_SURVEY_UNIT_INTERVIEWER_AFFECTATION = "/sabiane/survey-unit/%s/interviewer";
-	public static final String API_OPALE_HEALTHCHECK = "/healthcheck";
+	public static final String API_OPALE_HEALTHCHECK = "/healthCheck";
 
 	// LDAP service endpoints
 	public static final String API_LDAP_ADD_APP_GROUP_USERID = "/gestion/ajout/personne/application/%s/groupe/%s/utilisateur/%s";
-	public static final String API_LDAP_HEALTHCHECK = "/whoami";
+	public static final String API_LDAP_GET_APP_GROUP_USERS = "/recherche/application/%s/groupe/%s";
+	public static final String API_LDAP_HEALTHCHECK = "/healthcheck";
 
 	private Constants() {
 	}

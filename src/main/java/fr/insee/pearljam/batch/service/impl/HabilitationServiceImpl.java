@@ -1,6 +1,7 @@
 package fr.insee.pearljam.batch.service.impl;
 
-import javax.json.JsonObject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import fr.insee.pearljam.batch.Constants;
+import fr.insee.pearljam.batch.dto.HabilitatedUsers;
+import fr.insee.pearljam.batch.dto.HabilitationActionResponseDto;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.service.HabilitationService;
 
@@ -43,8 +46,16 @@ public class HabilitationServiceImpl implements HabilitationService {
     private String ldapServicePassword;
 
     String addUserInGroupInAppFormat = Constants.API_LDAP_ADD_APP_GROUP_USERID;
+    String getUsersInGroupInAppFormat = Constants.API_LDAP_GET_APP_GROUP_USERS;
 
     private static final String NO_RESPONSE_MSG = "Could not get response from habilitation API";
+
+    private HttpHeaders getHabilitationHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+        return headers;
+    }
 
     @Override
     public void addInterviewerHabilitation(String interviewerIdep) throws SynchronizationException {
@@ -52,24 +63,20 @@ public class HabilitationServiceImpl implements HabilitationService {
         String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup,
                 interviewerIdep);
 
-        LOGGER.warn("habilitationApiRootUrl");
-        LOGGER.warn(habilitationApiRootUrl);
-        LOGGER.warn("parametrizedUrl");
-        LOGGER.warn(parametrizedUrl);
+        LOGGER.debug("Calling {}", parametrizedUrl);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+        HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
-        ResponseEntity<JsonObject> response = restTemplate.exchange(habilitationApiRootUrl + "/" + parametrizedUrl,
+        ResponseEntity<HabilitationActionResponseDto> response = restTemplate.exchange(
+                habilitationApiRootUrl + "/" + parametrizedUrl,
                 HttpMethod.POST,
-                entity, JsonObject.class);
-        JsonObject body = response.getBody();
+                entity, HabilitationActionResponseDto.class);
+        HabilitationActionResponseDto body = response.getBody();
 
-        if (!response.hasBody() || body.get("erreur") != null)
-            throw new SynchronizationException("Can't add interviewer habilitation : " + body.get("erreur").toString());
+        if (!response.hasBody() || body.getErreur() != null)
+            throw new SynchronizationException("Can't add interviewer habilitation : " + body.getErreur());
 
     }
 
@@ -78,9 +85,7 @@ public class HabilitationServiceImpl implements HabilitationService {
 
         String uri = String.join("/", habilitationApiRootUrl, Constants.API_LDAP_HEALTHCHECK);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBasicAuth(ldapServiceLogin, ldapServicePassword);
+        HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
@@ -90,5 +95,27 @@ public class HabilitationServiceImpl implements HabilitationService {
             throw new SynchronizationException(NO_RESPONSE_MSG);
         }
 
+    }
+
+    @Override
+    public List<String> getHabilitatedInterviewers() throws SynchronizationException {
+        String parametrizedUrl = String.format(getUsersInGroupInAppFormat, appName, interviewerGroup);
+
+        LOGGER.debug("Calling {}", parametrizedUrl);
+
+        HttpHeaders headers = getHabilitationHeaders();
+
+        HttpEntity<?> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<HabilitatedUsers[]> response = restTemplate.exchange(
+                habilitationApiRootUrl + "/" + parametrizedUrl,
+                HttpMethod.GET,
+                entity, HabilitatedUsers[].class);
+
+        if (!response.hasBody())
+            throw new SynchronizationException("Can't get habilitated interviewers.");
+
+        HabilitatedUsers habilitatedUsers = response.getBody()[0];
+        return habilitatedUsers.getPersonnes().stream().map(personne -> personne.getUid()).collect(Collectors.toList());
     }
 }

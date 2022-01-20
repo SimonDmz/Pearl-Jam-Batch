@@ -61,12 +61,12 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 		List<InterviewerSynchronizationError> errors = new ArrayList<>();
 		BatchErrorCode code = BatchErrorCode.OK;
 
-		List<InterviewerDto> interviewers;
-		interviewers = opaleService.getInterviewersFromOpale();
+		List<InterviewerDto> interviewers = opaleService.getInterviewersFromOpale();
+		List<String> habilitatedInterviewers = habilitationService.getHabilitatedInterviewers();
 
 		for (InterviewerDto interviewer : interviewers) {
 			code = processInterviewer(interviewer, counters,
-					createdIds, updatedIds, errors, code);
+					createdIds, updatedIds, habilitatedInterviewers, errors, code);
 		}
 
 		if (logIds != null && logIds.equals(ContextReferentialSyncLogIds.YES.getLabel())) {
@@ -103,6 +103,7 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 			Long[] counters,
 			List<String> createdIds,
 			List<String> updatedIds,
+			List<String> alreadyHabilitatedIds,
 			List<InterviewerSynchronizationError> errors,
 			BatchErrorCode code) {
 		BatchErrorCode returnCode = code;
@@ -114,7 +115,9 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 					updatedIds.add(interviewer.getIdep());
 				}
 			} else {
-				habilitationService.addInterviewerHabilitation(interviewer.getIdep());
+				if (!alreadyHabilitatedIds.contains(interviewer.getIdep())) {
+					habilitationService.addInterviewerHabilitation(interviewer.getIdep());
+				}
 				interviewerTypeDao.createInterviewerFromDto(interviewer);
 				counters[1] += 1;
 				createdIds.add(interviewer.getIdep());
