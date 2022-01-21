@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,7 +71,7 @@ public class TriggerService {
 	public void initDefaultClock() {
 		setClock(
 				Clock.system(
-						Clock.systemDefaultZone().getZone()));
+						ZoneId.of("UTC")));
 	}
 
 	{
