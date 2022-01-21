@@ -2,6 +2,9 @@ package fr.insee.pearljam.batch.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -60,6 +63,23 @@ public class TriggerService {
 	
 	@Autowired
 	SynchronizationUtilsService synchronizationUtilsService;
+
+	private Clock clock;
+	public void setClock(Clock newClock) { clock = newClock; }
+
+	public void initDefaultClock() {
+		setClock(
+				Clock.system(
+						Clock.systemDefaultZone().getZone()));
+	}
+
+	{
+		initDefaultClock();
+	}
+
+	private long now(){
+		return LocalDateTime.now(clock).atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+	}
 
 	public BatchErrorCode synchronizeWithOpale(String folderOut) throws SQLException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
@@ -120,10 +140,10 @@ public class TriggerService {
 			// Get the list of Survey unit id to update from state NVM to ANV or NNS
 			surveyUnitDao.getSurveyUnitNVM().stream().forEach(suId -> {
 				if (StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterviewerId())) {
-					stateDao.createState(System.currentTimeMillis(), "ANV", suId);
+					stateDao.createState(now(), "ANV", suId);
 					lstSuANV.add(suId);
 				} else {
-					stateDao.createState(System.currentTimeMillis(), "NNS", suId);
+					stateDao.createState(now(), "NNS", suId);
 					lstSuNNS.add(suId);
 				}
 			});
@@ -135,7 +155,7 @@ public class TriggerService {
 			// Get the list of Survey unit id to update from state ANV or NNS to VIN
 			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN();
 			lstSu.stream().forEach(suId -> 
-				stateDao.createState(System.currentTimeMillis(), "VIN", suId)
+				stateDao.createState(now(), "VIN", suId)
 			);
 			String strLstSu = String.join(",", lstSu);
 			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
@@ -143,7 +163,7 @@ public class TriggerService {
 			// Get the list of Survey unit id to update to state NVA
 			lstSu = surveyUnitDao.getSurveyUnitForNVA();
 			lstSu.stream().forEach(suId -> {
-				stateDao.createState(System.currentTimeMillis(), "NVA", suId);
+				stateDao.createState(now(), "NVA", suId);
 				logger.log(Level.INFO, "Update survey-unit {} state NVA", suId);
 			});
 			strLstSu = String.join(",", lstSu);
