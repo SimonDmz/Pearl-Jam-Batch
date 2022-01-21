@@ -52,7 +52,7 @@ public class TestsEndToEndDailyUpdate {
 		assertEquals(5, messageDao.getIdsToDelete(c.getTimeInMillis()).size());
 
 		// set a fixed clock in triggerService to avoid exceeding test data dates and failing tests
-		Instant fixedInstant =  LocalDateTime.of(2019, 2,3,0,0).atZone(ZoneOffset.UTC).toInstant();
+		Instant fixedInstant = LocalDateTime.of(2020, 7, 14, 0, 0).atZone(ZoneOffset.UTC).toInstant();
 		triggerService.setClock(Clock.fixed(fixedInstant, utcTimeZone.toZoneId()));
 		triggerService.updateStates();
 		triggerService.initDefaultClock();
