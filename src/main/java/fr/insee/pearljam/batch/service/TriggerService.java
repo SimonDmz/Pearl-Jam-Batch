@@ -139,7 +139,7 @@ public class TriggerService {
 		try {
 			pilotageConnection.setAutoCommit(false);
 			// Get the list of Survey unit id to update from state NVM to ANV or NNS
-			surveyUnitDao.getSurveyUnitNVM().stream().forEach(suId -> {
+			surveyUnitDao.getSurveyUnitNVM(now()).stream().forEach(suId -> {
 				if (StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterviewerId())) {
 					stateDao.createState(now(), "ANV", suId);
 					lstSuANV.add(suId);
@@ -154,7 +154,7 @@ public class TriggerService {
 			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
 
 			// Get the list of Survey unit id to update from state ANV or NNS to VIN
-			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN();
+			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN(now());
 			lstSu.stream().forEach(suId -> 
 				stateDao.createState(now(), "VIN", suId)
 			);
@@ -162,7 +162,7 @@ public class TriggerService {
 			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
 			
 			// Get the list of Survey unit id to update to state NVA
-			lstSu = surveyUnitDao.getSurveyUnitForNVA();
+			lstSu = surveyUnitDao.getSurveyUnitForNVA(now());
 			lstSu.stream().forEach(suId -> {
 				stateDao.createState(now(), "NVA", suId);
 				logger.log(Level.INFO, "Update survey-unit {} state NVA", suId);
