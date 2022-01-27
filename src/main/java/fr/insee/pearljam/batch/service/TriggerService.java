@@ -102,8 +102,6 @@ public class TriggerService {
 			pilotageConnection.rollback();
 			pilotageConnection.setAutoCommit(true);
 			logger.error("Error during organizational units synchronization, rolling back : {}", e.getMessage());
-			logger.error("Full stack trace : ",e);
-
 		} finally {
 			pilotageConnection.setAutoCommit(true);
 		}
