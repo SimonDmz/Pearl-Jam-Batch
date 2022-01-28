@@ -18,7 +18,7 @@ public class SynchronizationUtilsServiceImpl implements SynchronizationUtilsServ
     HabilitationService habilitationService;
 
     public void checkServices() throws SynchronizationException {
-        contextReferentialService.contextReferentialServiceIsAvailable();
         habilitationService.isAvailable();
+        contextReferentialService.contextReferentialServiceIsAvailable();
     };
 }
