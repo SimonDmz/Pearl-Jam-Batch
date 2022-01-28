@@ -64,9 +64,9 @@ public interface SurveyUnitDao {
 	long getSampleIdentifiersIdBySurveyUnitId(String surveyUnitId);
 	
 	
-	List<String> getSurveyUnitNVM();
-	List<String> getSurveyUnitForQNA();
-	List<String> getSurveyUnitForNVA();
+	List<String> getSurveyUnitNVM(long instantDate);
+	List<String> getSurveyUnitForQNA(long instantDate);
+	List<String> getSurveyUnitForNVA(long instantDate);
 	String getSurveyUnitInterviewerAffectation(String surveyUnitId);
 	void setSurveyUnitInterviewerAffectation(String surveyUnitId, String idep);
 	String getSurveyUnitOrganizationUnitAffectation(String surveyUnitId);
@@ -78,6 +78,6 @@ public interface SurveyUnitDao {
 	void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit, String interviewerId,
 			String organizationUnitId);
 
-	List<String> getSurveyUnitAnvOrNnsToVIN();
+	List<String> getSurveyUnitAnvOrNnsToVIN(long instantDate);
 
 }

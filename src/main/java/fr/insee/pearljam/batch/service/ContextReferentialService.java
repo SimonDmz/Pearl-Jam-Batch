@@ -22,5 +22,5 @@ public interface ContextReferentialService {
 	List<OrganizationUnitAffectationsDto> getOrganizationUnitsAffectationsFromOpale() throws SynchronizationException;
 	SimpleIdDto getSurveyUnitOUAffectation(String suId) throws SynchronizationException;
 	InterviewerDto getSurveyUnitInterviewerAffectation(String suId) throws SynchronizationException;	
-
+	void contextReferentialServiceIsAvailable() throws SynchronizationException;
 }

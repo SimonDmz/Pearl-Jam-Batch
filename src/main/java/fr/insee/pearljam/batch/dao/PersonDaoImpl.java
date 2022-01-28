@@ -100,7 +100,7 @@ public class PersonDaoImpl implements PersonDao{
         	PersonType person = new PersonType();
         	Integer title = rs.getInt("title");
         	if(!rs.wasNull()) {
-                person.setTitle(title == 0 ? "Miss" : "Mister");
+                person.setTitle(title == 0 ? "Mister" : "Miss");
         	}
             person.setFirstName(rs.getString("first_name"));
             person.setLastName(rs.getString("last_name"));

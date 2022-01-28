@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -139,6 +140,22 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		
 	}
 	
+	@Override
+	public void contextReferentialServiceIsAvailable() throws SynchronizationException {
+		
+		String uri = getContextReferentialBaseUrl + Constants.API_OPALE_HEALTHCHECK;
+		
+	 	HttpHeaders headers = getHeaders();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		HttpStatus returnedCode = response.getStatusCode();
+		if(!returnedCode.is2xxSuccessful()) {
+			throw new SynchronizationException(NO_RESPONSE_MSG);
+		}
+		
+	}
+
 	private HttpHeaders getHeaders() throws SynchronizationException {
 		String token = keycloakService.getContextReferentialToken();
 		List<MediaType> accepted = new ArrayList<>();

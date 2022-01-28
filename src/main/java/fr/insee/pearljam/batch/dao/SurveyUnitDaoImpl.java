@@ -135,7 +135,7 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 	
 
 	@Override
-	public List<String> getSurveyUnitNVM() {
+	public List<String> getSurveyUnitNVM(long instantDate) {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.management_start_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
@@ -145,11 +145,11 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 				.append("WHERE t.lastState='NVM' ")
 				.append("AND t.management_start_date<=?")
 				.toString();
-		return pilotageJdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
+		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
 	}
 
 	@Override
-	public List<String> getSurveyUnitAnvOrNnsToVIN() {
+	public List<String> getSurveyUnitAnvOrNnsToVIN(long instantDate) {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.interviewer_start_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
@@ -159,11 +159,11 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 				.append("WHERE t.lastState IN ('ANV', 'NNS') ")
 				.append("AND t.interviewer_start_date<?")
 				.toString();
-		return pilotageJdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
+		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
 	}
 	
 	@Override
-	public List<String> getSurveyUnitForQNA() {
+	public List<String> getSurveyUnitForQNA(long instantDate) {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.collection_end_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
@@ -172,11 +172,11 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 				.append("JOIN visibility v ON v.campaign_id=c.id AND su.organization_unit_id=v.organization_unit_id) t ")
 				.append("WHERE t.collection_end_date<?")
 				.toString();
-		return pilotageJdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
+		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
 	}
 	
 	@Override
-	public List<String> getSurveyUnitForNVA() {
+	public List<String> getSurveyUnitForNVA(long instantDate) {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.end_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
@@ -186,7 +186,7 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 				.append("WHERE t.lastState <> 'NVA' ")
 				.append("AND t.end_date<?")
 				.toString();
-		return pilotageJdbcTemplate.queryForList(qString, new Object[] {System.currentTimeMillis()}, String.class);
+		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
 	}
 	
 
