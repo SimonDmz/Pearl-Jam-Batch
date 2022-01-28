@@ -5,6 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -42,10 +46,17 @@ public class TestsEndToEndDailyUpdate {
 	public void testScenario1() throws Exception {
 		MessageDao messageDao = context.getBean(MessageDao.class);
 		StateDao stateDao = context.getBean(StateDao.class); 
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		TimeZone utcTimeZone =TimeZone.getTimeZone("UTC");
+		Calendar c = Calendar.getInstance(utcTimeZone);
 		c.add(Calendar.MONTH, -1);
 		assertEquals(5, messageDao.getIdsToDelete(c.getTimeInMillis()).size());
+
+		// set a fixed clock in triggerService to avoid exceeding test data dates and failing tests
+		Instant fixedInstant = LocalDateTime.of(2020, 7, 14, 0, 0).atZone(ZoneOffset.UTC).toInstant();
+		triggerService.setClock(Clock.fixed(fixedInstant, utcTimeZone.toZoneId()));
 		triggerService.updateStates();
+		triggerService.initDefaultClock();
+		
 		assertTrue(messageDao.getIdsToDelete(c.getTimeInMillis()).isEmpty());
 		assertEquals(List.of("NVM"), stateDao.getStateBySurveyUnitId("24").stream().map(StateType::getType).collect(Collectors.toList()));
 		assertEquals(List.of("NVM","ANV"), stateDao.getStateBySurveyUnitId("25").stream().map(StateType::getType).collect(Collectors.toList()));

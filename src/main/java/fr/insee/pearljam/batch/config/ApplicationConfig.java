@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ApplicationConfig {
-	
+
 	public static String dbHost;
 	public static String dbPort;
 	public static String dbSchema;
@@ -27,7 +27,10 @@ public class ApplicationConfig {
 	public static String realm;
 	public static String FOLDER_IN_QUEEN;
 	public static String FOLDER_OUT_QUEEN;
-
+	public static String ldapServiceUrlScheme;
+	public static String ldapServiceUrlHost;
+	public static String ldapServiceUrlPort;
+	public static String ldapServiceUrlPath;
 
 	public ApplicationConfig() {
 		super();

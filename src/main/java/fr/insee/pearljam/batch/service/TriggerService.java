@@ -2,6 +2,10 @@ package fr.insee.pearljam.batch.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,6 +29,7 @@ import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsS
 import fr.insee.pearljam.batch.service.synchronization.InterviewersSynchronizationService;
 import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsAffectationsSynchronizationService;
 import fr.insee.pearljam.batch.service.synchronization.OrganizationalUnitsSynchronizationService;
+import fr.insee.pearljam.batch.service.synchronization.SynchronizationUtilsService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 
 @Service
@@ -57,13 +62,35 @@ public class TriggerService {
 	@Autowired
 	OrganizationalUnitsAffectationsSynchronizationService organizationalUnitsAffectationsSynchronizationService;
 	
+	@Autowired
+	SynchronizationUtilsService synchronizationUtilsService;
+
+	private Clock clock;
+	public void setClock(Clock newClock) { clock = newClock; }
+
+	public void initDefaultClock() {
+		setClock(
+				Clock.system(
+						ZoneId.of("UTC")));
+	}
+
+	{
+		initDefaultClock();
+	}
+
+	private long now(){
+		return LocalDateTime.now(clock).atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+	}
+
 	public BatchErrorCode synchronizeWithOpale(String folderOut) throws SQLException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
+			synchronizationUtilsService.checkServices();
 			returnCode = updateErrorCode(returnCode, interviewersSynchronizationService.synchronizeInterviewers(folderOut));
+			pilotageConnection.commit();
 			returnCode = updateErrorCode(returnCode, interviewersAffectationsSynchronizationService.synchronizeSurveyUnitInterviewerAffectation(folderOut));
-			returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
+			// returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
 			returnCode = updateErrorCode(returnCode, organizationalUnitsAffectationsSynchronizationService.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut));
 		} catch (TooManyReaffectationsException e) {
 			returnCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
@@ -110,12 +137,12 @@ public class TriggerService {
 		try {
 			pilotageConnection.setAutoCommit(false);
 			// Get the list of Survey unit id to update from state NVM to ANV or NNS
-			surveyUnitDao.getSurveyUnitNVM().stream().forEach(suId -> {
+			surveyUnitDao.getSurveyUnitNVM(now()).stream().forEach(suId -> {
 				if (StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterviewerId())) {
-					stateDao.createState(System.currentTimeMillis(), "ANV", suId);
+					stateDao.createState(now(), "ANV", suId);
 					lstSuANV.add(suId);
 				} else {
-					stateDao.createState(System.currentTimeMillis(), "NNS", suId);
+					stateDao.createState(now(), "NNS", suId);
 					lstSuNNS.add(suId);
 				}
 			});
@@ -125,17 +152,17 @@ public class TriggerService {
 			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
 
 			// Get the list of Survey unit id to update from state ANV or NNS to VIN
-			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN();
+			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN(now());
 			lstSu.stream().forEach(suId -> 
-				stateDao.createState(System.currentTimeMillis(), "VIN", suId)
+				stateDao.createState(now(), "VIN", suId)
 			);
 			String strLstSu = String.join(",", lstSu);
 			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
 			
 			// Get the list of Survey unit id to update to state NVA
-			lstSu = surveyUnitDao.getSurveyUnitForNVA();
+			lstSu = surveyUnitDao.getSurveyUnitForNVA(now());
 			lstSu.stream().forEach(suId -> {
-				stateDao.createState(System.currentTimeMillis(), "NVA", suId);
+				stateDao.createState(now(), "NVA", suId);
 				logger.log(Level.INFO, "Update survey-unit {} state NVA", suId);
 			});
 			strLstSu = String.join(",", lstSu);
