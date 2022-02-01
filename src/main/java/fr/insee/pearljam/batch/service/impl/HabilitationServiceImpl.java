@@ -63,8 +63,6 @@ public class HabilitationServiceImpl implements HabilitationService {
         String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup,
                 interviewerIdep);
 
-        LOGGER.debug("Calling {}", parametrizedUrl);
-
         HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -73,6 +71,9 @@ public class HabilitationServiceImpl implements HabilitationService {
                 habilitationApiRootUrl + "/" + parametrizedUrl,
                 HttpMethod.POST,
                 entity, HabilitationActionResponseDto.class);
+        LOGGER.info("Calling {}", parametrizedUrl);
+        LOGGER.info("Response {}", response.getStatusCode().toString());
+
         HabilitationActionResponseDto body = response.getBody();
 
         if (!response.hasBody() || body.getErreur() != null)
@@ -91,6 +92,9 @@ public class HabilitationServiceImpl implements HabilitationService {
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         HttpStatus returnedCode = response.getStatusCode();
+        LOGGER.debug("Calling {}", uri);
+        LOGGER.info("Response {}", response.getStatusCode().toString());
+
         if (!returnedCode.is2xxSuccessful()) {
             throw new SynchronizationException(NO_RESPONSE_MSG);
         }
@@ -101,8 +105,6 @@ public class HabilitationServiceImpl implements HabilitationService {
     public List<String> getHabilitatedInterviewers() throws SynchronizationException {
         String parametrizedUrl = String.format(getUsersInGroupInAppFormat, appName, interviewerGroup);
 
-        LOGGER.debug("Calling {}", parametrizedUrl);
-
         HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -112,6 +114,8 @@ public class HabilitationServiceImpl implements HabilitationService {
                 HttpMethod.GET,
                 entity, HabilitatedUsers[].class);
 
+        LOGGER.debug("Calling {}", parametrizedUrl);
+        LOGGER.info("Response {}", response.getStatusCode().toString());
         if (!response.hasBody())
             throw new SynchronizationException("Can't get habilitated interviewers.");
 
