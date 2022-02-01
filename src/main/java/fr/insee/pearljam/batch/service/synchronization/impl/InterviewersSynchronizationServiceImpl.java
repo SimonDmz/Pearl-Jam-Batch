@@ -109,6 +109,9 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 		BatchErrorCode returnCode = code;
 		try {
 			if (interviewerTypeDao.existInterviewer(interviewer.getIdep())) {
+				if (!alreadyHabilitatedIds.contains(interviewer.getIdep())) {
+					habilitationService.addInterviewerHabilitation(interviewer.getIdep());
+				}
 				if (interviewerTypeDao.isDifferentFromDto(interviewer)) {
 					interviewerTypeDao.updateInterviewerFromDto(interviewer);
 					counters[2] += 1;
