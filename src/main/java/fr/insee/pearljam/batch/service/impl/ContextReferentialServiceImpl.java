@@ -3,6 +3,9 @@ package fr.insee.pearljam.batch.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -33,6 +36,7 @@ import fr.insee.pearljam.batch.service.KeycloakService;
 
 @Service
 public class ContextReferentialServiceImpl implements ContextReferentialService {
+	private static final Logger logger = LogManager.getLogger(ContextReferentialServiceImpl.class);
 	
 	@Autowired
 	@Qualifier("contextReferentialBaseUrl")
@@ -53,6 +57,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<InterviewersResponseDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, InterviewersResponseDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+
 		InterviewersResponseDto body = response.getBody();
 		
 		if(body==null) {
@@ -68,6 +75,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<OrganizationUnitsResponseDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, OrganizationUnitsResponseDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		OrganizationUnitsResponseDto body = response.getBody();
 		if(body==null) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
@@ -84,6 +94,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<InterviewersAffectationsResponseDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, InterviewersAffectationsResponseDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		InterviewersAffectationsResponseDto body = response.getBody();
 		if(body==null) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
@@ -99,6 +112,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<OrganizationUnitsAffectationsResponseDto> response = restTemplate.exchange(uri, HttpMethod.GET, entity, OrganizationUnitsAffectationsResponseDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		OrganizationUnitsAffectationsResponseDto body = response.getBody();
 		if(body==null) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
@@ -115,6 +131,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<SimpleIdDto> response = restTemplate.exchange(String.format(uri, suId), HttpMethod.GET, entity, SimpleIdDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		SimpleIdDto body = response.getBody();
 		if(body==null) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
@@ -131,6 +150,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<InterviewerDto> response = restTemplate.exchange(String.format(uri, suId), HttpMethod.GET, entity, InterviewerDto.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		InterviewerDto body = response.getBody();
 		if(body==null) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
@@ -149,6 +171,9 @@ public class ContextReferentialServiceImpl implements ContextReferentialService 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		logger.info("Calling {}",uri);
+		logger.info("Response {}",response.getStatusCode().toString());
+		
 		HttpStatus returnedCode = response.getStatusCode();
 		if(!returnedCode.is2xxSuccessful()) {
 			throw new SynchronizationException(NO_RESPONSE_MSG);
