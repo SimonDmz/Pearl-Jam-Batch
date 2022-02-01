@@ -82,7 +82,7 @@ public class PropertyLogger  {
                     .flatMap(Arrays::stream)
                     .distinct()
                     .filter(prop -> !(prop.contains("credentials") || prop.contains("password")
-                            || prop.contains("pw") || prop.contains("Password")))
+                            || prop.contains("pw") || prop.contains("secret") || prop.contains("Password")))
                     .filter(prop -> prop.startsWith("fr.insee") || prop.startsWith("logging") || prop.startsWith("keycloak") || prop.startsWith("spring"))
                     .sorted()
                     .forEach(prop -> LOGGER.info("{}: {}", prop, env.getProperty(prop)));
