@@ -94,7 +94,7 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 			}
 		}
 
-		logger.info("Interviewers synchronization ended");
+		logger.info("Interviewers synchronization ended - result {}",code.getCode());
 		return code;
 	}
 
