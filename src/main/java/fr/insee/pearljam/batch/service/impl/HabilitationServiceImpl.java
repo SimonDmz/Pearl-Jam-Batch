@@ -92,7 +92,7 @@ public class HabilitationServiceImpl implements HabilitationService {
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         HttpStatus returnedCode = response.getStatusCode();
-        LOGGER.debug("Calling {}", uri);
+        LOGGER.info("Calling {}", uri);
         LOGGER.info("Response {}", response.getStatusCode().toString());
 
         if (!returnedCode.is2xxSuccessful()) {

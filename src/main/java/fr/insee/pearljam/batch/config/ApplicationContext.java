@@ -120,7 +120,8 @@ public class ApplicationContext {
 	 */
 	@Bean(name = "contextReferentialBaseUrl")
 	public String getContextReferentialBaseUrl() {
-		return ApplicationConfig.contextReferentialScheme + "://" + ApplicationConfig.contextReferentialHost + ":" + ApplicationConfig.contextReferentialPort 
+		return ApplicationConfig.contextReferentialScheme + "://" + ApplicationConfig.contextReferentialHost + ":"
+				+ ApplicationConfig.contextReferentialPort + "/"
 				+ ApplicationConfig.contextReferentialPath;
 	}
 	
