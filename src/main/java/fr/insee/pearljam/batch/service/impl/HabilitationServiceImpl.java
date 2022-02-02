@@ -62,20 +62,21 @@ public class HabilitationServiceImpl implements HabilitationService {
 
         String parametrizedUrl = String.format(addUserInGroupInAppFormat, appName, interviewerGroup,
                 interviewerIdep);
+        String uri = habilitationApiRootUrl + parametrizedUrl;
 
         HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
         ResponseEntity<HabilitationActionResponseDto> response = restTemplate.exchange(
-                habilitationApiRootUrl +  parametrizedUrl,
+                uri,
                 HttpMethod.POST,
                 entity, HabilitationActionResponseDto.class);
-        LOGGER.info("Calling {}", parametrizedUrl);
+        LOGGER.info("Calling {}", uri);
         LOGGER.info("Response {}", response.getStatusCode().toString());
 
         HabilitationActionResponseDto body = response.getBody();
-
+        LOGGER.info("Erreur {}", body.getErreur());
         if (!response.hasBody() || body.getErreur() != null)
             throw new SynchronizationException("Can't add interviewer habilitation : " + body.getErreur());
 
@@ -104,17 +105,18 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Override
     public List<String> getHabilitatedInterviewers() throws SynchronizationException {
         String parametrizedUrl = String.format(getUsersInGroupInAppFormat, appName, interviewerGroup);
+        String uri = habilitationApiRootUrl + "/" + parametrizedUrl;
 
         HttpHeaders headers = getHabilitationHeaders();
 
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
         ResponseEntity<HabilitatedUsers[]> response = restTemplate.exchange(
-                habilitationApiRootUrl + "/" + parametrizedUrl,
+                uri,
                 HttpMethod.GET,
                 entity, HabilitatedUsers[].class);
 
-        LOGGER.info("Calling {}", parametrizedUrl);
+        LOGGER.info("Calling {}", uri);
         LOGGER.info("Response {}", response.getStatusCode().toString());
         if (!response.hasBody())
             throw new SynchronizationException("Can't get habilitated interviewers.");
