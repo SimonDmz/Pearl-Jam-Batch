@@ -68,7 +68,7 @@ public class HabilitationServiceImpl implements HabilitationService {
         HttpEntity<?> entity = new HttpEntity<>(null, headers);
 
         ResponseEntity<HabilitationActionResponseDto> response = restTemplate.exchange(
-                habilitationApiRootUrl + "/" + parametrizedUrl,
+                habilitationApiRootUrl +  parametrizedUrl,
                 HttpMethod.POST,
                 entity, HabilitationActionResponseDto.class);
         LOGGER.info("Calling {}", parametrizedUrl);
@@ -84,7 +84,7 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Override
     public void isAvailable() throws SynchronizationException {
 
-        String uri = String.join("/", habilitationApiRootUrl, Constants.API_LDAP_HEALTHCHECK);
+        String uri = String.join("", habilitationApiRootUrl, Constants.API_LDAP_HEALTHCHECK);
 
         HttpHeaders headers = getHabilitationHeaders();
 
