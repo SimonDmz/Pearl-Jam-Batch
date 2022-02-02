@@ -114,7 +114,7 @@ public class HabilitationServiceImpl implements HabilitationService {
                 HttpMethod.GET,
                 entity, HabilitatedUsers[].class);
 
-        LOGGER.debug("Calling {}", parametrizedUrl);
+        LOGGER.info("Calling {}", parametrizedUrl);
         LOGGER.info("Response {}", response.getStatusCode().toString());
         if (!response.hasBody())
             throw new SynchronizationException("Can't get habilitated interviewers.");
