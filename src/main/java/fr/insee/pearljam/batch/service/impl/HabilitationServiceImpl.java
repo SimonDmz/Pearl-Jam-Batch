@@ -76,7 +76,6 @@ public class HabilitationServiceImpl implements HabilitationService {
         LOGGER.info("Response {}", response.getStatusCode().toString());
 
         HabilitationActionResponseDto body = response.getBody();
-        LOGGER.info("Erreur {}", body.getErreur());
         if (!response.hasBody() || body.getErreur() != null)
             throw new SynchronizationException("Can't add interviewer habilitation : " + body.getErreur());
 
