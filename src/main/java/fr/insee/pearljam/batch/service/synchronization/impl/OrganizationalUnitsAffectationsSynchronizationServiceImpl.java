@@ -133,7 +133,8 @@ public class OrganizationalUnitsAffectationsSynchronizationServiceImpl implement
 		}
 
 		
-		logger.info("Organizational units affectation synchronization ended");
+		logger.info("Organizational units affectation synchronization ended - result {}",code.getCode());
+		logger.info("Created [{}] - Updated [{}] - Error [{}]",counters[1],counters[2],errors.size());
 		return code;
 	}
 	
