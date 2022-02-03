@@ -117,6 +117,7 @@ public abstract class Launcher {
 		PathUtils.createMissingFolder(FOLDER_IN);
 		PathUtils.createMissingFolder(FOLDER_OUT);
 		PathUtils.createMissingFolder(FOLDER_IN + "/processing");
+		PathUtils.createMissingFolder(FOLDER_IN + "/sample");
 		PathUtils.createMissingFolder(FOLDER_OUT + "/sample");
 		PathUtils.createMissingFolder(FOLDER_OUT + "/campaign");
 	}
