@@ -11,9 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import fr.insee.pearljam.batch.exception.FolderException;
 
 /**
  * Operation on paths
@@ -73,6 +76,23 @@ public class PathUtils {
 	public static boolean isDirectoryExist(String path) {
 		File tmpDir = new File(path);
 		return tmpDir.exists() && tmpDir.isDirectory();
+	}
+
+	/**
+	 * Checks if a directory exists:  if not, it is created
+	 * 
+	 * @throws FolderException
+	 */
+	public static void createMissingFolder(String pathToCheck) throws FolderException {
+		if (!PathUtils.isDirectoryExist(pathToCheck)) {
+			logger.log(Level.WARN, "Creating /synchro folder in output directory");
+			try {
+				FileUtils.forceMkdir(new File(pathToCheck));
+			} catch (IOException e) {
+				throw new FolderException("Error during " + pathToCheck + " folder creation : " + e.getMessage());
+			}
+		}
+		logger.log(Level.INFO, "Folder tree '{}' is OK", pathToCheck);
 	}
 	
 	/**

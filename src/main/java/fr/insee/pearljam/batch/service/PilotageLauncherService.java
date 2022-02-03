@@ -36,6 +36,7 @@ import fr.insee.pearljam.batch.dao.OrganizationalUnitTypeDao;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.DataBaseException;
+import fr.insee.pearljam.batch.exception.FolderException;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.sampleprocessing.Campagne;
@@ -113,7 +114,7 @@ public class PilotageLauncherService {
 				logger.log(Level.INFO, "Start {}", batchOption.getLabel());
 				returnCode = load(batchOption, folderIn +"/"+ name +".xml", folderOut, processingFolder);
 				logger.log(Level.INFO, "Finish {}", batchOption.getLabel());
-			} catch (SynchronizationException e) {
+			} catch (SynchronizationException | FolderException e) {
 				ve = new ValidateException("Error during process, error loading "+name+" : "+e.getMessage());
 				returnCode = BatchErrorCode.KO_TECHNICAL_ERROR;
 			} catch (Exception e) {
@@ -174,10 +175,11 @@ public class PilotageLauncherService {
 	 * @throws BatchException 
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
+	 * @throws FolderException
 	 * @throws Exception 
 	 * @throws ParseException 
 	 */
-	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, BatchException, ParserConfigurationException, SAXException{
+	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, BatchException, ParserConfigurationException, SAXException, FolderException{
 		switch(batchOption) {
 			case LOADCAMPAIGN:
 				return loadCampaign(in, out, processing);
@@ -416,11 +418,14 @@ public class PilotageLauncherService {
 		}
 	}
 	
-	public BatchErrorCode loadSampleProcessing(String in, String processing) throws ParserConfigurationException, SAXException, IOException, ValidateException, BatchException, SynchronizationException, SQLException {
+	public BatchErrorCode loadSampleProcessing(String in, String processing) throws ParserConfigurationException, SAXException, IOException, ValidateException, BatchException, SynchronizationException, SQLException, FolderException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		CampaignService pilotageCampaignService = context.getBean(CampaignService.class);
 		LoadService dataCollectionloadService = context.getBean(LoadService.class);
 				
+		// Check folder tree
+		checkProcessingFolders();
+
 		// Move SampleProcessing File to processing folder and unmarshall
 		pilotageFolderService.setCampaignName(in);
 		moveFileToProcessing("sampleprocessing", in, processing, pilotageFolderService.getCampaignName());
@@ -471,6 +476,10 @@ public class PilotageLauncherService {
 		// Move files in out folder
 		moveFilesInOutFolders(returnCode);
 		return returnCode;
+	}
+
+	private void checkProcessingFolders() throws FolderException {
+		PathUtils.createMissingFolder(ApplicationConfig.FOLDER_OUT + "/campaign");
 	}
 
 	private void moveFilesInOutFolders(BatchErrorCode returnCode) throws IOException, ValidateException {
