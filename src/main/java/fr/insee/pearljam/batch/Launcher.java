@@ -115,22 +115,15 @@ public abstract class Launcher {
 	 */
 	public static void checkFolderTree() throws FolderException {
 		PathUtils.createMissingFolder(FOLDER_IN);
-		PathUtils.createMissingFolder(FOLDER_OUT);
 		PathUtils.createMissingFolder(FOLDER_IN + "/processing");
 		PathUtils.createMissingFolder(FOLDER_IN + "/sample");
+		PathUtils.createMissingFolder(FOLDER_IN + "/campaign");
+		PathUtils.createMissingFolder(FOLDER_OUT);
 		PathUtils.createMissingFolder(FOLDER_OUT + "/sample");
 		PathUtils.createMissingFolder(FOLDER_OUT + "/campaign");
-	}
-
- 	/**
-	 * Checks if the "synchro" folder exists in the out folder
-	 * if not, it is created
-	 * 
-	 * @throws FolderException
-	 */
-	public static void checkSynchroFolder() throws FolderException {
 		PathUtils.createMissingFolder(FOLDER_OUT + "/synchro");
 	}
+
 
 	/**
 	 * run batch : Check if argument is well fielded ant start to run the batch
@@ -163,7 +156,6 @@ public abstract class Launcher {
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.updateStates();
 		case SYNCHRONIZE:
-			checkSynchroFolder();
 			logger.log(Level.INFO, "Running synchronization with context referential");
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);
