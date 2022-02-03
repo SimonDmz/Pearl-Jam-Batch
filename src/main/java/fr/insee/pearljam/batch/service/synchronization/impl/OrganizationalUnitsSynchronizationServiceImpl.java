@@ -87,7 +87,8 @@ public class OrganizationalUnitsSynchronizationServiceImpl implements Organizati
 				}
 			}
 
-		logger.info("Organizational units synchronization ended");
+		logger.info("Organizational units synchronization ended - result {}",code.getCode());
+		logger.info("Organizational units created [{}] - errors [{}]",counters[1],errors.size());
 		return code;
 	}
 	
