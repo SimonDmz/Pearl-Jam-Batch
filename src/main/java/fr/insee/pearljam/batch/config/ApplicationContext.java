@@ -190,7 +190,6 @@ public class ApplicationContext {
 
 		}
 		pilotageJdbcTemplate.setResultsMapCaseInsensitive(true);
-		System.out.println(pilotageJdbcTemplate.getDataSource().getConnection().getClientInfo());
 		return pilotageJdbcTemplate;
 	}
 	
@@ -237,7 +236,6 @@ public class ApplicationContext {
 
 		}
 		jdbcTemplate.setResultsMapCaseInsensitive(true);
-		System.out.println(jdbcTemplate.getDataSource().getConnection().getClientInfo());
 		return jdbcTemplate;
 	}
 	
