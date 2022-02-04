@@ -85,7 +85,7 @@ public class PathUtils {
 	 */
 	public static void createMissingFolder(String pathToCheck) throws FolderException {
 		if (!PathUtils.isDirectoryExist(pathToCheck)) {
-			logger.log(Level.WARN, "Creating /synchro folder in output directory");
+		logger.log(Level.WARN, "Creating {} directory",pathToCheck);
 			try {
 				FileUtils.forceMkdir(new File(pathToCheck));
 			} catch (IOException e) {
