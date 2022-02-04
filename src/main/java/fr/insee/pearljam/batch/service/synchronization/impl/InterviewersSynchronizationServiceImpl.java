@@ -3,6 +3,7 @@ package fr.insee.pearljam.batch.service.synchronization.impl;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,8 +94,11 @@ public class InterviewersSynchronizationServiceImpl implements InterviewersSynch
 						new UpdatedInterviewers(updatedIds));
 			}
 		}
-
-		logger.info("Interviewers synchronization ended");
+		logger.info("Created interviewers : {}", String.join(" ", createdIds));
+		logger.info("Updated interviewers : {}", String.join(" ", updatedIds));
+		logger.info("Errors : {}", String.join(" ",
+				errors.stream().map(InterviewerSynchronizationError::getInterviewerId).collect(Collectors.toList())));
+		logger.info("Interviewers synchronization ended - result {}", code.getCode());
 		return code;
 	}
 

@@ -38,6 +38,7 @@ jobs:
                 cd Queen-Batch                                         
                 mvn clean install -DskipTests
         - name: Build with Maven
+          timeout-minutes: 15
           run: mvn clean install
         - name: Get current version
           id: version

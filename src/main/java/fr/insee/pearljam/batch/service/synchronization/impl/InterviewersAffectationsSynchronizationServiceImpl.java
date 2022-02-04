@@ -141,7 +141,8 @@ public class InterviewersAffectationsSynchronizationServiceImpl implements Inter
 		}
 
 		
-		logger.info("Interviewers affectations synchronization ended");
+		logger.info("Interviewers affectations synchronization ended - result {}",code.getCode());
+		logger.info("Created [{}] - Updated [{}] - Error [{}]",counters[1],counters[2],errors.size());
 		return code;
 	}
 	
