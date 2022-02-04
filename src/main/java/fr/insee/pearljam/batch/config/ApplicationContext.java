@@ -120,7 +120,8 @@ public class ApplicationContext {
 	 */
 	@Bean(name = "contextReferentialBaseUrl")
 	public String getContextReferentialBaseUrl() {
-		return ApplicationConfig.contextReferentialScheme + "://" + ApplicationConfig.contextReferentialHost + ":" + ApplicationConfig.contextReferentialPort 
+		return ApplicationConfig.contextReferentialScheme + "://" + ApplicationConfig.contextReferentialHost + ":"
+				+ ApplicationConfig.contextReferentialPort + "/"
 				+ ApplicationConfig.contextReferentialPath;
 	}
 	
@@ -189,7 +190,6 @@ public class ApplicationContext {
 
 		}
 		pilotageJdbcTemplate.setResultsMapCaseInsensitive(true);
-		System.out.println(pilotageJdbcTemplate.getDataSource().getConnection().getClientInfo());
 		return pilotageJdbcTemplate;
 	}
 	
@@ -236,7 +236,6 @@ public class ApplicationContext {
 
 		}
 		jdbcTemplate.setResultsMapCaseInsensitive(true);
-		System.out.println(jdbcTemplate.getDataSource().getConnection().getClientInfo());
 		return jdbcTemplate;
 	}
 	

@@ -113,7 +113,7 @@ public class PilotageLauncherService {
 				logger.log(Level.INFO, "Start {}", batchOption.getLabel());
 				returnCode = load(batchOption, folderIn +"/"+ name +".xml", folderOut, processingFolder);
 				logger.log(Level.INFO, "Finish {}", batchOption.getLabel());
-			} catch (SynchronizationException e) {
+			} catch (SynchronizationException  e) {
 				ve = new ValidateException("Error during process, error loading "+name+" : "+e.getMessage());
 				returnCode = BatchErrorCode.KO_TECHNICAL_ERROR;
 			} catch (Exception e) {
@@ -177,7 +177,7 @@ public class PilotageLauncherService {
 	 * @throws Exception 
 	 * @throws ParseException 
 	 */
-	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, BatchException, ParserConfigurationException, SAXException{
+	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, BatchException, ParserConfigurationException, SAXException {
 		switch(batchOption) {
 			case LOADCAMPAIGN:
 				return loadCampaign(in, out, processing);
@@ -472,6 +472,7 @@ public class PilotageLauncherService {
 		moveFilesInOutFolders(returnCode);
 		return returnCode;
 	}
+
 
 	private void moveFilesInOutFolders(BatchErrorCode returnCode) throws IOException, ValidateException {
 		if(new File(ApplicationConfig.FOLDER_IN_QUEEN + SAMPLE_PATH_IN).exists()) {

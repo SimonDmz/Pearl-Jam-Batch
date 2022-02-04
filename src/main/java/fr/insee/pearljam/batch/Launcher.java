@@ -1,11 +1,9 @@
 package fr.insee.pearljam.batch;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -96,10 +94,10 @@ public abstract class Launcher {
 		FOLDER_IN = ApplicationConfig.FOLDER_IN;
 		FOLDER_OUT = ApplicationConfig.FOLDER_OUT;
 		if (StringUtils.isBlank(FOLDER_IN) || "${fr.insee.pearljam.folder.in}".equals(FOLDER_IN)) {
-			throw new FolderException("property fr.insee.pearljam.batch.folder.in is not define in properties");
+			throw new FolderException("property fr.insee.pearljam.batch.folder.in is not defined in properties");
 		}
 		if (StringUtils.isBlank(FOLDER_OUT) || "${fr.insee.pearljam.folder.out}".equals(FOLDER_OUT)) {
-			throw new FolderException("property fr.insee.pearljam.batch.folder.out is not define in properties");
+			throw new FolderException("property fr.insee.pearljam.batch.folder.out is not defined in properties");
 		}
 		logger.log(Level.INFO, "Folder properties are OK");
 
@@ -110,58 +108,22 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Check folder tree : folders define in properties exist or not. If folder not
-	 * exist, folder is create
+	 * Check folder tree : folders defined in properties exist or not. If folder not
+	 * exist, folder is created
 	 * 
 	 * @throws FolderException
 	 */
 	public static void checkFolderTree() throws FolderException {
-		if (!PathUtils.isDirectoryExist(FOLDER_IN)) {
-			logger.log(Level.WARN, "Folder tree '{}' does not exist", FOLDER_IN);
-			try {
-				FileUtils.forceMkdir(new File(FOLDER_IN));
-			} catch (IOException e) {
-				throw new FolderException("Error during " + FOLDER_IN + " creation : " + e.getMessage());
-			}
-		}
-		logger.log(Level.INFO, "Folder tree '{}' is OK", FOLDER_IN);
+		PathUtils.createMissingFolder(FOLDER_IN);
+		PathUtils.createMissingFolder(FOLDER_IN + "/processing");
+		PathUtils.createMissingFolder(FOLDER_IN + "/sample");
+		PathUtils.createMissingFolder(FOLDER_IN + "/campaign");
+		PathUtils.createMissingFolder(FOLDER_OUT);
+		PathUtils.createMissingFolder(FOLDER_OUT + "/sample");
+		PathUtils.createMissingFolder(FOLDER_OUT + "/campaign");
+		PathUtils.createMissingFolder(FOLDER_OUT + "/synchro");
+	}
 
-		if (!PathUtils.isDirectoryExist(FOLDER_OUT)) {
-			logger.log(Level.WARN, "Folder tree '{}' does not exist", FOLDER_OUT);
-			try {
-				FileUtils.forceMkdir(new File(FOLDER_OUT));
-			} catch (IOException e) {
-				throw new FolderException("Error during " + FOLDER_OUT + " creation : " + e.getMessage());
-			}
-    }
-    
-    if (!PathUtils.isDirectoryExist(FOLDER_IN + "/processing")) {
-			logger.log(Level.WARN, "Folder tree '{}' does not exist", FOLDER_IN + "/processing");
-			try {
-				FileUtils.forceMkdir(new File(FOLDER_IN + "/processing"));
-			} catch (IOException e) {
-				throw new FolderException("Error during " + FOLDER_IN + "/processing  creation : " + e.getMessage());
-			}
-		}
-		logger.log(Level.INFO, "Folder tree '{}' is OK", FOLDER_IN + "/processing");
-  }
-
-  /**
-	 * Checks if the "synchro" folder exists in the out folder
-	 * if not, it is created
-	 * 
-	 * @throws FolderException
-	 */
-  public static void checkSynchroFolder() throws FolderException{
-    if (!PathUtils.isDirectoryExist(FOLDER_OUT + "/synchro")) {
-			logger.log(Level.WARN, "Creating /synchro folder in output directory");
-			try {
-				FileUtils.forceMkdir(new File(FOLDER_OUT + "/synchro"));
-			} catch (IOException e) {
-				throw new FolderException("Error during " + FOLDER_OUT + "/synchro folder creation : " + e.getMessage());
-			}
-		}
-  }
 
 	/**
 	 * run batch : Check if argument is well fielded ant start to run the batch
@@ -194,7 +156,6 @@ public abstract class Launcher {
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.updateStates();
 		case SYNCHRONIZE:
-			checkSynchroFolder();
 			logger.log(Level.INFO, "Running synchronization with context referential");
 			triggerService = context.getBean(TriggerService.class);
 			return triggerService.synchronizeWithOpale(FOLDER_OUT);

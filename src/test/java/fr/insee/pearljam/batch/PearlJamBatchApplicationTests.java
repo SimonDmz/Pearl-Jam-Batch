@@ -76,6 +76,7 @@ public class PearlJamBatchApplicationTests {
 	 */
 	@BeforeClass
 	public static void init() throws IOException {
+		logger.warn("Test TestsEndToEndExtractCampaign is ignored");
 		logger.info("Tests starts");
 		postgreSQLContainerPilotage.start();
 		// tempFolder("sample.xml");
@@ -135,7 +136,7 @@ public class PearlJamBatchApplicationTests {
 		liquibasePilotage.dropAll();
 		liquibasePilotage.update(new Contexts());
 		liquibasePilotage.close();
-		System.out.println("DB Pilotage created");
+		logger.info("DB Pilotage created");
 
 		
 		PGSimpleDataSource dsDataCollection = new PGSimpleDataSource();
@@ -149,7 +150,7 @@ public class PearlJamBatchApplicationTests {
 		liquibaseDataCollection.dropAll();
 		liquibaseDataCollection.update(new Contexts());
 		liquibaseDataCollection.close();
-		System.out.println("DB DataCollection created");
+		logger.info("DB DataCollection created");
 	}
 
 	/**
