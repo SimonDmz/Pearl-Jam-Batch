@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.batch.dao.MessageDao;
 import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
+import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsSynchronizationService;
@@ -233,10 +234,12 @@ public class TriggerService {
 					lstSuNNS.add(suId);
 				}
 			});
-			String strLstANV =String.join(",", lstSuANV);
-			String strLstNNS =String.join(",", lstSuNNS);
-			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(), strLstANV);
-			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
+			String strLstANV = String.join(",", lstSuANV);
+			String strLstNNS = String.join(",", lstSuNNS);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(),
+					strLstANV);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(),
+					strLstNNS);
 
 			// Get the list of Survey unit id to update from state ANV or NNS to VIN
 			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN(now());
