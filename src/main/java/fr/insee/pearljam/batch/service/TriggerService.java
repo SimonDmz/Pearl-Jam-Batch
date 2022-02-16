@@ -122,7 +122,7 @@ public class TriggerService {
 		return BatchErrorCode.OK;
 	}
 
-	public BatchErrorCode synchronizeIntervewers(String folderOut) {
+	public BatchErrorCode synchronizeIntervewers(String folderOut) throws SQLException {
 		BatchErrorCode returnedCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
@@ -138,7 +138,7 @@ public class TriggerService {
 
 	}
 
-	public BatchErrorCode synchronizeIntervewersAffectations(String folderOut) {
+	public BatchErrorCode synchronizeIntervewersAffectations(String folderOut)  throws SQLException{
 		BatchErrorCode returnedCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
@@ -160,7 +160,7 @@ public class TriggerService {
 		return returnedCode;
 	}
 
-	public BatchErrorCode synchronizeOrganizationUnits(String folderOut) {
+	public BatchErrorCode synchronizeOrganizationUnits(String folderOut)  throws SQLException {
 		BatchErrorCode returnedCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
@@ -176,7 +176,7 @@ public class TriggerService {
 		return returnedCode;
 	}
 
-	public BatchErrorCode synchronizeOrganizationUnitsAffectations(String folderOut) {
+	public BatchErrorCode synchronizeOrganizationUnitsAffectations(String folderOut)  throws SQLException {
 		BatchErrorCode returnedCode = BatchErrorCode.OK;
 		pilotageConnection.setAutoCommit(false);
 		try {
