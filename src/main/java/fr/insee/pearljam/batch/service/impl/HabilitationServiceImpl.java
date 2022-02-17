@@ -104,7 +104,7 @@ public class HabilitationServiceImpl implements HabilitationService {
     @Override
     public List<String> getHabilitatedInterviewers() throws SynchronizationException {
         String parametrizedUrl = String.format(getUsersInGroupInAppFormat, appName, interviewerGroup);
-        String uri = habilitationApiRootUrl + "/" + parametrizedUrl;
+        String uri = habilitationApiRootUrl + parametrizedUrl;
 
         HttpHeaders headers = getHabilitationHeaders();
 
