@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import fr.insee.pearljam.batch.dao.MessageDao;
 import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
+import fr.insee.pearljam.batch.exception.SynchronizationException;
 import fr.insee.pearljam.batch.exception.TooManyReaffectationsException;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.service.synchronization.InterviewersAffectationsSynchronizationService;
@@ -46,27 +47,30 @@ public class TriggerService {
 	StateDao stateDao;
 	SurveyUnitDao surveyUnitDao;
 	MessageDao messageDao;
-	
+
 	@Autowired
 	CampaignService campaignService;
-	
+
 	@Autowired
 	InterviewersSynchronizationService interviewersSynchronizationService;
-	
+
 	@Autowired
 	InterviewersAffectationsSynchronizationService interviewersAffectationsSynchronizationService;
-	
+
 	@Autowired
 	OrganizationalUnitsSynchronizationService organizationalUnitsSynchronizationService;
-	
+
 	@Autowired
 	OrganizationalUnitsAffectationsSynchronizationService organizationalUnitsAffectationsSynchronizationService;
-	
+
 	@Autowired
 	SynchronizationUtilsService synchronizationUtilsService;
 
 	private Clock clock;
-	public void setClock(Clock newClock) { clock = newClock; }
+
+	public void setClock(Clock newClock) {
+		clock = newClock;
+	}
 
 	public void initDefaultClock() {
 		setClock(
@@ -78,38 +82,122 @@ public class TriggerService {
 		initDefaultClock();
 	}
 
-	private long now(){
+	private long now() {
 		return LocalDateTime.now(clock).atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
 	}
 
 	public BatchErrorCode synchronizeWithOpale(String folderOut) throws SQLException {
-		BatchErrorCode returnCode = BatchErrorCode.OK;
-		pilotageConnection.setAutoCommit(false);
-		try {
-			synchronizationUtilsService.checkServices();
-			returnCode = updateErrorCode(returnCode, interviewersSynchronizationService.synchronizeInterviewers(folderOut));
-			pilotageConnection.commit();
-			returnCode = updateErrorCode(returnCode, interviewersAffectationsSynchronizationService.synchronizeSurveyUnitInterviewerAffectation(folderOut));
-			// returnCode = updateErrorCode(returnCode, organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut));
-			returnCode = updateErrorCode(returnCode, organizationalUnitsAffectationsSynchronizationService.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut));
-		} catch (TooManyReaffectationsException e) {
-			returnCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
-			pilotageConnection.rollback();
-			pilotageConnection.setAutoCommit(true);
-			logger.error("Error during survey-unit / interviewers affectation synchronization, rolling back : {}", e.getMessage());
-		} catch (Exception e) {
-			returnCode = BatchErrorCode.KO_TECHNICAL_ERROR;
-			pilotageConnection.rollback();
-			pilotageConnection.setAutoCommit(true);
-			logger.error("Error during organizational units synchronization, rolling back : {}", e.getMessage());
-		} finally {
-			pilotageConnection.setAutoCommit(true);
-		}
-		
+
+		BatchErrorCode returnCode = checkExternalServices();
+		if (!returnCode.equals(BatchErrorCode.OK))
+			return returnCode;
+
+		BatchErrorCode itwSyncReturnCode = synchronizeIntervewers(folderOut);
+		returnCode = updateErrorCode(returnCode, itwSyncReturnCode);
+
+		BatchErrorCode itwAffSyncReturnCode = synchronizeIntervewersAffectations(folderOut);
+		returnCode = updateErrorCode(returnCode, itwAffSyncReturnCode);
+
+		// temporary bypass
+		// BatchErrorCode ouSyncReturnCode = synchronizeOrganizationUnits(folderOut);
+		// returnCode = updateErrorCode(returnCode, ouSyncReturnCode);
+
+		BatchErrorCode ouAffSyncReturnCode = synchronizeOrganizationUnitsAffectations(folderOut);
+		returnCode = updateErrorCode(returnCode, ouAffSyncReturnCode);
 
 		return returnCode;
 	}
-	
+
+	public BatchErrorCode checkExternalServices() {
+		try {
+			synchronizationUtilsService.checkServices();
+		} catch (SynchronizationException e) {
+			logger.error("Error during checking external services, synchronization aborted : {}", e.getMessage());
+			return BatchErrorCode.KO_TECHNICAL_ERROR;
+		} catch (Exception e) {
+			logger.error("Unexpected error during checking external services, synchronization aborted : {}",
+					e.getMessage());
+			return BatchErrorCode.KO_TECHNICAL_ERROR;
+		}
+		return BatchErrorCode.OK;
+	}
+
+	public BatchErrorCode synchronizeIntervewers(String folderOut) throws SQLException {
+		BatchErrorCode returnedCode = BatchErrorCode.OK;
+		pilotageConnection.setAutoCommit(false);
+		try {
+			returnedCode = interviewersSynchronizationService.synchronizeInterviewers(folderOut);
+		} catch (Exception e) {
+			pilotageConnection.rollback();
+			logger.error("Error during interviewers synchronization, rolling back : {}", e.getMessage());
+			returnedCode = BatchErrorCode.KO_TECHNICAL_ERROR;
+		} finally {
+			pilotageConnection.setAutoCommit(true);
+		}
+		return returnedCode;
+
+	}
+
+	public BatchErrorCode synchronizeIntervewersAffectations(String folderOut)  throws SQLException{
+		BatchErrorCode returnedCode = BatchErrorCode.OK;
+		pilotageConnection.setAutoCommit(false);
+		try {
+			returnedCode = interviewersAffectationsSynchronizationService
+					.synchronizeSurveyUnitInterviewerAffectation(folderOut);
+		} catch (TooManyReaffectationsException e) {
+			returnedCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
+			pilotageConnection.rollback();
+			logger.error("Error during survey-unit / interviewers affectation synchronization, rolling back : {}",
+					e.getMessage());
+		} catch (Exception e) {
+			returnedCode = BatchErrorCode.KO_TECHNICAL_ERROR;
+			pilotageConnection.rollback();
+			logger.error("Error during survey-unit / interviewers affectation synchronization, rolling back : {}",
+					e.getMessage());
+		} finally {
+			pilotageConnection.setAutoCommit(true);
+		}
+		return returnedCode;
+	}
+
+	public BatchErrorCode synchronizeOrganizationUnits(String folderOut)  throws SQLException {
+		BatchErrorCode returnedCode = BatchErrorCode.OK;
+		pilotageConnection.setAutoCommit(false);
+		try {
+			returnedCode = organizationalUnitsSynchronizationService.synchronizeOrganizationUnits(folderOut);
+		} catch (Exception e) {
+			returnedCode = BatchErrorCode.KO_TECHNICAL_ERROR;
+			pilotageConnection.rollback();
+			logger.error("Error during organization units synchronization, rolling back : {}",
+					e.getMessage());
+		} finally {
+			pilotageConnection.setAutoCommit(true);
+		}
+		return returnedCode;
+	}
+
+	public BatchErrorCode synchronizeOrganizationUnitsAffectations(String folderOut)  throws SQLException {
+		BatchErrorCode returnedCode = BatchErrorCode.OK;
+		pilotageConnection.setAutoCommit(false);
+		try {
+			returnedCode = organizationalUnitsAffectationsSynchronizationService
+					.synchronizeSurveyUnitOrganizationUnitAffectation(folderOut);
+		} catch (TooManyReaffectationsException e) {
+			returnedCode = BatchErrorCode.KO_FONCTIONAL_ERROR;
+			pilotageConnection.rollback();
+			logger.error("Error during survey-unit / organization-units affectation synchronization, rolling back : {}",
+					e.getMessage());
+		} catch (Exception e) {
+			returnedCode = BatchErrorCode.KO_TECHNICAL_ERROR;
+			pilotageConnection.rollback();
+			logger.error("Error during survey-unit / organization-units affectation synchronization, rolling back : {}",
+					e.getMessage());
+		} finally {
+			pilotageConnection.setAutoCommit(true);
+		}
+		return returnedCode;
+	}
+
 	public BatchErrorCode updateErrorCode(BatchErrorCode current, BatchErrorCode lastResult) {
 		BatchErrorCode[] codeCriticityOrder = {
 				BatchErrorCode.KO_TECHNICAL_ERROR,
@@ -118,14 +206,14 @@ public class TriggerService {
 				BatchErrorCode.OK_FONCTIONAL_WARNING,
 				BatchErrorCode.OK_WITH_STOP,
 		};
-		for(BatchErrorCode code : codeCriticityOrder) {
-			if(current.equals(code) || lastResult.equals(code)) {
+		for (BatchErrorCode code : codeCriticityOrder) {
+			if (current.equals(code) || lastResult.equals(code)) {
 				return code;
 			}
 		}
 		return BatchErrorCode.OK;
 	}
-	
+
 	public BatchErrorCode updateStates() throws SQLException, ValidateException {
 		stateDao = context.getBean(StateDao.class);
 		surveyUnitDao = context.getBean(SurveyUnitDao.class);
@@ -146,19 +234,19 @@ public class TriggerService {
 					lstSuNNS.add(suId);
 				}
 			});
-			String strLstANV =String.join(",", lstSuANV);
-			String strLstNNS =String.join(",", lstSuNNS);
-			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(), strLstANV);
-			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(), strLstNNS);
+			String strLstANV = String.join(",", lstSuANV);
+			String strLstNNS = String.join(",", lstSuNNS);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to ANV : [{}]", lstSuANV.size(),
+					strLstANV);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(),
+					strLstNNS);
 
 			// Get the list of Survey unit id to update from state ANV or NNS to VIN
 			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN(now());
-			lstSu.stream().forEach(suId -> 
-				stateDao.createState(now(), "VIN", suId)
-			);
+			lstSu.stream().forEach(suId -> stateDao.createState(now(), "VIN", suId));
 			String strLstSu = String.join(",", lstSu);
 			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
-			
+
 			// Get the list of Survey unit id to update to state NVA
 			lstSu = surveyUnitDao.getSurveyUnitForNVA(now());
 			lstSu.stream().forEach(suId -> {
@@ -187,6 +275,6 @@ public class TriggerService {
 			throw new ValidateException("Error during process, error update states : " + e.getMessage());
 		}
 		return BatchErrorCode.OK;
-			
+
 	}
 }
