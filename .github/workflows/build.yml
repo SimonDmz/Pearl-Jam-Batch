@@ -30,12 +30,12 @@ jobs:
       - name: Install lunatic-model
         run:  |
               cd Lunatic-Model                      
-              mvn clean install -DskipTests 
+              mvn clean install -DskipTests --batch-mode --no-transfer-progress
       - name: Install queen-batch
         run:  |
               cd Queen-Batch                                         
-              mvn clean install -DskipTests
+              mvn clean install -DskipTests --batch-mode --no-transfer-progress
       - name: Build with Maven
         timeout-minutes: 15
-        run: mvn clean install
+        run: mvn clean install --batch-mode --no-transfer-progress
   

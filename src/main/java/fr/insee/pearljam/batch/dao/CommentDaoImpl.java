@@ -46,4 +46,10 @@ public class CommentDaoImpl implements CommentDao{
 		String qString = "DELETE FROM comment WHERE survey_unit_id=?";
 		pilotageJdbcTemplate.update(qString, surveyUnitId);
 	}
+
+	@Override
+	public void createComment(CommentType comment, String surveyUnitId) {
+		String qString = "INSERT INTO comment (type, value, survey_unit_id) VALUES (?, ?, ?)";
+		pilotageJdbcTemplate.update(qString, comment.getType(), comment.getValue(),surveyUnitId);
+	}
 }

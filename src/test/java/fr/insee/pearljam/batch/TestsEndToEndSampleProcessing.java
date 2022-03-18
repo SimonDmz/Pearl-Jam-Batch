@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,7 +16,9 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.FileSystemUtils;
 
+import fr.insee.pearljam.batch.campaign.PersonType;
 import fr.insee.pearljam.batch.config.ApplicationContext;
+import fr.insee.pearljam.batch.dao.PersonDao;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.service.PilotageLauncherService;
@@ -22,12 +27,14 @@ import fr.insee.pearljam.batch.utils.PathUtils;
 import fr.insee.queen.batch.service.DatasetService;
 
 public class TestsEndToEndSampleProcessing {
-	
 	AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationContext.class);
 	
 	PilotageLauncherService pilotageLauncherService = context.getBean(PilotageLauncherService.class);
 
 	DatasetService datasetService = context.getBean(DatasetService.class);
+
+	PersonDao  personDao = context.getBean(PersonDao.class);
+	
 	
 	
 	private static final String OUT = "src/test/resources/out/sampleprocessing/testScenarios";
@@ -128,7 +135,7 @@ public class TestsEndToEndSampleProcessing {
 	}
 	
 	/**
-	 * Scenario 4 : XML ok and campaign exist in both DB
+	 * Scenario 5 : XML ok and campaign exist in both DB
 	 * @throws Exception
 	 */
 	@Test
@@ -141,6 +148,31 @@ public class TestsEndToEndSampleProcessing {
 
 	}
 	
+	/**
+	 * Scenario 6 : Check if favorite_email is populated
+	 * @throws Exception
+	 */
+	@Test
+	public void testScenario6() throws Exception {
+		datasetService.createDataSet();
+		assertEquals(BatchErrorCode.OK, pilotageLauncherService.validateLoadClean(BatchOption.SAMPLEPROCESSING, "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario6", OUT));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "sampleProcessing",".done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT_CAMPAIGN), "campaign",".done.xml"));
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT_SAMPLE), "sample", ".done.xml"));
+	
+		List<Entry<Long, PersonType>> personsMap = personDao.getPersonsBySurveyUnitId("SIM1234");
+		List<PersonType> persons = personsMap.stream().map(entry -> entry.getValue()).collect(Collectors.toList());
+		PersonType truePreferedEmailPerson = persons.stream().filter(p->p.getFirstName().equals("John")).findFirst().get();
+		PersonType falsePreferedEmailPerson = persons.stream().filter(p->p.getFirstName().equals("Jane")).findFirst().get();
+		PersonType missingPreferedEmailPerson = persons.stream().filter(p->p.getFirstName().equals("Pat")).findFirst().get();
+		// XML with true
+		assertEquals(true,truePreferedEmailPerson.isFavoriteEmail());
+		// XML with false
+		assertEquals(false,falsePreferedEmailPerson.isFavoriteEmail());
+		// missing XML
+		assertEquals(false,missingPreferedEmailPerson.isFavoriteEmail());
+	}
+
 	
 	@After
 	public void cleanOutFolder() {

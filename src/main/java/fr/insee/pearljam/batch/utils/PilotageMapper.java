@@ -4,6 +4,8 @@ import java.util.stream.Collectors;
 
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.campaign.Campaign;
+import fr.insee.pearljam.batch.campaign.CommentType;
+import fr.insee.pearljam.batch.campaign.CommentsType;
 import fr.insee.pearljam.batch.campaign.InseeAddressType;
 import fr.insee.pearljam.batch.campaign.InseeSampleIdentiersType;
 import fr.insee.pearljam.batch.campaign.PersonType;
@@ -17,6 +19,7 @@ import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Question
 import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.Contacts.Contact;
 import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.Contacts.Contact.Telephones;
 import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.Contacts.Contact.Telephones.Telephone;
+import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.UniteEnquetee.Commentaires;
 import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.UniteEnquetee.IdentifiantsInsee;
 
 /**
@@ -50,6 +53,7 @@ public class PilotageMapper {
 					surveyUnitType.setInseeAddress(getInseeAddressFromSampleProcessing(su.getInformationsGenerales().getContacts(), su.getInformationsGenerales().getUniteEnquetee().getLocalisationGeographique()));
 					surveyUnitType.setInseeSampleIdentiers(getInseeSampleIdentiersFromSampleProcessing(su.getInformationsGenerales().getUniteEnquetee().getIdentifiantsInsee()));
 					surveyUnitType.setPersons(getPersonsFromSampleProcessing(su.getInformationsGenerales().getContacts()));
+					surveyUnitType.setComments(getCommentsFromSampleProcessing(su.getInformationsGenerales().getUniteEnquetee().getCommentaires()));
 					return surveyUnitType;
 				}).collect(Collectors.toList())
 		);
@@ -57,6 +61,36 @@ public class PilotageMapper {
 	}
 	
 	
+	private static CommentsType getCommentsFromSampleProcessing(Commentaires commentaires) {
+		CommentsType comments = new CommentsType();
+		
+		if (commentaires == null || commentaires.getCommentaire().isEmpty())
+			return comments;
+
+		commentaires.getCommentaire().stream().forEach(commentaire -> {
+			CommentType comment = new CommentType();
+			comment.setType(convertCommentType(commentaire.getType()));
+			comment.setValue(commentaire.getValeur());
+			comments.getComment().add(comment);
+		});
+		return comments;
+	}
+
+	private static String convertCommentType(String input) {
+		String output = "";
+		switch (input) {
+			case "enqueteur":
+				output = "INTERVIEWER";
+				break;
+			case "pilotage":
+				output = "MANAGEMENT";
+				break;
+			default:
+				break;
+		}
+		return output;
+	}
+
 	private static PersonsType getPersonsFromSampleProcessing(Contacts contacts) {
 		PersonsType persons = new PersonsType();
 		for (Contact contact : contacts.getContact()) {
@@ -65,6 +99,7 @@ public class PilotageMapper {
 			person.setFirstName(contact.getPrenomReferent());
 			person.setLastName(contact.getNomReferent());
 			person.setEmail(contact.getMailReferent());
+			person.setFavoriteEmail(contact.isMailFavori() != null ? contact.isMailFavori() : false);
 			person.setPrivileged(contact.isPrincipal());
 			person.setDateOfBirth(contact.getDateNaissance());
 			person.setPhoneNumbers( getPhoneNumbersFromSampleProcessing(contact.getTelephones()));
