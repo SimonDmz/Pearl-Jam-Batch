@@ -141,29 +141,6 @@ public class CampaignService {
 	boolean deleteAllSurveyUnits = false;
 	
 	private static final Logger logger = LogManager.getLogger(CampaignService.class);
-
-	/**
-	 * Initialization of all DAO needed
-	 */
-	private void initDaos() {
-		campaignDao = context.getBean(CampaignDao.class);
-		surveyUnitDao = context.getBean(SurveyUnitDao.class);
-		stateDao = context.getBean(StateDao.class);
-		addressDao = context.getBean(AddressDao.class);
-		sampleIdentifierDao = context.getBean(SampleIdentifierDao.class);
-		geographicalLocationDao = context.getBean(GeographicalLocationDao.class);
-		visibilityDao = context.getBean(VisibilityDao.class);
-		phoneNumberDao = context.getBean(PhoneNumberDao.class);
-		commentDao = context.getBean(CommentDao.class);
-		contactAttemptDao = context.getBean(ContactAttemptDao.class);
-		contactOutcomeDao = context.getBean(ContactOutcomeDao.class);
-		organizationalUnitTypeDao = context.getBean(OrganizationalUnitTypeDao.class);
-		preferenceDao = context.getBean(PreferenceDao.class);
-		userDao = context.getBean(UserTypeDao.class);
-		messageDao = context.getBean(MessageDao.class);
-		interviewerTypeDao = context.getBean(InterviewerTypeDao.class);
-	}
-
 	
 	/**
 	 * Delete Campaign : delete and archive a campaign and all data associated
@@ -177,7 +154,6 @@ public class CampaignService {
 	 * @throws DataBaseException
 	 */
 	public BatchErrorCode deleteCampaign(Campaign campaign, String out) throws BatchException, SQLException, DataBaseException {
-		initDaos();
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		// Archive datas in XML file
 		returnCode = archiveCampaign(campaign, returnCode, true);
@@ -405,7 +381,6 @@ public class CampaignService {
 	public BatchErrorCode createOrUpdateCampaign(Campaign campaign, boolean campaignExist, String in, String out)
 			throws SQLException, DataBaseException, SynchronizationException {
 		BatchErrorCode returnCode = BatchErrorCode.OK;
-		initDaos();
 		pilotageConnection.setAutoCommit(false);
 		try {
 			String campaignId = campaign.getId().toUpperCase();
@@ -763,7 +738,6 @@ public class CampaignService {
 
 
 	public BatchErrorCode extractCampaign(Campaign campaign, String out) throws DataBaseException, BatchException {
-		initDaos();
 		BatchErrorCode returnCode = BatchErrorCode.OK;
 		// Archive datas in XML file
 		returnCode = archiveCampaign(campaign, returnCode, false);
