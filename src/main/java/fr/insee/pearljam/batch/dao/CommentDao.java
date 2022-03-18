@@ -23,4 +23,12 @@ public interface CommentDao {
      * @param surveyUnitId
      */
 	void deleteCommentBySurveyUnitId(String surveyUnitId) throws SQLException;
+
+/**
+     * Add Comment in database
+     * @param comment
+     * @return created Comment
+     */
+    void createComment(CommentType comment, String surveyUnitId );
+
 }

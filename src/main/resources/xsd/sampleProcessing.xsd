@@ -61,6 +61,28 @@
 																		</xs:sequence>
 																	</xs:complexType>
 																</xs:element>
+																<xs:element minOccurs="0" maxOccurs="1" name="Commentaires">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element minOccurs="0" maxOccurs="unbounded" name="Commentaire" >
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="Type">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:enumeration value="pilotage" />
+																									<xs:enumeration value="enqueteur" />
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Valeur" type="xs:string" />
+																					</xs:sequence>
+																				</xs:complexType>
+
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
 															</xs:sequence>
 														</xs:complexType>
 													</xs:element>
@@ -82,6 +104,7 @@
 																			<xs:element name="NomReferent" type="xs:string" />
 																			<xs:element name="PrenomReferent" type="xs:string" />
 																			<xs:element name="MailReferent" type="xs:string" />
+																			<xs:element name="MailFavori" type="xs:boolean" minOccurs="0"/>
 																			<xs:element name="DateNaissance" type="xs:string" />
 																			<xs:element name="Telephones">
 																				<xs:complexType>
@@ -89,7 +112,15 @@
 																						<xs:element minOccurs="1" maxOccurs="unbounded" name="Telephone">
 																							<xs:complexType>
 																								<xs:sequence>
-																									<xs:element name="Source" type="xs:string" />
+																									<xs:element name="Source">
+																										<xs:simpleType>
+																											<xs:restriction base="xs:string">
+																												<xs:enumeration value="fiscal" />
+																												<xs:enumeration value="interviewer" />
+																												<xs:enumeration value="directory" />
+																											</xs:restriction>
+																										</xs:simpleType>
+																									</xs:element>
 																									<xs:element name="Favori" type="xs:boolean" minOccurs="0" maxOccurs="1" />
 																									<xs:element name="Numero" type="xs:string" />
 																								</xs:sequence>

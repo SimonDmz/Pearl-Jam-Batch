@@ -603,6 +603,13 @@ public class CampaignService {
 		if(interviewerAffectation != null) {
 			stateDao.createState(System.currentTimeMillis(), "NVM", surveyUnitType.getId());
 		}
+
+		// Create Comments
+		if(surveyUnitType.getComments() != null ){
+			for(CommentType comment : surveyUnitType.getComments().getComment()){
+				commentDao.createComment(comment,surveyUnitType.getId());
+			}
+		}
 	}
 
 
@@ -627,6 +634,9 @@ public class CampaignService {
 				phoneNumberDao.createPhoneNumber(phoneNumber, personId);
 			}
 		}
+
+		// Update Comments
+
 	}
 
 
