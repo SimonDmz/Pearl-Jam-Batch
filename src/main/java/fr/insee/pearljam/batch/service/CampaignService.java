@@ -596,9 +596,7 @@ public class CampaignService {
 		}
 		
 		// Create State for the Survey Unit
-		if(interviewerAffectation != null) {
 			stateDao.createState(System.currentTimeMillis(), "NVM", surveyUnitType.getId());
-		}
 
 		// Create Comments
 		if(surveyUnitType.getComments() != null ){
