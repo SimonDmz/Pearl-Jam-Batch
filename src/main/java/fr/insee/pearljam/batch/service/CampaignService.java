@@ -77,8 +77,6 @@ import fr.insee.pearljam.batch.dao.StateDao;
 import fr.insee.pearljam.batch.dao.SurveyUnitDao;
 import fr.insee.pearljam.batch.dao.UserTypeDao;
 import fr.insee.pearljam.batch.dao.VisibilityDao;
-import fr.insee.pearljam.batch.dto.InterviewerDto;
-import fr.insee.pearljam.batch.dto.SimpleIdDto;
 import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.DataBaseException;
 import fr.insee.pearljam.batch.exception.SynchronizationException;
@@ -99,8 +97,6 @@ public class CampaignService {
 	@Autowired
 	@Qualifier("pilotageConnection")
 	Connection pilotageConnection;
-	@Autowired
-	ContextReferentialService contextReferentialService;
 	@Autowired
 	PersonDao personDao;
 	@Autowired
@@ -600,8 +596,13 @@ public class CampaignService {
 		}
 		
 		// Create State for the Survey Unit
-		if(interviewerAffectation != null) {
 			stateDao.createState(System.currentTimeMillis(), "NVM", surveyUnitType.getId());
+
+		// Create Comments
+		if(surveyUnitType.getComments() != null ){
+			for(CommentType comment : surveyUnitType.getComments().getComment()){
+				commentDao.createComment(comment,surveyUnitType.getId());
+			}
 		}
 	}
 
@@ -627,6 +628,9 @@ public class CampaignService {
 				phoneNumberDao.createPhoneNumber(phoneNumber, personId);
 			}
 		}
+
+		// Update Comments
+
 	}
 
 
@@ -640,17 +644,6 @@ public class CampaignService {
 			return surveyUnitType.getInterviewerId();
 		}
 		
-		InterviewerDto intwDto = contextReferentialService.getSurveyUnitInterviewerAffectation(surveyUnitType.getId());
-		if(intwDto != null && intwDto.getIdep() != null) {
-			if(interviewerTypeDao.existInterviewer(intwDto.getIdep())) {
-				affectation = intwDto.getIdep();
-			}
-			else {
-				logger.error("Survey unit {} is affected to interviewer {} that does not exist in Sabianne", surveyUnitType.getId(), intwDto.getIdep());
-			}
-		}
-		
-		
 		return affectation;
 	}
 	
@@ -662,15 +655,6 @@ public class CampaignService {
 		}
 		if(surveyUnitType.getOrganizationalUnitId() != null && !surveyUnitType.getOrganizationalUnitId().isBlank()) {
 			return surveyUnitType.getOrganizationalUnitId();
-		}
-		SimpleIdDto idDto = contextReferentialService.getSurveyUnitOUAffectation(surveyUnitType.getId());
-		if(idDto != null && idDto.getId() != null) {
-			if(organizationalUnitTypeDao.existOrganizationalUnit(idDto.getId())) {
-				affectation = idDto.getId();
-			}
-			else {
-				logger.error("Survey unit {} is affected to organizational unit {} that does not exist in Sabianne", surveyUnitType.getId(), idDto.getId());
-			}
 		}
 
 		return affectation;

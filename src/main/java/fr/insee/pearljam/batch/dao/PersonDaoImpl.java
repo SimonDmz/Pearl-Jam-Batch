@@ -47,7 +47,7 @@ public class PersonDaoImpl implements PersonDao{
 	@Override
 	public Long createPerson(PersonType person, String surveyUnitId) {
 		String qString = new StringBuilder("INSERT INTO person (birthdate, email, favorite_email, first_name, last_name, title, survey_unit_id, privileged) ")
-				.append("VALUES (?, ?, false, ?, ?, ?, ?, ?)")
+				.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 				.toString();
 		Long parsedDate = null;
 		Integer parsedTitle = null;
@@ -66,7 +66,7 @@ public class PersonDaoImpl implements PersonDao{
 		else {
 			logger.log(Level.ERROR,"Could not parse title of person '{} {}'", person.getFirstName(), person.getLastName());
 		}
-		
+		boolean favoriteEmail= person.isFavoriteEmail()!=null?person.isFavoriteEmail():false;
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		final Long tempDate = parsedDate;
 		final Integer tempTitle = parsedTitle;
@@ -76,11 +76,12 @@ public class PersonDaoImpl implements PersonDao{
 		            PreparedStatement ps = connection.prepareStatement(qString, Statement.RETURN_GENERATED_KEYS);
 		            ps.setLong(1, tempDate);
 		            ps.setString(2, person.getEmail());
-		            ps.setString(3, person.getFirstName());
-		            ps.setString(4, person.getLastName());
-		            ps.setLong(5, tempTitle);
-		            ps.setString(6, surveyUnitId);
-		            ps.setBoolean(7, person.isPrivileged());
+		            ps.setBoolean(3, favoriteEmail);
+		            ps.setString(4, person.getFirstName());
+		            ps.setString(5, person.getLastName());
+		            ps.setLong(6, tempTitle);
+		            ps.setString(7, surveyUnitId);
+		            ps.setBoolean(8, person.isPrivileged());
 		            return ps;
 		        }
 		    },
@@ -111,6 +112,7 @@ public class PersonDaoImpl implements PersonDao{
                 person.setDateOfBirth(df.format(new Date(dateTime)));
         	}
             person.setPrivileged(rs.getBoolean("privileged"));
+            person.setFavoriteEmail(rs.getBoolean("favorite_email"));
             
             Long id = rs.getLong("id");
             

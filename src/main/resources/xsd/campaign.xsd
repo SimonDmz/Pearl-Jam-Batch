@@ -133,6 +133,7 @@
 			<xs:element name="LastName" type="xs:string" />
 			<xs:element name="Email" type="xs:string" />
 			<xs:element name="Privileged" type="xs:boolean" />
+			<xs:element name="FavoriteEmail" type="xs:boolean" minOccurs="0" />
 			<xs:element name="DateOfBirth">
 				<xs:simpleType>
         			<xs:restriction base="xs:string"> 

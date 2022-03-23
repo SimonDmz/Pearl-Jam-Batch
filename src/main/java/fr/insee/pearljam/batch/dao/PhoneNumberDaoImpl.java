@@ -69,6 +69,7 @@ public class PhoneNumberDaoImpl implements PhoneNumberDao {
         public PhoneNumberType mapRow(ResultSet rs, int rowNum) throws SQLException         {
         	PhoneNumberType phoneNumber = new PhoneNumberType();
         	phoneNumber.setNumber(rs.getString("number"));
+			phoneNumber.setFavorite(rs.getBoolean("favorite"));
         	Integer source = rs.getInt("source");
         	if(!rs.wasNull()) {
         		switch(source) {
