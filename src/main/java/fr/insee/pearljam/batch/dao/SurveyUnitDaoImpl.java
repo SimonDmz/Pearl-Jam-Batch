@@ -149,14 +149,27 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 	}
 
 	@Override
-	public List<String> getSurveyUnitAnvOrNnsToVIN(long instantDate) {
+	public List<String> getSurveyUnitNNS(long instantDate) {
+		String qString = new StringBuilder("SELECT t.id FROM ")
+				.append("(SELECT su.id as id, v.management_start_date, ")
+				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
+				.append("FROM survey_unit su ")
+				.append("JOIN campaign c ON su.campaign_id=c.id ")
+				.append("JOIN visibility v ON v.campaign_id=c.id AND su.organization_unit_id=v.organization_unit_id) t ")
+				.append("WHERE t.lastState = 'NNS' ")
+				.append("AND t.management_start_date<?")
+				.toString();
+		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
+	}
+	@Override
+	public List<String> getSurveyUnitANV(long instantDate) {
 		String qString = new StringBuilder("SELECT t.id FROM ")
 				.append("(SELECT su.id as id, v.interviewer_start_date, ")
 				.append("(SELECT s.type FROM state s WHERE s.survey_unit_id=su.id ORDER BY s.date DESC LIMIT 1) as lastState ")
 				.append("FROM survey_unit su ")
 				.append("JOIN campaign c ON su.campaign_id=c.id ")
 				.append("JOIN visibility v ON v.campaign_id=c.id AND su.organization_unit_id=v.organization_unit_id) t ")
-				.append("WHERE t.lastState IN ('ANV', 'NNS') ")
+				.append("WHERE t.lastState = 'ANV' ")
 				.append("AND t.interviewer_start_date<?")
 				.toString();
 		return pilotageJdbcTemplate.queryForList(qString, new Object[] {instantDate}, String.class);
