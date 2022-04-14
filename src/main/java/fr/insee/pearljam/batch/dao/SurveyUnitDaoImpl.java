@@ -40,10 +40,10 @@ public class SurveyUnitDaoImpl implements SurveyUnitDao {
 	}
 
 	@Override
-	public void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit, String interviewerId, String organizationUnitId) {
-		String qString = "UPDATE survey_unit SET priority=?, campaign_id=?, interviewer_id=?, organization_unit_id=? WHERE id=?";
+	public void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit, String organizationUnitId) {
+		String qString = "UPDATE survey_unit SET priority=?, campaign_id=?,  organization_unit_id=? WHERE id=?";
 		pilotageJdbcTemplate.update(qString, surveyUnit.isPriority(), campaignId,
-				interviewerId, organizationUnitId, surveyUnit.getId());
+				organizationUnitId, surveyUnit.getId());
 	}
 
 	public void deleteSurveyUnitByCampaignId(String campaignId) {

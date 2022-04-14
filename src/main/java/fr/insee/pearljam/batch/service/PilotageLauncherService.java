@@ -425,6 +425,7 @@ public class PilotageLauncherService {
 		pilotageFolderService.setCampaignName(in);
 		moveFileToProcessing("sampleprocessing", in, processing, pilotageFolderService.getCampaignName());
 		Campagne sampleProcessing = XmlUtils.xmlToObject(processing + "/" + pilotageFolderService.getFilename(), Campagne.class);
+		logger.log(Level.INFO, "SampleProcessing file parsed");
 		
 		// Extract campaignId, list of steps and list of survey-unit id from sampleprocessing
 		String campaignId = sampleProcessing.getIdSource() + sampleProcessing.getMillesime() + sampleProcessing.getIdPeriode();
@@ -445,19 +446,20 @@ public class PilotageLauncherService {
 			if(steps.contains(Constants.PILOTAGE)){
 				pilotageValidate = pilotageCampaignService.validateInput(mapPilotageSu.get(su), campaignId);
 				if(pilotageValidate) {
+					logger.log(Level.INFO, "Creating survey-unit {} in pilotage", su);
 					oldSu = pilotageCampaignService.createOrUpdateSurveyUnit(mapPilotageSu.get(su), campaignId);
-					logger.log(Level.INFO, "Survey-unit {} created in pilotage", su);
 				} else {
+					logger.log(Level.WARN, "Survey-unit {} is invalid", su);
 					returnCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
 				}
 			}
 			try{
 				if(pilotageValidate && steps.contains(Constants.DATACOLLECTION)){
+					logger.log(Level.INFO, "Creating survey-unit {} in data-collection", su);
 					dataCollectionloadService.createOrUpdateSurveyUnit(mapDataCollectionSu.get(su));
-					logger.log(Level.INFO, "Survey-unit {} created in data-collection", su);
 				}
 			}catch(SQLException e){
-				logger.log(Level.ERROR, "Error during create Survey-unit {} in data collection", su);
+				logger.log(Level.ERROR, "Error when creating Survey-unit {} in data collection", su);
 				if(steps.contains(Constants.PILOTAGE)){
 					//Rollback Survey unit creation/update on pearl BB
 					logger.log(Level.WARN, "Roll back for Survey-unit {} created in pilotage ...", su);
@@ -562,6 +564,8 @@ public class PilotageLauncherService {
 			logger.log(Level.ERROR, "Organizational Unit [{}] does not exist", strList);
 			return false;
 		}else {
+			int nbOU = campaign.getOrganizationalUnits()!=null?campaign.getOrganizationalUnits().getOrganizationalUnit().size():0;
+			logger.info("{} Organizational Units successfully checked", nbOU);
 			return true;
 		}
 		
@@ -585,13 +589,14 @@ public class PilotageLauncherService {
 						&& collectionStartDate.before(collectionEndDate) && collectionEndDate.before(endDate)) {
 					returnCode = true;
 				}else {
-					throw new ValidateException("Error no coherency between the dates for the Organizational Unit : " + organizationalUnitType.getId());
+					throw new ValidateException("Error : inconsistency between Organizational Unit dates  : OuId = " + organizationalUnitType.getId());
 				}
 			} catch (Exception e) {
 				throw new ValidateException("Error during process, error checking dates coherency for "+organizationalUnitType.getId()+" : "+e.getMessage());
 			}
 			
 		}
+		logger.info("Organizational Units dates are consistents.");
 		return returnCode;
 	}
 }
