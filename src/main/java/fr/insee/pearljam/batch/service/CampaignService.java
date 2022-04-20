@@ -613,8 +613,7 @@ public class CampaignService {
 		// Update sample identifier
 		sampleIdentifierDao.updateSampleIdentifier(surveyUnitType.getInseeSampleIdentiers(),
 				surveyUnitType.getId());
-		String organizationUnitAffectation = getOrganizationUnitAffectation(surveyUnitType);
-		surveyUnitDao.updateSurveyUnitById(campaignId, surveyUnitType,  organizationUnitAffectation);
+		surveyUnitDao.updateSurveyUnitById(campaignId, surveyUnitType);
 		
 		// Replace persons
 		phoneNumberDao.deletePhoneNumbersBySurveyUnitId(surveyUnitType.getId());
