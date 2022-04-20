@@ -77,6 +77,6 @@ public interface SurveyUnitDao {
 	void createSurveyUnit(String campaignId, SurveyUnitType surveyUnit, Long addressId, Long sampleIdentifierId,
 			String interviewerId, String organizationUnitId);
 
-	void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit, String organizationUnitId);
+	void updateSurveyUnitById(String campaignId, SurveyUnitType surveyUnit);
 
 }
