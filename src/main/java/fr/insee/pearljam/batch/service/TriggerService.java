@@ -9,6 +9,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
@@ -241,11 +242,18 @@ public class TriggerService {
 			logger.log(Level.INFO, "There are {} survey-units updated from state NVM to NNS : [{}]", lstSuNNS.size(),
 					strLstNNS);
 
-			// Get the list of Survey unit id to update from state ANV or NNS to VIN
-			lstSu = surveyUnitDao.getSurveyUnitAnvOrNnsToVIN(now());
+
+			// Get the list of Survey unit id to update from state NNS to ANV
+			lstSu = surveyUnitDao.getSurveyUnitNNS(now()).stream().filter(suId -> StringUtils.isNotBlank(surveyUnitDao.getSurveyUnitById(suId).getInterviewerId())).collect(Collectors.toList());
+			lstSu.stream().forEach(suId -> stateDao.createState(now(), "ANV", suId));
+			String strLstNnsToAnv = String.join(",", lstSu);
+			logger.log(Level.INFO, "There are {} survey-units updated from state NNS to ANV : [{}]", lstSu.size(), strLstNnsToAnv);
+
+			// Get the list of Survey unit id to update from state ANV to VIN
+			lstSu = surveyUnitDao.getSurveyUnitANV(now());
 			lstSu.stream().forEach(suId -> stateDao.createState(now(), "VIN", suId));
 			String strLstSu = String.join(",", lstSu);
-			logger.log(Level.INFO, "There are {} survey-units updated to state VIN : [{}]", lstSu.size(), strLstSu);
+			logger.log(Level.INFO, "There are {} survey-units updated from state ANV to VIN : [{}]", lstSu.size(), strLstSu);
 
 			// Get the list of Survey unit id to update to state NVA
 			lstSu = surveyUnitDao.getSurveyUnitForNVA(now());
