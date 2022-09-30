@@ -43,7 +43,7 @@ public class TestsEndToEndDeleteCampaign {
 	public static UnitTests unitTests = new UnitTests();
 	
 	/**
-	 * Scenario 1 : XML file is not valid
+	 * Scenario 1 : XML file is not valid (<Ide> markup instead of <Id>)
 	 * @throws ValidateException
 	 */
 	@Test
@@ -80,7 +80,7 @@ public class TestsEndToEndDeleteCampaign {
 	public void testScenario3() throws Exception {
 		String in = "src/test/resources/in/delete/testScenarios/deleteScenario3";
 		try {
-			pilotageLauncherService.validateLoadClean(BatchOption.DELETECAMPAIGN, in, OUT);
+			assertEquals(BatchErrorCode.OK_FONCTIONAL_WARNING,	pilotageLauncherService.validateLoadClean(BatchOption.DELETECAMPAIGN, in, OUT));
 		} catch(ValidateException ve) {
 			assertEquals(true, ve.getMessage().contains("Error validating campaign.xml : "));
 			assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of(OUT), "campaign","delete.warning.xml"));

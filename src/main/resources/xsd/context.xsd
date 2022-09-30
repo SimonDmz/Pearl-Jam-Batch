@@ -4,116 +4,99 @@
 	<xs:element name="Context">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="Users" minOccurs="0"/>
-				<xs:element ref="Interviewers" minOccurs="0"/>
-				<xs:element ref="OrganizationalUnits" minOccurs="0"/>
-				<xs:element ref="GeographicalLocations" minOccurs="0"/>
+				<xs:element ref="Users" minOccurs="0" />
+				<xs:element ref="Interviewers" minOccurs="0" />
+				<xs:element ref="OrganizationalUnits" minOccurs="0" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="Users" type="UsersType"/>
-	<xs:element name="User" type="UserType"/>
-	<xs:element name="Interviewers" type="InerviewersType"/>
-	<xs:element name="Interviewer" type="InterviewerType"/>
-	<xs:element name="OrganizationalUnits" type="OrganizationalUnitsType"/>
-	<xs:element name="OrganizationalUnit" type="OrganizationalUnitType"/>
-	<xs:element name="UsersRef" type="UsersRefType"/>
-	<xs:element name="InterviewersRef" type="InterviewersRefType"/>
-	<xs:element name="OrganizationalUnitsRef" type="OrganizationalUnitsRefType"/>
-	
-	<xs:element name="GeographicalLocations" type="GeographicalLocationsType"/>
-	<xs:element name="GeographicalLocation" type="GeographicalLocationType"/>
+	<xs:element name="Users" type="UsersType" />
+	<xs:element name="User" type="UserType" />
+	<xs:element name="Interviewers" type="InerviewersType" />
+	<xs:element name="Interviewer" type="InterviewerType" />
+	<xs:element name="OrganizationalUnits" type="OrganizationalUnitsType" />
+	<xs:element name="OrganizationalUnit" type="OrganizationalUnitType" />
+	<xs:element name="UsersRef" type="UsersRefType" />
+	<xs:element name="InterviewersRef" type="InterviewersRefType" />
+	<xs:element name="OrganizationalUnitsRef" type="OrganizationalUnitsRefType" />
 
 	<xs:complexType name="ContextType">
-			<xs:sequence>
-				<xs:element ref="Users"/>
-				<xs:element ref="Interviewers"/>
-				<xs:element ref="OrganizationalUnits"/>
-				<xs:element ref="GeographicalLocations"/>
-			</xs:sequence>
-		</xs:complexType>
+		<xs:sequence>
+			<xs:element ref="Users" />
+			<xs:element ref="Interviewers" />
+			<xs:element ref="OrganizationalUnits" />
+		</xs:sequence>
+	</xs:complexType>
 
 	<xs:complexType name="UsersType">
 		<xs:sequence>
-			<xs:element ref="User" maxOccurs="unbounded"/>
+			<xs:element ref="User" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="UserType">
 		<xs:sequence>
-			<xs:element name="Id" type="xs:string"/>
-			<xs:element name="FirstName" type="xs:string"/>
-			<xs:element name="LastName" type="xs:string"/>
+			<xs:element name="Id" type="xs:string" />
+			<xs:element name="FirstName" type="xs:string" />
+			<xs:element name="LastName" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="InerviewersType">
 		<xs:sequence>
-			<xs:element ref="Interviewer" maxOccurs="unbounded"/>
+			<xs:element ref="Interviewer" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="InterviewerType">
 		<xs:sequence>
-			<xs:element name="Id" type="xs:string"/>
-			<xs:element name="FirstName" type="xs:string"/>
-			<xs:element name="LastName" type="xs:string"/>
-			<xs:element name="Email" type="xs:string"/>
-			<xs:element name="PhoneNumber" type="xs:string"/>
+			<xs:element name="Id" type="xs:string" />
+			<xs:element name="FirstName" type="xs:string" />
+			<xs:element name="LastName" type="xs:string" />
+			<xs:element name="Email" type="xs:string" />
+			<xs:element name="PhoneNumber" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="OrganizationalUnitsType">
 		<xs:sequence>
-			<xs:element ref="OrganizationalUnit" maxOccurs="unbounded"/>
+			<xs:element ref="OrganizationalUnit" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="OrganizationalUnitType">
 		<xs:sequence>
-			<xs:element name="Id" type="xs:string"/>
-			<xs:element name="Label" type="xs:string"/>
+			<xs:element name="Id" type="xs:string" />
+			<xs:element name="Label" type="xs:string" />
 			<xs:element name="Type">
 				<xs:simpleType>
-        			<xs:restriction base="xs:string">
+					<xs:restriction base="xs:string">
 						<xs:pattern value="[A-Z ]+"></xs:pattern>
 					</xs:restriction>
-   				</xs:simpleType>
+				</xs:simpleType>
 			</xs:element>
-			<xs:element ref="UsersRef"/>
-			<xs:element ref="OrganizationalUnitsRef"/>
-      
+			<xs:element ref="UsersRef" />
+			<xs:element ref="OrganizationalUnitsRef" />
+
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="UsersRefType">
 		<xs:sequence>
-			<xs:element name="UserId" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="UserId" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="InterviewersRefType">
 		<xs:sequence>
-			<xs:element name="InterviewerId" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
-		</xs:sequence>
-	</xs:complexType>
-	
-	<xs:complexType name="OrganizationalUnitsRefType">
-		<xs:sequence>
-			<xs:element name="OrganizationalUnitId" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
-		</xs:sequence>
-	</xs:complexType>
-	
-	<xs:complexType name="GeographicalLocationsType">
-		<xs:sequence>
-			<xs:element ref="GeographicalLocation" maxOccurs="unbounded"/>
+			<xs:element name="InterviewerId" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="GeographicalLocationType">
+	<xs:complexType name="OrganizationalUnitsRefType">
 		<xs:sequence>
-			<xs:element name="Id" type="xs:string"/>
-			<xs:element name="Label" type="xs:string"/>
+			<xs:element name="OrganizationalUnitId" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
+
 </xs:schema>

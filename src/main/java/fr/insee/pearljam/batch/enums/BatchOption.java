@@ -1,14 +1,13 @@
 package fr.insee.pearljam.batch.enums;
 
 public enum BatchOption {
-	LOADCAMPAIGN("LOADCAMPAIGN"),
 	DELETECAMPAIGN("DELETECAMPAIGN"),
 	LOADCONTEXT("LOADCONTEXT"),
 	DAILYUPDATE("DAILYUPDATE"),
 	SYNCHRONIZE("SYNCHRONIZE"),
 	EXTRACT("EXTRACT"),
 	SAMPLEPROCESSING("SAMPLEPROCESSING");
-	
+
 	/**
 	 * label of the BatchOption
 	 */
@@ -16,6 +15,7 @@ public enum BatchOption {
 
 	/**
 	 * Defaut constructor for BatchOption
+	 * 
 	 * @param label
 	 */
 	BatchOption(String label) {
@@ -24,6 +24,7 @@ public enum BatchOption {
 
 	/**
 	 * Get the label for BatchOption
+	 * 
 	 * @return label
 	 */
 	public String getLabel() {

@@ -48,7 +48,7 @@
             <UsersRef>
                 <UserId>USER1</UserId>
             </UsersRef>
-            <OrganizationalUnitsRef/>
+            <OrganizationalUnitsRef />
         </OrganizationalUnit>
         <OrganizationalUnit>
             <Id>OU2</Id>
@@ -73,14 +73,4 @@
             </OrganizationalUnitsRef>
         </OrganizationalUnit>
     </OrganizationalUnits>
-    <GeographicalLocations>
-        <GeographicalLocation>
-            <Id>59350</Id>
-            <Label>Lille</Label>
-        </GeographicalLocation>
-        <GeographicalLocation>
-            <Id>75056</Id>
-            <Label>Paris</Label>
-        </GeographicalLocation>
-    </GeographicalLocations>
 </Context>

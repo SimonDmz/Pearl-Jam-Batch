@@ -6,9 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +24,10 @@ import org.xml.sax.SAXException;
 
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.campaign.Campaign;
-import fr.insee.pearljam.batch.campaign.OrganizationalUnitType;
 import fr.insee.pearljam.batch.campaign.SurveyUnitType;
 import fr.insee.pearljam.batch.config.ApplicationConfig;
 import fr.insee.pearljam.batch.context.Context;
 import fr.insee.pearljam.batch.dao.CampaignDao;
-import fr.insee.pearljam.batch.dao.OrganizationalUnitTypeDao;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.BatchException;
 import fr.insee.pearljam.batch.exception.DataBaseException;
@@ -94,7 +89,6 @@ public class PilotageLauncherService {
 					case LOADCONTEXT:
 						XmlUtils.validateXMLSchema(Constants.MODEL_CONTEXT, folderIn + "/" + name +".xml");
 						break;
-					case LOADCAMPAIGN:
 					case DELETECAMPAIGN:
 					case EXTRACT:
 						XmlUtils.validateXMLSchema(Constants.MODEL_CAMPAIGN, folderIn + "/" + name +".xml");
@@ -143,8 +137,6 @@ public class PilotageLauncherService {
 	 */
 	private String getName(BatchOption batchOption) {
 		switch(batchOption) {
-			case LOADCAMPAIGN:
-				return Constants.CAMPAIGN;
 			case DELETECAMPAIGN:
 				return Constants.CAMPAIGN_TO_DELETE;
 			case EXTRACT:
@@ -179,8 +171,6 @@ public class PilotageLauncherService {
 	 */
 	public BatchErrorCode load(BatchOption batchOption, String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException, BatchException, ParserConfigurationException, SAXException {
 		switch(batchOption) {
-			case LOADCAMPAIGN:
-				return loadCampaign(in, out, processing);
 			case DELETECAMPAIGN:
 				return deleteCampaign(in, out);
 			case EXTRACT:
@@ -211,7 +201,7 @@ public class PilotageLauncherService {
 		
 		String location;
 		String processedFilename = pilotageFolderService.getFilename();
-		if((batchOption==BatchOption.LOADCAMPAIGN || batchOption==BatchOption.SAMPLEPROCESSING) && !processedFilename.isBlank()) {
+		if(( batchOption==BatchOption.SAMPLEPROCESSING) && !processedFilename.isBlank()) {
 			location = processing + "/" + processedFilename;
 		}
 		else {
@@ -253,6 +243,9 @@ public class PilotageLauncherService {
 		case EXTRACT:
 			designation = "extract";
 			finalName = Constants.CAMPAIGN;
+			break;
+		case SAMPLEPROCESSING:
+			designation = "sp";
 			break;
 		default:
 			designation = "";
@@ -308,40 +301,6 @@ public class PilotageLauncherService {
 		}
 	}
 
-	/**
-	 * Specific function for load Campaign (Create or update)
-	 * @param in
-	 * @param out
-	 * @return BatchErrorCode
-	 * @throws BatchException
-	 * @throws SQLException
-	 * @throws DataBaseException
-	 * @throws ValidateException
-	 * @throws SynchronizationException 
-	 * @throws IOException 
-	 * @throws ParseException 
-	 */
-	public BatchErrorCode loadCampaign(String in, String out, String processing) throws SQLException, DataBaseException, ValidateException, SynchronizationException, IOException {
-		CampaignDao campaignDao = context.getBean(CampaignDao.class);
-		Campaign campaign = XmlUtils.xmlToObject(in, Campaign.class);
-		CampaignService campaignService = context.getBean(CampaignService.class);
-		if(campaign!=null) {
-			String campaignId = campaign.getId();
-		    moveFileToProcessing(Constants.CAMPAIGN, in, processing, campaignId);
-			if(checkOrganizationUnits(campaign) && checkDateConsistency(campaign)) {
-				return campaignService.createOrUpdateCampaign(
-						campaign, 
-						campaignDao.existCampaign(campaign.getId()), 
-						processing + "/" + pilotageFolderService.getFilename(), 
-						out);
-			}else{
-				throw new ValidateException("Error during load campaign " + campaign.getId());
-			}
-		}else {
-			throw new ValidateException(Constants.ERROR_CAMPAIGN_NULL);
-		}
-	}
-	
 	/**
 	 * Specific function for delete Campaign
 	 * 
@@ -544,59 +503,4 @@ public class PilotageLauncherService {
 				.collect(Collectors.toMap(SurveyUnit::getId, su-> su));
 	}
 
-	/**
-	 * check existence in delimited organiaztion units
-	 * @param campaign
-	 * @return false if at least one Organizational Unit does not exist 
-	 */
-	private boolean checkOrganizationUnits(Campaign campaign){
-		List<String> lstOrganizationalUnitMissing = new ArrayList<>();
-		if(campaign.getOrganizationalUnits()!=null) {
-			OrganizationalUnitTypeDao organizationalUnitTypeDao = context.getBean(OrganizationalUnitTypeDao.class);
-			for(OrganizationalUnitType organizationalUnitType : campaign.getOrganizationalUnits().getOrganizationalUnit()) {
-				if(!organizationalUnitTypeDao.existOrganizationalUnit(organizationalUnitType.getId())) {
-					lstOrganizationalUnitMissing.add(organizationalUnitType.getId());
-				}
-			}
-		}
-		if(!lstOrganizationalUnitMissing.isEmpty()) {
-			String strList = String.join(",", lstOrganizationalUnitMissing);
-			logger.log(Level.ERROR, "Organizational Unit [{}] does not exist", strList);
-			return false;
-		}else {
-			int nbOU = campaign.getOrganizationalUnits()!=null?campaign.getOrganizationalUnits().getOrganizationalUnit().size():0;
-			logger.info("{} Organizational Units successfully checked", nbOU);
-			return true;
-		}
-		
-	}
-	
-	private boolean checkDateConsistency(Campaign campaign) throws ValidateException {
-		boolean returnCode = false;
-		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-		if(campaign.getOrganizationalUnits() == null) {
-			return true;
-		}
-		for(OrganizationalUnitType organizationalUnitType : campaign.getOrganizationalUnits().getOrganizationalUnit()) {
-			try {
-				Date collectionStartDate = sdf.parse(organizationalUnitType.getCollectionStartDate());
-				Date collectionEndDate = sdf.parse(organizationalUnitType.getCollectionEndDate());
-				Date identificationPhaseStartDate = sdf.parse(organizationalUnitType.getIdentificationPhaseStartDate());
-				Date interviewerStartDate = sdf.parse(organizationalUnitType.getInterviewerStartDate());
-				Date managerStartDate = sdf.parse(organizationalUnitType.getManagementStartDate());
-				Date endDate = sdf.parse(organizationalUnitType.getEndDate());
-				if(managerStartDate.before(interviewerStartDate) && interviewerStartDate.before(identificationPhaseStartDate) && identificationPhaseStartDate.before(collectionStartDate) 
-						&& collectionStartDate.before(collectionEndDate) && collectionEndDate.before(endDate)) {
-					returnCode = true;
-				}else {
-					throw new ValidateException("Error : inconsistency between Organizational Unit dates  : OuId = " + organizationalUnitType.getId());
-				}
-			} catch (Exception e) {
-				throw new ValidateException("Error during process, error checking dates coherency for "+organizationalUnitType.getId()+" : "+e.getMessage());
-			}
-			
-		}
-		logger.info("Organizational Units dates are consistents.");
-		return returnCode;
-	}
 }
