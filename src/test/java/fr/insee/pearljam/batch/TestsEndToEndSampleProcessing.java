@@ -59,11 +59,11 @@ public class TestsEndToEndSampleProcessing {
 			dir.mkdir();
 		}
 		
-		dir = new File("src/test/resources/out/sample");
+		dir = new File(OUT_SAMPLE);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
-		dir = new File(OUT+"/campaign");
+		dir = new File(OUT_CAMPAIGN);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}

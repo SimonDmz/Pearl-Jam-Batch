@@ -42,7 +42,6 @@ import liquibase.resource.ResourceAccessor;
 @RunWith(Suite.class)
 @SuiteClasses({
 		UnitTests.class,
-		TestsEndToEndCampaign.class,
 		TestsEndToEndDeleteCampaign.class, 
 		TestsEndToEndSampleProcessing.class,
 		TestsEndToEndContext.class, 
@@ -208,7 +207,22 @@ public class PearlJamBatchApplicationTests {
 		if (!processingFolder.exists()) {
 			processingFolder.mkdir();
 		}
-
+		File dirInSample = new File("src/test/resources/in/sample");
+		if (!dirInSample.exists()) {
+			dirInSample.mkdir();
+		}
+		File dirOutSample = new File("src/test/resources/out/sample");
+		if (!dirOutSample.exists()) {
+			dirOutSample.mkdir();
+		}
+		File dirInCampaign = new File("src/test/resources/in/campaign");
+		if (!dirInCampaign.exists()) {
+			dirInCampaign.mkdir();
+		}
+		File dirOutCampaign = new File("src/test/resources/out/campaign");
+		if (!dirOutCampaign.exists()) {
+			dirOutCampaign.mkdir();
+		}
 	}
 		
 	@Bean

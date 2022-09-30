@@ -52,7 +52,7 @@ public class CampaignDaoImpl implements CampaignDao {
 	}
 	
 	public void updateCampaignById(Campaign campaign) {
-		String qString ="UPDATE campaign SET label=? WHERE id=?";
+		String qString ="UPDATE campaign SET label=? , identification_configuration=? , contact_attempt_configuration=? , contact_outcome_configuration=? WHERE id=?";
 
 		pilotageJdbcTemplate.update(qString, campaign.getLabel(), campaign.getId().toUpperCase());
 	}

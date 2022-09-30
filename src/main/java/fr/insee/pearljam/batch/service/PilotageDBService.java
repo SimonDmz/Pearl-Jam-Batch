@@ -20,7 +20,7 @@ public class PilotageDBService {
 	Connection pilotageConnection;
 	
 	List<String> missingTable = new ArrayList<>();
-	List<String> lstTable = List.of("interviewer", "sample_identifier", "contact_attempt", "geographical_location",
+	List<String> lstTable = List.of("interviewer", "sample_identifier", "contact_attempt", 
 			"campaign", "comment", "state", "visibility", "user", "survey_unit", "contact_outcome",
 			 "address", "organization_unit", "preference");
 

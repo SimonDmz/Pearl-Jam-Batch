@@ -8,7 +8,7 @@
         </User>
     </Users>
     <Interviewers>
-		<Interviewer>
+        <Interviewer>
             <Id>INTW11</Id>
             <FirstName>Lars </FirstName>
             <LastName>Ulrich</LastName>
@@ -21,18 +21,8 @@
             <Id>OU1</Id>
             <Label>Local organizational unit 1</Label>
             <Type>LOCAL</Type>
-            <UsersRef/>
-            <OrganizationalUnitsRef/>
+            <UsersRef />
+            <OrganizationalUnitsRef />
         </OrganizationalUnit>
     </OrganizationalUnits>
-    <GeographicalLocations>
-        <GeographicalLocation>
-            <Id>59350</Id>
-            <Label>Lille</Label>
-        </GeographicalLocation>
-        <GeographicalLocation>
-            <Id>75056</Id>
-            <Label>Paris</Label>
-        </GeographicalLocation>
-    </GeographicalLocations>
 </Context>

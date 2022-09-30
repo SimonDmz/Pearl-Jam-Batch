@@ -17,7 +17,6 @@
 				<UniteEnquetee>
 					<Identifiant>SIM1234</Identifiant>
 					<Prioritaire>true</Prioritaire>
-					<LocalisationGeographique>32220</LocalisationGeographique>
 					<IdentifiantsInsee>
 						<Bs>0</Bs>
 						<Ec>0</Ec>
@@ -47,7 +46,7 @@
 						<Telephones>
 							<Telephone>
 								<Source>fiscal</Source>
-								<Favori>true</Favori>  <!-- ===> défaut = false -->
+								<Favori>true</Favori> <!-- ===> défaut = false -->
 								<Numero>0101010101</Numero>
 							</Telephone>
 						</Telephones>
@@ -62,6 +61,12 @@
 							<LibelleCommune>...</LibelleCommune>
 							<CodeCommune>LUPPE VIOLLES</CodeCommune>
 							<LibellePays>...</LibellePays>
+							<Batiment>...</Batiment>
+							<Etage>...</Etage>
+							<Porte>...</Porte>
+							<Escalier>...</Escalier>
+							<Ascenseur>true</Ascenseur>
+							<QPV>true</QPV>
 						</Adresse>
 					</Contact>
 					<Contact>
