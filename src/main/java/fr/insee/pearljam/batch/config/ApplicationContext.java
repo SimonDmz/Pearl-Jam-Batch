@@ -139,7 +139,7 @@ public class ApplicationContext {
 	 */
 	@Bean(name = "habilitationApiBaseUrl")
 	public String getHabilitationApiBaseUrl() {
-		return String.format("%s://%s:%s/%s", ApplicationConfig.ldapServiceUrlScheme,
+		return String.format("%s://%s:%s", ApplicationConfig.ldapServiceUrlScheme,
 				ApplicationConfig.ldapServiceUrlHost, ApplicationConfig.ldapServiceUrlPort);
 	}
 
