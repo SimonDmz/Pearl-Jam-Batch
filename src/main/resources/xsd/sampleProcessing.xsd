@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
-<xs:schema attributeFormDefault="unqualified"
-	elementFormDefault="qualified"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="Campagne">
 		<xs:complexType>
 			<xs:sequence>
@@ -35,7 +33,6 @@
 															<xs:sequence>
 																<xs:element name="Identifiant" type="xs:string" />
 																<xs:element name="Prioritaire" type="xs:boolean" />
-																<xs:element name="LocalisationGeographique" type="xs:string" />
 																<xs:element name="IdentifiantsInsee">
 																	<xs:complexType>
 																		<xs:sequence>
@@ -64,7 +61,7 @@
 																<xs:element minOccurs="0" maxOccurs="1" name="Commentaires">
 																	<xs:complexType>
 																		<xs:sequence>
-																			<xs:element minOccurs="0" maxOccurs="unbounded" name="Commentaire" >
+																			<xs:element minOccurs="0" maxOccurs="unbounded" name="Commentaire">
 																				<xs:complexType>
 																					<xs:sequence>
 																						<xs:element name="Type">
@@ -89,22 +86,22 @@
 													<xs:element name="Contacts">
 														<xs:complexType>
 															<xs:sequence>
-																<xs:element  minOccurs="0" maxOccurs="unbounded" name="Contact">
+																<xs:element minOccurs="0" maxOccurs="unbounded" name="Contact">
 																	<xs:complexType>
 																		<xs:sequence>
 																			<xs:element name="Principal" type="xs:boolean" />
 																			<xs:element name="CiviliteReferent">
 																				<xs:simpleType>
-																			      	<xs:restriction base="xs:string">
-																			          	<xs:enumeration value="Mme"/>
-																			          	<xs:enumeration value="M."/>
-																			      	</xs:restriction>
+																					<xs:restriction base="xs:string">
+																						<xs:enumeration value="Mme" />
+																						<xs:enumeration value="M." />
+																					</xs:restriction>
 																				</xs:simpleType>
 																			</xs:element>
 																			<xs:element name="NomReferent" type="xs:string" />
 																			<xs:element name="PrenomReferent" type="xs:string" />
 																			<xs:element name="MailReferent" type="xs:string" />
-																			<xs:element name="MailFavori" type="xs:boolean" minOccurs="0"/>
+																			<xs:element name="MailFavori" type="xs:boolean" minOccurs="0" />
 																			<xs:element name="DateNaissance" type="xs:string" />
 																			<xs:element name="Telephones">
 																				<xs:complexType>
@@ -129,7 +126,7 @@
 																					</xs:sequence>
 																				</xs:complexType>
 																			</xs:element>
-																			<xs:element name="Adresse"  minOccurs="0" maxOccurs="1">
+																			<xs:element name="Adresse" minOccurs="0" maxOccurs="1">
 																				<xs:complexType>
 																					<xs:sequence>
 																						<xs:element name="NumeroVoie" type="xs:string" />
@@ -142,6 +139,12 @@
 																						<xs:element name="LibelleCommune" type="xs:string" />
 																						<xs:element name="CodeCommune" type="xs:string" />
 																						<xs:element name="LibellePays" type="xs:string" />
+																						<xs:element name="Batiment" type="xs:string" />
+																						<xs:element name="Etage" type="xs:string" />
+																						<xs:element name="Porte" type="xs:string" />
+																						<xs:element name="Escalier" type="xs:string" />
+																						<xs:element name="Ascenseur" type="xs:boolean" />
+																						<xs:element name="QPV" type="xs:boolean" />
 																					</xs:sequence>
 																				</xs:complexType>
 																			</xs:element>

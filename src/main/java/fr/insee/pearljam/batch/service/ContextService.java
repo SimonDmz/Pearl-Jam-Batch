@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import fr.insee.pearljam.batch.Constants;
 import fr.insee.pearljam.batch.context.Context;
-import fr.insee.pearljam.batch.context.GeographicalLocationType;
-import fr.insee.pearljam.batch.context.GeographicalLocationsType;
 import fr.insee.pearljam.batch.context.InerviewersType;
 import fr.insee.pearljam.batch.context.InterviewerType;
 import fr.insee.pearljam.batch.context.OrganizationalUnitType;
@@ -25,7 +23,6 @@ import fr.insee.pearljam.batch.context.OrganizationalUnitsType;
 import fr.insee.pearljam.batch.context.UserType;
 import fr.insee.pearljam.batch.context.UsersRefType;
 import fr.insee.pearljam.batch.context.UsersType;
-import fr.insee.pearljam.batch.dao.GeographicalLocationDao;
 import fr.insee.pearljam.batch.dao.InterviewerTypeDao;
 import fr.insee.pearljam.batch.dao.OrganizationalUnitTypeDao;
 import fr.insee.pearljam.batch.dao.UserTypeDao;
@@ -50,7 +47,6 @@ public class ContextService {
 
 	UserTypeDao userDao;
 	InterviewerTypeDao interviewerDao;
-	GeographicalLocationDao geographicalLocationDao;
 	OrganizationalUnitTypeDao organizationalUnitDao;
 
 	private static final Logger logger = LogManager.getLogger(ContextService.class);
@@ -65,7 +61,6 @@ public class ContextService {
 	 */
 	public BatchErrorCode createContext(Context context) throws SQLException, DataBaseException {
 		organizationalUnitDao = this.context.getBean(OrganizationalUnitTypeDao.class);
-		geographicalLocationDao = this.context.getBean(GeographicalLocationDao.class);
 		interviewerDao = this.context.getBean(InterviewerTypeDao.class);
 		userDao = this.context.getBean(UserTypeDao.class);
 		BatchErrorCode returnCode = BatchErrorCode.OK;
@@ -75,8 +70,6 @@ public class ContextService {
 			returnCode = createUsers(context.getUsers(), returnCode);
 			// Create Interviewers
 			returnCode = createInterviewers(context.getInterviewers(), returnCode);
-			// Create Geographical locations
-			returnCode = createGeographicalLocations(context.getGeographicalLocations(), returnCode);
 			// Create Organizational Units
 			returnCode = createOrganizationalUnits(context.getOrganizationalUnits(), returnCode);
 			pilotageConnection.commit();
@@ -200,32 +193,6 @@ public class ContextService {
 		return returnCreateCode;
 	}
 
-	
-	/**
-	 * Create GeographicalLocations and all data associated
-	 * 
-	 * @param geographicalLocationsType
-	 * @param returnCode
-	 * @return
-	 */
-	private BatchErrorCode createGeographicalLocations(GeographicalLocationsType geographicalLocationsType, BatchErrorCode returnCode) {
-		BatchErrorCode returnCreateCode = returnCode;
-		if (geographicalLocationsType != null) {
-			for (GeographicalLocationType geographicalLocation : geographicalLocationsType.getGeographicalLocation()) {
-				if (geographicalLocationDao.existGeographicalLocation(geographicalLocation.getId())) {
-					logger.log(Level.WARN, "The geographical location {} already exists", geographicalLocation.getId());
-					returnCreateCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
-				} else {
-					geographicalLocationDao.createGeographicalLocation(geographicalLocation);
-					logger.log(Level.INFO, "The geographical location {} has been created", geographicalLocation.getId());
-				}
-			}
-		} else {
-			logger.log(Level.WARN, "There is no geographical locations to treat");
-			returnCreateCode = BatchErrorCode.OK_FONCTIONAL_WARNING;
-		}
-		return returnCreateCode;
-	}
 
 	/**
 	 * Create Users and all data associated

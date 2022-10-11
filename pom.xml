@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.insee.pearljam</groupId>
 	<artifactId>pearljam-batch</artifactId>
-	<version>2.4.14</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 	<name>pearljam-batch</name>
 	<description>PearlJam Batch</description>
@@ -17,7 +17,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<saxon.version>9.7.0-8</saxon.version>
-		<queenbatch.version>4.1.5</queenbatch.version>
+		<queenbatch.version>4.1.10</queenbatch.version>
 	</properties>
 
 	<dependencyManagement>

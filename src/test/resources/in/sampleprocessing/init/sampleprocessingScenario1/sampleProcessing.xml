@@ -18,7 +18,6 @@
 					<test></test>
 					<Identifiant>SIM1234</Identifiant>
 					<Prioritaire>true</Prioritaire>
-					<LocalisationGeographique>32220</LocalisationGeographique>
 					<IdentifiantsInsee>
 						<Bs>0</Bs>
 						<Ec>0</Ec>

@@ -1,13 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context>
-    <GeographicalLocations>
-        <GeographicalLocation>
-            <Id>59350</Id>
-            <Label>Lille</Label>
-        </GeographicalLocation>
-        <GeographicalLocation>
-            <Id>75056</Id>
-            <Label>Paris</Label>
-        </GeographicalLocation>
-    </GeographicalLocations>
-</Context>
+<Context></Context>

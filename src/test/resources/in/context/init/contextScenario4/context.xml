@@ -30,7 +30,7 @@
             <Email>lars.urlich@test.com</Email>
             <PhoneNumber>0101010101</PhoneNumber>
         </Interviewer>
-		<Interviewer>
+        <Interviewer>
             <Id>INTW11</Id>
             <FirstName>Lars </FirstName>
             <LastName>Ulrich</LastName>
@@ -60,7 +60,7 @@
             <UsersRef>
                 <UserId>USER2</UserId>
             </UsersRef>
-            <OrganizationalUnitsRef/>
+            <OrganizationalUnitsRef />
         </OrganizationalUnit>
         <OrganizationalUnit>
             <Id>OU2</Id>
@@ -69,7 +69,7 @@
             <UsersRef>
                 <UserId>USER3</UserId>
             </UsersRef>
-            <OrganizationalUnitsRef/>
+            <OrganizationalUnitsRef />
         </OrganizationalUnit>
         <OrganizationalUnit>
             <Id>OU3</Id>
@@ -84,14 +84,5 @@
             </OrganizationalUnitsRef>
         </OrganizationalUnit>
     </OrganizationalUnits>
-    <GeographicalLocations>
-        <GeographicalLocation>
-            <Id>59350</Id>
-            <Label>Lille</Label>
-        </GeographicalLocation>
-        <GeographicalLocation>
-            <Id>75056</Id>
-            <Label>Paris</Label>
-        </GeographicalLocation>
-    </GeographicalLocations>
+
 </Context>

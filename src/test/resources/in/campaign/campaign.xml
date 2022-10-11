@@ -26,32 +26,30 @@
         <SurveyUnit>
             <Id>simpsons2022_1</Id>
             <InterviewerId>INTW1</InterviewerId>
-      <OrganizationalUnitId>OU-NORTH</OrganizationalUnitId>
+            <OrganizationalUnitId>OU-NORTH</OrganizationalUnitId>
             <Persons>
-              <Person>
-              <Title>Mister</Title>
-              <FirstName>...</FirstName>
-              <LastName>...</LastName>
-              <Email>example@example.fr</Email>
-              <DateOfBirth>01/01/2020</DateOfBirth>
-              <Privileged>true</Privileged>
-              <PhoneNumbers>
-                <PhoneNumber>
-                    <Number>0101010101</Number>
-                    <Source>fiscal</Source>
-                </PhoneNumber>
-                <PhoneNumber>
-                    <Number>0202020202</Number>
-                    <Source>directory</Source>
-                </PhoneNumber>
-              </PhoneNumbers>
-            </Person>
-          </Persons>
+                <Person>
+                    <Title>Mister</Title>
+                    <FirstName>...</FirstName>
+                    <LastName>...</LastName>
+                    <Email>example@example.fr</Email>
+                    <DateOfBirth>01/01/2020</DateOfBirth>
+                    <Privileged>true</Privileged>
+                    <PhoneNumbers>
+                        <PhoneNumber>
+                            <Number>0101010101</Number>
+                            <Source>fiscal</Source>
+                        </PhoneNumber>
+                        <PhoneNumber>
+                            <Number>0202020202</Number>
+                            <Source>directory</Source>
+                        </PhoneNumber>
+                    </PhoneNumbers>
+                </Person>
+            </Persons>
             <Priority>true</Priority>
-            
-                
-                
-            
+
+
             <InseeAddress>
                 <GeographicalLocationId>35242</GeographicalLocationId>
                 <L1>...</L1>
@@ -79,32 +77,30 @@
         <SurveyUnit>
             <Id>simpsons2022_2</Id>
             <InterviewerId>INTW4</InterviewerId>
-      <OrganizationalUnitId>OU-NORTH</OrganizationalUnitId>
+            <OrganizationalUnitId>OU-NORTH</OrganizationalUnitId>
             <Persons>
-              <Person>
-              <Title>Mister</Title>
-              <FirstName>...</FirstName>
-              <LastName>...</LastName>
-              <Email>example@example.fr</Email>
-              <DateOfBirth>01/01/2020</DateOfBirth>
-              <Privileged>true</Privileged>
-              <PhoneNumbers>
-                <PhoneNumber>
-                    <Number>0101010101</Number>
-                    <Source>fiscal</Source>
-                </PhoneNumber>
-                <PhoneNumber>
-                    <Number>0202020202</Number>
-                    <Source>directory</Source>
-                </PhoneNumber>
-              </PhoneNumbers>
-            </Person>
-          </Persons>
+                <Person>
+                    <Title>Mister</Title>
+                    <FirstName>...</FirstName>
+                    <LastName>...</LastName>
+                    <Email>example@example.fr</Email>
+                    <DateOfBirth>01/01/2020</DateOfBirth>
+                    <Privileged>true</Privileged>
+                    <PhoneNumbers>
+                        <PhoneNumber>
+                            <Number>0101010101</Number>
+                            <Source>fiscal</Source>
+                        </PhoneNumber>
+                        <PhoneNumber>
+                            <Number>0202020202</Number>
+                            <Source>directory</Source>
+                        </PhoneNumber>
+                    </PhoneNumbers>
+                </Person>
+            </Persons>
             <Priority>true</Priority>
-            
-                
-                
-            
+
+
             <InseeAddress>
                 <GeographicalLocationId>35242</GeographicalLocationId>
                 <L1>...</L1>

@@ -11,30 +11,18 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.ExpectedCount;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.insee.pearljam.batch.config.ApplicationContext;
-import fr.insee.pearljam.batch.dto.InterviewerDto;
-import fr.insee.pearljam.batch.dto.KeycloakResponseDto;
-import fr.insee.pearljam.batch.dto.SimpleIdDto;
 import fr.insee.pearljam.batch.enums.BatchOption;
 import fr.insee.pearljam.batch.exception.ArgumentException;
+import fr.insee.pearljam.batch.exception.ValidateException;
 import fr.insee.pearljam.batch.service.PilotageLauncherService;
 import fr.insee.pearljam.batch.utils.BatchErrorCode;
 import fr.insee.pearljam.batch.utils.PathUtils;
 import fr.insee.pearljam.batch.utils.XmlUtils;
+import fr.insee.queen.batch.service.DatasetService;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;      
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 
 public class UnitTests {
@@ -44,18 +32,12 @@ public class UnitTests {
 	/* Instantiate the Launcher class via Lanceur.class */
 	public Lanceur launcher = new Lanceur();
 	
-    private RestTemplate restTemplate = context.getBean(RestTemplate.class);
-	
 	/* Create a temporary service for the tests*/	
     private PilotageLauncherService pilotageLauncherService = context.getBean(PilotageLauncherService.class);
 	
-	private String keycloakTokenUrl = (String) context.getBean("keycloakAuthUrl");
-	private String contextReferentialBaseUrl = (String) context.getBean("contextReferentialBaseUrl");
-	
-	private MockRestServiceServer mockServer;
-    private ObjectMapper mapper = new ObjectMapper();
-    
-	private static final String PROCESSING = "src/test/resources/in/campaign/testScenarios/processing";
+	DatasetService datasetService = context.getBean(DatasetService.class);
+
+	private static final String PROCESSING = "src/test/resources/in/sampleprocessing/testScenarios/processing";
 
 	/**
 	 * This method is executed before each test in this class.
@@ -65,10 +47,8 @@ public class UnitTests {
 	@Before
 	public void setUp() throws Exception {
 		PearlJamBatchApplicationTests.initData();
-		PearlJamBatchApplicationTests.copyFiles("campaign");
+		PearlJamBatchApplicationTests.copyFiles("sampleprocessing");
 		
-		MockitoAnnotations.initMocks(this);
-		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 		
 	/* Tests for PathUtils.java */
@@ -85,12 +65,12 @@ public class UnitTests {
 	
 	@Test
 	public void directoryShouldContainsExtension() throws IOException {
-		assertEquals(true, PathUtils.isDirContainsFileExtension(Path.of("src/test/resources/in/campaign/testScenarios/"), "campaign.xml"));
+		assertEquals(true, PathUtils.isDirContainsFileExtension(Path.of("src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario5"), "sampleProcessing.xml"));
 	}
 	
 	@Test
 	public void fileShouldExist() throws IOException {
-		assertEquals(true, PathUtils.isFileExist("src/test/resources/in/campaign/testScenarios/campaign.xml"));
+		assertEquals(true, PathUtils.isFileExist("src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario5/sampleProcessing.xml"));
 	}
 	
 	/* Run Batch */
@@ -112,7 +92,7 @@ public class UnitTests {
 	public void shouldValidateCampaignWithoutError() throws Exception {
 		boolean error = false;
 		try {
-			XmlUtils.validateXMLSchema(Constants.class.getResource("/xsd/campaign.xsd"), "src/test/resources/in/campaign/testScenarios/campaign.xml");
+			XmlUtils.validateXMLSchema(Constants.MODEL_SAMPLEPROCESSING, "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario5/sampleProcessing.xml");
 		} catch (Exception e) {
 			error = true;
 		}
@@ -127,7 +107,7 @@ public class UnitTests {
 	public void shouldValidateCampaignWithError() throws Exception {
 		boolean error = false;
 		try {
-			XmlUtils.validateXMLSchema(Constants.MODEL_CAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario1/campaign.xml");
+			XmlUtils.validateXMLSchema(Constants.MODEL_SAMPLEPROCESSING, "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario1/sampleProcessing.xml");
 		} catch (Exception e) {
 			error = true;
 		}
@@ -137,41 +117,26 @@ public class UnitTests {
 	/* Load */
 	
 	@Test
-	public void loadCampaignWithoutError() throws Exception {
-		SimpleIdDto idDto = new SimpleIdDto(); 
-		idDto.setId("BLA");
-		
-		InterviewerDto intDto = new InterviewerDto();
-		intDto.setIdep("INTW1");
-		
-		KeycloakResponseDto resp = new KeycloakResponseDto();
-		resp.setAccess_token("token");
-		
-		
-		expectExternalCall(keycloakTokenUrl, resp);
-		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/simpsons2022_1", idDto);
-		expectExternalCall(keycloakTokenUrl, resp);
-		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/simpsons2022_2", idDto);
-
-		assertEquals(BatchErrorCode.OK, pilotageLauncherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaign.xml", "src/test/resources/out/unitTests", PROCESSING));
+	public void loadSampleProcessingWithoutError() throws Exception {
+			datasetService.createDataSet();
+			assertEquals(BatchErrorCode.OK, pilotageLauncherService.load(BatchOption.SAMPLEPROCESSING, "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario5/sampleProcessing.xml", "src/test/resources/out/sampleprocessing/testScenarios", PROCESSING));
 	}
 	
 	@Test
-	public void loadCampaignWithError() throws Exception {
-		File deleteOutFile = new File("src/test/resources/out/unitTests");
-		FileUtils.cleanDirectory(deleteOutFile);
-		
-		KeycloakResponseDto resp = new KeycloakResponseDto();
-		resp.setAccess_token("token");
-		SimpleIdDto idDto = new SimpleIdDto(); 
-		idDto.setId("BLA");
-		
-		expectExternalCall(keycloakTokenUrl, resp);
-		expectExternalCall(contextReferentialBaseUrl + "/sabiane/organization-units/survey-unit/su1234", idDto);
+	public void loadSampleProcessingWithError() throws Exception {
 
-        
-		pilotageLauncherService.load(BatchOption.LOADCAMPAIGN, "src/test/resources/in/campaign/testScenarios/campaignScenario9/campaign.xml", "src/test/resources/out/unitTests", PROCESSING);
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"), "campaign","error.list"));
+		datasetService.createDataSet();
+		File deleteOutFile = new File("src/test/resources/out/sampleprocessing/testScenarios");
+		FileUtils.cleanDirectory(deleteOutFile);
+
+		try {
+			pilotageLauncherService.load(BatchOption.SAMPLEPROCESSING,
+			"src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario4/sampleProcessing.xml",
+			"src/test/resources/out/sampleprocessing/testScenarios/", PROCESSING);
+		} catch(ValidateException ve) {
+			assertEquals(true, PathUtils.isDirContainsErrorFile(
+			Path.of("src/test/resources/out/sampleprocessing/testScenarios"), "sampleProcessing", ".error.xml"));
+		}
 	}
 	
 	/* Clean and reset */
@@ -183,10 +148,11 @@ public class UnitTests {
 	 */
 	@Test
 	public void cleandAndResetCampaignWithoutError() throws Exception {
-		File deleteOutFile = new File("src/test/resources/out/unitTests");
+		datasetService.createDataSet();
+		File deleteOutFile = new File("src/test/resources/out/sampleprocessing/testScenarios");
 		FileUtils.cleanDirectory(deleteOutFile);
-		pilotageLauncherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.OK, BatchOption.LOADCAMPAIGN);
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"),"campaign", ".done.xml"));
+		pilotageLauncherService.cleanAndReset("sampleProcessing", "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario5/sampleProcessing.xml", "src/test/resources/out/sampleprocessing/testScenarios", PROCESSING, BatchErrorCode.OK, BatchOption.SAMPLEPROCESSING);
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/sampleprocessing/testScenarios"),"sampleProcessing", ".done.xml"));
 	}
 	
 	/**
@@ -196,24 +162,16 @@ public class UnitTests {
 	 */
 	@Test
 	public void cleandAndResetCampaignWithError() throws Exception {
-		File deleteOutFile = new File("src/test/resources/out/unitTests");
+		datasetService.createDataSet();
+		File deleteOutFile = new File("src/test/resources/out/sampleprocessing/testScenarios");
 		FileUtils.cleanDirectory(deleteOutFile);
-		pilotageLauncherService.cleanAndReset("campaign", "src/test/resources/in/campaign/testScenarios/campaignScenario5/campaign.xml", "src/test/resources/out/unitTests/", PROCESSING, BatchErrorCode.KO_FONCTIONAL_ERROR, BatchOption.LOADCAMPAIGN);
-		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/unitTests"),"campaign", ".error.xml"));
+		pilotageLauncherService.cleanAndReset("sampleProcessing", "src/test/resources/in/sampleprocessing/testScenarios/sampleprocessingScenario4/sampleProcessing.xml", "src/test/resources/out/sampleprocessing/testScenarios", PROCESSING, BatchErrorCode.KO_FONCTIONAL_ERROR, BatchOption.SAMPLEPROCESSING);
+		assertEquals(true, PathUtils.isDirContainsErrorFile(Path.of("src/test/resources/out/sampleprocessing/testScenarios"), "sampleProcessing",".error.xml"));
 	}
-	
-	private void expectExternalCall(String url, Object resp) throws JsonProcessingException {
-		mockServer.expect(ExpectedCount.once(), 
-		          requestTo(url))
-		          .andRespond(withStatus(HttpStatus.OK)
-		          .contentType(MediaType.APPLICATION_JSON)
-		          .body(mapper.writeValueAsString(resp))
-		        ); 
-	}
-	
+
 	@After
 	public void cleanOutFolder() {
-		purgeDirectory(new File("src/test/resources/out/unitTests"));
+		purgeDirectory(new File("src/test/resources/out/sampleprocessing/testScenarios"));
 		purgeDirectory(new File(PROCESSING));
 	}
 	
@@ -226,7 +184,7 @@ public class UnitTests {
 	
 	@AfterClass
 	public static void deleteFiles() throws IOException {
-		File deleteUnitTestsOutDir = new File("src/test/resources/out/unitTests");
+		File deleteUnitTestsOutDir = new File("src/test/resources/out/sampleprocessing/testScenarios");
 		FileUtils.deleteDirectory(deleteUnitTestsOutDir);
 	}
 }

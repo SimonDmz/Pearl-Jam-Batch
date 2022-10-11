@@ -23,11 +23,11 @@ import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Question
 import fr.insee.pearljam.batch.sampleprocessing.Campagne.Questionnaires.Questionnaire.InformationsGenerales.UniteEnquetee.IdentifiantsInsee;
 
 /**
- * Operation on XML Content 
- * - getXmlNodeFile 
- * - validateXMLSchema 
- * - xmlToObject 
- * - objectToXML 
+ * Operation on XML Content
+ * - getXmlNodeFile
+ * - validateXMLSchema
+ * - xmlToObject
+ * - objectToXML
  * - removeSurveyUnitNode
  * - updateSampleFileErrorList
  * 
@@ -48,22 +48,26 @@ public class PilotageMapper {
 					SurveyUnitType surveyUnitType = new SurveyUnitType();
 					surveyUnitType.setId(su.getInformationsGenerales().getUniteEnquetee().getIdentifiant());
 					surveyUnitType.setPriority(su.getInformationsGenerales().getUniteEnquetee().isPrioritaire());
-					surveyUnitType.setInterviewerId(su.getInformationsGenerales().getUniteEnquetee().getAffectation().getEnqueteurId());
-					surveyUnitType.setOrganizationalUnitId(su.getInformationsGenerales().getUniteEnquetee().getAffectation().getUniteOrganisationnelleId());
-					surveyUnitType.setInseeAddress(getInseeAddressFromSampleProcessing(su.getInformationsGenerales().getContacts(), su.getInformationsGenerales().getUniteEnquetee().getLocalisationGeographique()));
-					surveyUnitType.setInseeSampleIdentiers(getInseeSampleIdentiersFromSampleProcessing(su.getInformationsGenerales().getUniteEnquetee().getIdentifiantsInsee()));
-					surveyUnitType.setPersons(getPersonsFromSampleProcessing(su.getInformationsGenerales().getContacts()));
-					surveyUnitType.setComments(getCommentsFromSampleProcessing(su.getInformationsGenerales().getUniteEnquetee().getCommentaires()));
+					surveyUnitType.setInterviewerId(
+							su.getInformationsGenerales().getUniteEnquetee().getAffectation().getEnqueteurId());
+					surveyUnitType.setOrganizationalUnitId(su.getInformationsGenerales().getUniteEnquetee()
+							.getAffectation().getUniteOrganisationnelleId());
+					surveyUnitType.setInseeAddress(
+							getInseeAddressFromSampleProcessing(su.getInformationsGenerales().getContacts()));
+					surveyUnitType.setInseeSampleIdentiers(getInseeSampleIdentiersFromSampleProcessing(
+							su.getInformationsGenerales().getUniteEnquetee().getIdentifiantsInsee()));
+					surveyUnitType
+							.setPersons(getPersonsFromSampleProcessing(su.getInformationsGenerales().getContacts()));
+					surveyUnitType.setComments(getCommentsFromSampleProcessing(
+							su.getInformationsGenerales().getUniteEnquetee().getCommentaires()));
 					return surveyUnitType;
-				}).collect(Collectors.toList())
-		);
+				}).collect(Collectors.toList()));
 		return campaign;
 	}
-	
-	
+
 	private static CommentsType getCommentsFromSampleProcessing(Commentaires commentaires) {
 		CommentsType comments = new CommentsType();
-		
+
 		if (commentaires == null || commentaires.getCommentaire().isEmpty())
 			return comments;
 
@@ -102,7 +106,7 @@ public class PilotageMapper {
 			person.setFavoriteEmail(contact.isMailFavori() != null ? contact.isMailFavori() : false);
 			person.setPrivileged(contact.isPrincipal());
 			person.setDateOfBirth(contact.getDateNaissance());
-			person.setPhoneNumbers( getPhoneNumbersFromSampleProcessing(contact.getTelephones()));
+			person.setPhoneNumbers(getPhoneNumbersFromSampleProcessing(contact.getTelephones()));
 			persons.getPerson().add(person);
 		}
 		return persons;
@@ -120,10 +124,10 @@ public class PilotageMapper {
 		return phoneNumbers;
 	}
 
-	private static InseeAddressType getInseeAddressFromSampleProcessing(Contacts contacts, String geographicalLocation) {
+	private static InseeAddressType getInseeAddressFromSampleProcessing(Contacts contacts) {
 		InseeAddressType address = new InseeAddressType();
 		for (Contact contact : contacts.getContact()) {
-			if(contact.getAdresse()!=null) {
+			if (contact.getAdresse() != null) {
 				address.setL1(new StringBuilder().append(contact.getCiviliteReferent())
 						.append(Constants.ESPACE)
 						.append(contact.getPrenomReferent())
@@ -139,7 +143,7 @@ public class PilotageMapper {
 						.append(Constants.ESPACE)
 						.append(contact.getAdresse().getIndiceRepetition())
 						.append(Constants.ESPACE)
-						.append(contact.getAdresse().getTypeVoie()) 
+						.append(contact.getAdresse().getTypeVoie())
 						.append(Constants.ESPACE)
 						.append(contact.getAdresse().getLibelleVoie()).toString());
 				address.setL5(contact.getAdresse().getMentionSpeciale());
@@ -147,7 +151,12 @@ public class PilotageMapper {
 						.append(Constants.ESPACE)
 						.append(contact.getAdresse().getLibelleCommune()).toString());
 				address.setL7(contact.getAdresse().getLibellePays());
-				address.setGeographicalLocationId(geographicalLocation);
+				address.setBuilding(contact.getAdresse().getBatiment());
+				address.setFloor(contact.getAdresse().getEtage());
+				address.setDoor(contact.getAdresse().getPorte());
+				address.setStaircase(contact.getAdresse().getEscalier());
+				address.setElevator(contact.getAdresse().isAscenseur());
+				address.setCityPriorityDistrict(contact.getAdresse().isQPV());
 			}
 		}
 		return address;
