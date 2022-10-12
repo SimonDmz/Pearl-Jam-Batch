@@ -87,7 +87,6 @@ public class ApplicationContext {
 		ApplicationConfig.ldapServiceUrlScheme=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.scheme");
 		ApplicationConfig.ldapServiceUrlHost=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.host");
 		ApplicationConfig.ldapServiceUrlPort=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.port");
-		ApplicationConfig.ldapServiceUrlPath=envSpring.getProperty("fr.insee.pearljam.ldap.service.url.path");
 	}
 
 	/**
