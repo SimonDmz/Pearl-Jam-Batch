@@ -39,6 +39,7 @@ import fr.insee.pearljam.batch.dao.ClosingCauseDao;
 import fr.insee.pearljam.batch.dao.CommentDao;
 import fr.insee.pearljam.batch.dao.ContactAttemptDao;
 import fr.insee.pearljam.batch.dao.ContactOutcomeDao;
+import fr.insee.pearljam.batch.dao.IdentificationDao;
 import fr.insee.pearljam.batch.dao.InterviewerTypeDao;
 import fr.insee.pearljam.batch.dao.MessageDao;
 import fr.insee.pearljam.batch.dao.OrganizationalUnitTypeDao;
@@ -104,6 +105,8 @@ public class CampaignService {
 	MessageDao messageDao;
 	@Autowired
 	InterviewerTypeDao interviewerTypeDao;
+	@Autowired
+	IdentificationDao identificationDao;
 
 	boolean deleteAllSurveyUnits = false;
 
@@ -232,6 +235,8 @@ public class CampaignService {
 					// InseeSampleIdentifiers
 					surveyUnitType.setInseeSampleIdentiers(
 							sampleIdentifierDao.getSampleIdentiersBySurveyUnitId(surveyUnitType.getId()));
+
+					surveyUnitType.setIdentification(identificationDao.getIdentificationTypeBySurveyUnitId(surveyUnitType.getId()));
 
 				} catch (Exception e) {
 					throw new DataBaseException("Error during the archiving of the file campaign."
