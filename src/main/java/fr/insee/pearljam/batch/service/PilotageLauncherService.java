@@ -339,18 +339,23 @@ public class PilotageLauncherService {
 	 * @throws SQLException
 	 * @throws DataBaseException
 	 */
-	public BatchErrorCode extractCampaign(String in, String out) throws ValidateException, DataBaseException, BatchException {
+	public BatchErrorCode extractCampaign(String in, String out)
+			throws ValidateException, DataBaseException, BatchException {
 		Campaign campaign = XmlUtils.xmlToObject(in, Campaign.class);
 		CampaignDao campaignDao = context.getBean(CampaignDao.class);
 		CampaignService campaignService = context.getBean(CampaignService.class);
-		if(campaign!=null) {
-			if(campaignDao.existCampaign(campaign.getId())) {
+		if (campaign != null) {
+			Campaign dbCampaign = campaignDao.findById(campaign.getId());
+			if (dbCampaign != null) {
+				campaign.setContactAttemptsConfiguration(dbCampaign.getContactAttemptsConfiguration());
+				campaign.setContactOutcomeConfiguration(dbCampaign.getContactOutcomeConfiguration());
+				campaign.setIdentificationConfiguration(dbCampaign.getIdentificationConfiguration());
 				return campaignService.extractCampaign(campaign, out);
-			}else{
+			} else {
 				logger.log(Level.ERROR, "The campaign {} does not exist", campaign.getId());
 				return BatchErrorCode.OK_FONCTIONAL_WARNING;
 			}
-		}else {
+		} else {
 			throw new ValidateException(Constants.ERROR_CAMPAIGN_NULL);
 		}
 	}
