@@ -173,6 +173,10 @@ public class CampaignService {
 		List<OrganizationalUnitType> listOrganizationalUnit = visibilityDao
 				.getAllVisibilitiesByCampaignId(campaign.getId());
 		ou.getOrganizationalUnit().addAll(listOrganizationalUnit);
+		Campaign dbCampaign = campaignDao.findById(campaign.getId());
+		campaign.setContactAttemptsConfiguration(dbCampaign.getContactAttemptsConfiguration());
+		campaign.setContactOutcomeConfiguration(dbCampaign.getContactOutcomeConfiguration());
+		campaign.setIdentificationConfiguration(dbCampaign.getIdentificationConfiguration());
 		campaign.setOrganizationalUnits(ou);
 		if (campaign.getSurveyUnits() == null || campaign.getSurveyUnits().getSurveyUnit() == null
 				|| campaign.getSurveyUnits().getSurveyUnit().isEmpty() || checkListAllSurveyUnit(campaign)) {
